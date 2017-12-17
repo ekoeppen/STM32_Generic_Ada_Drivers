@@ -1,0 +1,17 @@
+with "../../../Ada_Drivers_Library/boards/stm32f072_stackable.gpr";
+
+project Main extends "../common/common.gpr" is
+
+	for Runtime ("Ada") use STM32F072_Stackable'Runtime("Ada");
+	for Languages use ("Ada");
+	for Source_Dirs use (
+		".",
+		"../../common/",
+		"../../f0/",
+		"../../drivers/");
+	for Main use ("main");
+	for Target use "arm-eabi";
+	for Object_Dir use "obj";
+	for Exec_Dir use "exe";
+
+end Main;

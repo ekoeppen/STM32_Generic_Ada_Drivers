@@ -1,0 +1,43 @@
+V "GNAT Lib v2016"
+A -Os
+A -gnatA
+A --RTS=/home/ekoppen/Documents/Unison/Ada/Ada_Drivers_Library/boards/../embedded-runtimes/ravenscar-stm32f072/sfp/
+A -mlittle-endian
+A -mfloat-abi=soft
+A -mcpu=cortex-m0
+A -mthumb
+A -g
+A -gnatp
+A -gnatn
+A -gnatwa
+A -gnatwe
+A -gnatQ
+A -gnatw.X
+A -gnaty
+A -gnatyO
+A -gnatyM120
+A -ffunction-sections
+A -fdata-sections
+P ZX
+
+RN
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK_05
+
+U stm32gd%s		stm32gd.ads		944af4bb NE OO PU PK IU
+W hal%s			hal.ads			hal.ali
+W interfaces%s		interfac.ads		interfac.ali
+
+D hal.ads		20170526192806 2b42c80e hal%s
+D interfac.ads		20170529104818 5ab55268 interfaces%s
+D stm32gd.ads		20170614044017 e5bd6edd stm32gd%s
+D system.ads		20170529104818 0bedc8d1 system%s
+X 1 hal.ads
+34K9*HAL 166e8 3|3w6 3r19
+43M9*UInt4 3|13r40
+X 2 interfac.ads
+33K9*Interfaces 179e15 3|2w6 2r36
+X 3 stm32gd.ads
+6K9*STM32GD 13E9 15l5 15e12
+9M9*GPIO_Alternate_Function<1|43M9> 13c9
+

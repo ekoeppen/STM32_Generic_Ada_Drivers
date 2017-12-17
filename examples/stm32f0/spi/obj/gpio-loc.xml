@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Locations>
+  <Project>
+    <vfs_file>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/gpio.gpr</vfs_file>
+    <file_marker column=" 1" line=" 1" >
+      <vfs_project>/home/ekoeppen/Documents/Unison/Ada/Ada_Drivers_Library/boards/stm32f072_stackable/board.gpr</vfs_project>
+      <vfs_file>/home/ekoeppen/Documents/Unison/Ada/Ada_Drivers_Library/boards/stm32f072_stackable/src/stm32-board.ads</vfs_file>
+    </file_marker>
+    <file_marker column=" 1" line=" 1" >
+      <vfs_project>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/gpio.gpr</vfs_project>
+      <vfs_file>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/main.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 29" line=" 10" >
+      <vfs_project>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/gpio.gpr</vfs_project>
+      <vfs_file>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/main.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 9" line=" 10" >
+      <vfs_project>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/gpio.gpr</vfs_project>
+      <vfs_file>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/f0/stm32gd-gpio-pin.ads</vfs_file>
+    </file_marker>
+    <file_marker column=" 1" line=" 1" >
+      <vfs_project>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/gpio.gpr</vfs_project>
+      <vfs_file>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/f0/stm32gd-gpio.ads</vfs_file>
+    </file_marker>
+    <file_marker current="true" column=" 1" line=" 1" >
+      <vfs_project>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/examples/gpio/gpio.gpr</vfs_project>
+      <vfs_file>/home/ekoeppen/Documents/Unison/Ada/STM32_Generic_Drivers/f0/stm32gd-spi.ads</vfs_file>
+    </file_marker>
+  </Project>
+</Locations>
