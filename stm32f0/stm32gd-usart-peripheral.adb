@@ -127,20 +127,20 @@ package body STM32GD.USART.Peripheral is
       Delimiter_Found : Boolean := False;
    begin
       Count := 0;
-      DMA_Pos := RX_DMA_Buffer'Length - Integer (DMA_Periph.CNDTR3.NDT) + RX_DMA_Buffer'First;
-      while DMA_Index /= DMA_Pos and not Delimiter_Found loop
-         if RX_DMA_Buffer (DMA_Index) = Delimiter then 
-            Delimiter_Found := True;
-         end if;
-         if Data_Index < Data'Last then
+      while not Delimiter_Found and Data_Index < Data'Last loop
+         DMA_Pos := RX_DMA_Buffer'Length - Integer (DMA_Periph.CNDTR3.NDT) + RX_DMA_Buffer'First;
+         while DMA_Index /= DMA_Pos and not Delimiter_Found and Data_Index < Data'Last loop
+            if RX_DMA_Buffer (DMA_Index) = Delimiter then
+               Delimiter_Found := True;
+            end if;
             Data (Data_Index) := RX_DMA_Buffer (DMA_Index);
             Data_Index := Data_Index + 1;
             Count := Count + 1;
-         end if;
-         DMA_Index := DMA_Index + 1;
-         if DMA_Index > RX_DMA_Buffer'Last then
-            DMA_Index := RX_DMA_Buffer'First;
-         end if;
+            DMA_Index := DMA_Index + 1;
+            if DMA_Index > RX_DMA_Buffer'Last then
+               DMA_Index := RX_DMA_Buffer'First;
+            end if;
+         end loop;
       end loop;
    end DMA_Receive;
 
