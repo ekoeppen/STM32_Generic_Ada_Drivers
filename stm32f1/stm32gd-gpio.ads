@@ -43,43 +43,31 @@ package STM32GD.GPIO is
                 (Pin_0, Pin_1, Pin_2, Pin_3, Pin_4, Pin_5, Pin_6, Pin_7,
                  Pin_8, Pin_9, Pin_10, Pin_11, Pin_12, Pin_13, Pin_14, Pin_15);
 
-   type Pin_IO_Modes is (Mode_In, Mode_Out, Mode_AF, Mode_Analog)
+   type Pin_In_Conf is (In_Analog, In_Floating, In_PullUpDown)
+     with Size => 2;
+
+   for Pin_In_Conf use
+     (In_Analog      => 2#00#,
+      In_Floating    => 2#01#,
+      In_PullUpDown  => 2#10#);
+
+   type Pin_Out_Conf is (
+      Out_PushPull, Out_OpenDrain, Alt_PushPull, Alt_OpenDrain)
+     with Size => 2;
+
+   for Pin_Out_Conf use
+     (Out_PushPull   => 2#00#,
+      Out_OpenDrain  => 2#01#,
+      Alt_PushPull   => 2#10#,
+      Alt_OpenDrain  => 2#11#);
+
+   type Pin_IO_Modes is (Input, Speed_10MHz, Speed_2MHz, Speed_50MHz)
      with Size => 2;
 
    for Pin_IO_Modes use
-     (Mode_In     => 0,
-      Mode_Out    => 1,
-      Mode_AF     => 2,
-      Mode_Analog => 3);
-
-   type Pin_Output_Types is (Push_Pull, Open_Drain)
-     with Size => 1;
-
-   for Pin_Output_Types use (Push_Pull => 0, Open_Drain => 1);
-
-   type Pin_Output_Speeds is (Speed_2MHz,  Speed_25MHz, Speed_50MHz, Speed_100MHz)
-     with Size => 2;
-
-   for Pin_Output_Speeds use
-     (Speed_2MHz   => 0,  -- low
-      Speed_25MHz  => 1,  -- medium
-      Speed_50MHz  => 2,  -- high
-      Speed_100MHz => 3); -- very high
-
-   Speed_Low       : Pin_Output_Speeds renames Speed_2MHz;
-   Speed_Medium    : Pin_Output_Speeds renames Speed_25MHz;
-   Speed_High      : Pin_Output_Speeds renames Speed_50MHz;
-   Speed_Very_High : Pin_Output_Speeds renames Speed_100MHz;
-
-   type Internal_Pin_Resistors is (Floating, Pull_Up, Pull_Down)
-     with Size => 2;
-
-   for Internal_Pin_Resistors use (Floating  => 0,
-                                   Pull_Up   => 1,
-                                   Pull_Down => 2);
-
-
-   type GPIO_Alternate_Function is new UInt4;
+     (Input       => 2#00#,
+      Speed_10MHz => 2#01#,
+      Speed_2MHz  => 2#10#,
+      Speed_50MHz => 2#11#);
 
 end STM32GD.GPIO;
-

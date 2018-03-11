@@ -1,4 +1,4 @@
---  This spec has been automatically generated from STM32F103xx.svd
+--  This spec has been automatically generated from STM32F103.svd
 
 pragma Restrictions (No_Elaboration_Code);
 pragma Ada_2012;
@@ -1834,7 +1834,11 @@ package STM32_SVD.CAN is
    end record;
 
    --  Controller area network
-   CAN_Periph : aliased CAN_Peripheral
+   CAN1_Periph : aliased CAN_Peripheral
      with Import, Address => System'To_Address (16#40006400#);
+
+   --  Controller area network
+   CAN2_Periph : aliased CAN_Peripheral
+     with Import, Address => System'To_Address (16#40006800#);
 
 end STM32_SVD.CAN;

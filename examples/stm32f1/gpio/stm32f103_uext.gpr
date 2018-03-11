@@ -5,7 +5,8 @@ project STM32F103_UEXT extends "../../common/common.gpr" is
 		"../../../common/",
 		"../../../stm32f1/",
 		"../../../stm32f1/stm32f103xx/svd/",
-		"../../../drivers/");
+		"../../../drivers/",
+		"../../boards/stm32f103_uext/");
 
 	for Main use ("main");
 	for Object_Dir use "stm32f103_uext";

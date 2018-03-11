@@ -5,7 +5,7 @@
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
 --  met:                                                                    --
---     1. Redistributions of source code must retain the above copyright    --
+--     . Redistributions of source code must retain the above copyright    --
 --        notice, this list of conditions and the following disclaimer.     --
 --     2. Redistributions in binary form must reproduce the above copyright --
 --        notice, this list of conditions and the following disclaimer in   --
@@ -32,7 +32,7 @@
 --                                                                          --
 --   @file    stm32f407xx.h   et al.                                        --
 --   @author  MCD Application Team                                          --
---   @version V1.1.0                                                        --
+--   @version V..0                                                        --
 --   @date    19-June-2014                                                  --
 --   @brief   CMSIS STM32F407xx Device Peripheral Access Layer Header File. --
 --                                                                          --
@@ -57,10 +57,10 @@ package body STM32GD.EXTI is
    is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.IMR1.Arr (Index) := 1;
-      EXTI_Periph.RTSR1.TR.Arr (Index) :=
+      EXTI_Periph.IMR.MR.Arr (Index) := 1;
+      EXTI_Periph.RTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge then 1 else 0);
-      EXTI_Periph.FTSR1.TR.Arr (Index) :=
+      EXTI_Periph.FTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge then 1 else 0);
    end Enable_External_Interrupt;
 
@@ -71,9 +71,9 @@ package body STM32GD.EXTI is
    procedure Disable_External_Interrupt (Line : External_Line_Number) is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.IMR1.Arr (Index)  := 0;
-      EXTI_Periph.RTSR1.TR.Arr (Index) := 0;
-      EXTI_Periph.FTSR1.TR.Arr (Index) := 0;
+      EXTI_Periph.IMR.MR.Arr (Index)  := 0;
+      EXTI_Periph.RTSR.TR.Arr (Index) := 0;
+      EXTI_Periph.FTSR.TR.Arr (Index) := 0;
    end Disable_External_Interrupt;
 
    ---------------------------
@@ -86,10 +86,10 @@ package body STM32GD.EXTI is
    is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.EMR1.Arr (Index)  := 1;
-      EXTI_Periph.RTSR1.TR.Arr (Index) :=
+      EXTI_Periph.EMR.MR.Arr (Index)  := 1;
+      EXTI_Periph.RTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge then 1 else 0);
-      EXTI_Periph.FTSR1.TR.Arr (Index) :=
+      EXTI_Periph.FTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge then 1 else 0);
    end Enable_External_Event;
 
@@ -100,9 +100,9 @@ package body STM32GD.EXTI is
    procedure Disable_External_Event (Line : External_Line_Number) is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.EMR1.Arr (Index)  := 0;
-      EXTI_Periph.RTSR1.TR.Arr (Index) := 0;
-      EXTI_Periph.FTSR1.TR.Arr (Index) := 0;
+      EXTI_Periph.EMR.MR.Arr (Index)  := 0;
+      EXTI_Periph.RTSR.TR.Arr (Index) := 0;
+      EXTI_Periph.FTSR.TR.Arr (Index) := 0;
    end Disable_External_Event;
 
    ------------------
@@ -111,7 +111,7 @@ package body STM32GD.EXTI is
 
    procedure Generate_SWI (Line : External_Line_Number) is
    begin
-      EXTI_Periph.SWIER1.SWIER.Arr (External_Line_Number'Pos (Line)) := 1;
+      EXTI_Periph.SWIER.SWIER.Arr (External_Line_Number'Pos (Line)) := 1;
    end Generate_SWI;
 
    --------------------------------
@@ -120,7 +120,7 @@ package body STM32GD.EXTI is
 
    function External_Interrupt_Pending (Line : External_Line_Number)
      return Boolean
-   is (if EXTI_Periph.PR1.PR.Arr (External_Line_Number'Pos (Line)) = 1 then True else False);
+   is (if EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) = 1 then True else False);
 
    ------------------------------
    -- Clear_External_Interrupt --
@@ -129,7 +129,7 @@ package body STM32GD.EXTI is
    procedure Clear_External_Interrupt (Line : External_Line_Number) is
    begin
       --  yes, one to clear
-      EXTI_Periph.PR1.PR.Arr (External_Line_Number'Pos (Line)) := 1;
+      EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) := 1;
    end Clear_External_Interrupt;
 
 

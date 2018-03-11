@@ -6,21 +6,17 @@ with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 
 with STM32_SVD.RCC;
+with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
-
-   package GPIO renames STM32GD.GPIO;
-   package LED is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Mode_Out);
 
    Next_Release : Time := Clock;
    Period       : constant Time_Span := Milliseconds (75);  -- arbitrary
 
 begin
-   STM32_SVD.RCC.RCC_Periph.AHBENR.IOPAEN := 1;
-   LED.Init;
-   LED.Set;
+   Init;
    loop
-      LED.Toggle;
+      LED_GREEN.Toggle;
       Next_Release := Next_Release + Period;
       delay until Next_Release;
    end loop;

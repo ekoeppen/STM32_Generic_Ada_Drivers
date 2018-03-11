@@ -1,4 +1,4 @@
---  This spec has been automatically generated from STM32F103xx.svd
+--  This spec has been automatically generated from STM32F103.svd
 
 pragma Restrictions (No_Elaboration_Code);
 pragma Ada_2012;
@@ -962,6 +962,6 @@ package STM32_SVD.BKP is
 
    --  Backup registers
    BKP_Periph : aliased BKP_Peripheral
-     with Import, Address => System'To_Address (16#40006C04#);
+     with Import, Address => System'To_Address (16#40006C00#);
 
 end STM32_SVD.BKP;

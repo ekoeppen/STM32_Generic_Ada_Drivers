@@ -1,0 +1,17 @@
+project STM32F0Disco extends "../../common/common.gpr" is
+
+	for Source_Dirs use (
+		".",
+		"../../../stm32f0/stm32f051x/svd/",
+		"../../../stm32f0/stm32f051x/",
+		"../../../stm32f0/",
+		"../../../common/",
+		"../../../drivers/",
+		"../../boards/stm32f0disco/");
+
+	for Main use ("main");
+	for Object_Dir use "stm32f0disco";
+	for Exec_Dir use "stm32f0disco";
+	for Runtime ("Ada") use RTS_Profile & "-stm32f0disco";
+
+end STM32F0Disco;
