@@ -1,3 +1,3 @@
-# STM32_Generic_Ada_Drivers
+# STM32 Generi  Ada Drivers
 
 Peripheral drivers based on Ada generic packages for STM32 microcontrollers
