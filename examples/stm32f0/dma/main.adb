@@ -42,9 +42,10 @@ begin
    RX.Init;
    TX.Init;
    USART.Init;
+   LED_GREEN.Set;
    while True loop
-      LED_GREEN.Toggle;
       USART.DMA_Receive (10, RX_Buffer, RX_Count);
+      LED_GREEN.Toggle;
       if RX_Count > 0 then
          USART.DMA_Transmit (RX_Buffer, RX_Count);
       end if;

@@ -1,0 +1,16 @@
+project STM32F030C8_Breakout extends "../../common/common.gpr" is
+
+	for Source_Dirs use (
+		".",
+		"../../../common/",
+		"../../../stm32f0/",
+		"../../../drivers/",
+		"../../../stm32f0/stm32f030x/svd/",
+		"../../boards/stm32f030c8_breakout/");
+
+	for Main use ("main");
+	for Object_Dir use "stm32f030c8_breakout";
+	for Exec_Dir use "stm32f030c8_breakout";
+	for Runtime ("Ada") use RTS_Profile & "-stm32f030c8_breakout";
+
+end STM32F030C8_Breakout;

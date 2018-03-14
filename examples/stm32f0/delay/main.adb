@@ -15,10 +15,11 @@ procedure Main is
 
 begin
    Init;
+   LED_GREEN.Set;
    loop
-      LED_GREEN.Toggle;
       Next_Release := Next_Release + Period;
       delay until Next_Release;
+      LED_GREEN.Toggle;
    end loop;
 end Main;
 
