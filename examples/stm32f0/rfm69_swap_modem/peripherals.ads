@@ -15,6 +15,6 @@ package Peripherals is
 
    package USART is new STM32GD.USART.Peripheral (USART => STM32GD.USART.USART_1, Speed => 115200, RX_DMA_Buffer_Size => 64);
 
-	procedure Init;
+   procedure Init;
 
 end Peripherals;

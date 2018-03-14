@@ -12,7 +12,7 @@ package body Serial is
       procedure Write is begin null; end;
    end Serial_Data;
 
-   task Serial_Task with Storage_Size => 1024 is
+   task Serial_Task with Storage_Size => 256 is
       pragma Priority (30);
    end Serial_Task;
 

@@ -12,6 +12,7 @@ with STM32GD.USART;
 with Peripherals;
 with Serial;
 with Blink;
+with Modem;
 
 procedure Main is
    Next_Release : Time := Clock;
