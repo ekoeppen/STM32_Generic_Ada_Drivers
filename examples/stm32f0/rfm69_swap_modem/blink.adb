@@ -1,11 +1,14 @@
 with STM32GD.Board;
+with Serial;
 
 package body Blink is
 
    Next_Release : Time := Clock;
    Period       : constant Time_Span := Milliseconds (500);
 
-   task Blink_Task with Storage_Size => 112;
+   task Blink_Task with Storage_Size => 256 is
+      pragma Priority (10);
+   end Blink_Task;
 
    protected body Blink_Parameters is
       procedure Set_Rate (R : Time_Span) is
@@ -32,6 +35,7 @@ package body Blink is
 
    task body Blink_Task is
    begin
+      Serial.Write_Line ("Blink task starting" & Character'Val (10));
       loop
          STM32GD.Board.LED_RED.Toggle;
          Next_Release := Next_Release + Blink_Parameters.Get_Rate;

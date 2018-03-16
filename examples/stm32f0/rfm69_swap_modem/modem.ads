@@ -1,3 +1,3 @@
 package Modem is
-	pragma Elaborate_Body;
+   pragma Elaborate_Body;
 end Modem;

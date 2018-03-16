@@ -20,6 +20,8 @@ procedure Main is
 begin
    STM32GD.Board.Init;
    Peripherals.Init;
+   Serial.Write_Line ("--------------------------------------------------------------------------" & Character'Val (10));
+   Serial.Write_Line ("Main task starting" & Character'Val (10));
    while True loop
       Next_Release := Next_Release + Period;
       delay until Next_Release;

@@ -121,6 +121,30 @@ package body STM32GD.USART.Peripheral is
       end loop;
    end DMA_Receive;
 
+   function DMA_Receive (Delimiter : in Byte; Data : out USART_Data; Count : out Natural) return Boolean is
+      Data_Index : Integer := Data'First;
+      DMA_Pos : Integer;
+      Delimiter_Found : Boolean := False;
+   begin
+      Count := 0;
+      DMA_Pos := RX_DMA_Buffer'Length - Integer (DMA_Periph.CNDTR3.NDT) + RX_DMA_Buffer'First;
+      while DMA_Index /= DMA_Pos or Delimiter_Found loop
+         if RX_DMA_Buffer (DMA_Index) = Delimiter then
+            Delimiter_Found := True;
+         end if;
+         if Data_Index < Data'Last then
+            Data (Data_Index) := RX_DMA_Buffer (DMA_Index);
+            Data_Index := Data_Index + 1;
+            Count := Count + 1;
+         end if;
+         DMA_Index := DMA_Index + 1;
+         if DMA_Index > RX_DMA_Buffer'Last then
+            DMA_Index := RX_DMA_Buffer'First;
+         end if;
+      end loop;
+      return Delimiter_Found;
+   end DMA_Receive;
+
    procedure DMA_Receive (Delimiter : in Byte; Data : out USART_Data; Count : out Natural) is
       Data_Index : Integer := Data'First;
       DMA_Pos : Integer;
