@@ -4,6 +4,7 @@ with System; use System;
 with System.Machine_Code;
 
 with Ada.Real_Time; use Ada.Real_Time;
+with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
 
 with STM32GD.Board;
@@ -16,7 +17,7 @@ with Modem;
 
 procedure Main is
    Next_Release : Time := Clock;
-   Period       : constant Time_Span := Milliseconds (1000);
+   Period       : constant Time_Span := Milliseconds (100);
 begin
    STM32GD.Board.Init;
    Peripherals.Init;

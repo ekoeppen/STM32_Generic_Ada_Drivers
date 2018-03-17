@@ -1,16 +1,13 @@
 with Serial; use Serial;
+with STM32GD.Board;
 with STM32GD.USART; use STM32GD.USART;
 with Ada.Real_Time; use Ada.Real_Time;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 package body Modem is
 
-   task Modem_Task with Storage_Size => 256 is
-      pragma Priority (15);
-   end Modem_Task;
-   task Command_Task with Storage_Size => 256 is
-      pragma Priority (15);
-   end Command_Task;
+   task Modem_Task with Storage_Size => 256;
+   task Command_Task with Storage_Size => 256;
 
    -----------------------------------------------------------------------------
 

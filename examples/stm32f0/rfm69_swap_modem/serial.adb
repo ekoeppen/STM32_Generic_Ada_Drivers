@@ -1,31 +1,44 @@
-with STM32_SVD;
+with STM32_SVD; use STM32_SVD;
+with STM32_SVD.USART; use STM32_SVD.USART;
 with STM32GD.USART; use STM32GD.USART;
 with STM32GD.Board;
 with Peripherals;
+with Peripherals.IRQ_Handlers;
 with Ada.Real_Time; use Ada.Real_Time;
+with Ada.Interrupts;
+with Ada.Interrupts.Names;
+with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 package body Serial is
 
-   protected body Buffer is
-      procedure Set_Line (Data: Serial_Data) is
-      begin
-         Set_True (Input_Available);
-         Line := Data;
-      end Set_Line;
+   Data_Ready : Suspension_Object;
+   Input : Serial_Data;
+   Input_Available : Suspension_Object;
 
-      function Get_Line return Serial_Data is
-      begin
-         Set_False (Input_Available);
-         return Line;
-      end Get_Line;
-   end Buffer;
+   protected IRQ_Handler is
+      procedure USART1;
+      pragma Attach_Handler (USART1, Ada.Interrupts.Names.USART1);
+   end IRQ_Handler;
 
    ----------------------------------------------------------------------------
-   --
+
+   protected body IRQ_Handler is
+      procedure USART1 is
+      begin
+         USART1_Periph.ICR.TCCF := 1;
+         --  if USART1_Periph.ISR.RXNE = 1 then
+            Set_True (Data_Ready);
+         --  end if;
+      end USART1;
+   end IRQ_Handler;
+
+   ----------------------------------------------------------------------------
+
    procedure Read_Line (Line : out Serial_Data) is
    begin
+      Set_False (Input_Available);
       Suspend_Until_True (Input_Available);
-      Line := Input.Get_Line;
+      Line := Input;
    end Read_Line;
 
    procedure Write_Line (Line : in Serial_Data) is
@@ -42,24 +55,27 @@ package body Serial is
       Peripherals.USART.DMA_Transmit (TX_Buffer, TX_Buffer'Length);
    end Write_Line;
 
+   procedure Test is
+      RX_Data : Serial_Data;
+   begin
+      Read_Line (RX_Data);
+      Write_Line (RX_Data);
+   end Test;
+
    ----------------------------------------------------------------------------
 
-   task Serial_Task with Storage_Size => 256 is
-      pragma Priority (10);
-   end Serial_Task;
+   task Serial_Task with Storage_Size => 256;
 
    task body Serial_Task is
-      RX_Data : Serial_Data;
-      Next_Release : Time := Clock;
-      Period       : constant Time_Span := Milliseconds (10);
    begin
       Serial.Write_Line ("Serial task starting" & Character'Val (10));
-      delay until Next_Release + Period;
+      USART1_Periph.CR1.RXNEIE := 1;
       loop
-         Peripherals.USART.DMA_Receive (RX_Data.Data, RX_Data.Length);
-         if RX_Data.Length > 0 then
-            Input.Set_Line (RX_Data);
-            STM32GD.Board.LED_GREEN.Toggle;
+         Set_False (Data_Ready);
+         Suspend_Until_True (Data_Ready);
+         Peripherals.USART.DMA_Receive (10, Input.Data, Input.Length);
+         if Input.Length > 0 then
+            Set_True (Input_Available);
          end if;
       end loop;
    end Serial_Task;
