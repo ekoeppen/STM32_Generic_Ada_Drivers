@@ -6,7 +6,7 @@ package body Blink is
    Next_Release : Time := Clock;
    Period       : constant Time_Span := Milliseconds (500);
 
-   task Blink_Task with Storage_Size => 256;
+   task Blink_Task with Storage_Size => 384;
 
    protected body Blink_Parameters is
       procedure Set_Rate (R : Time_Span) is

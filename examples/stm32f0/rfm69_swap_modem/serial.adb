@@ -11,26 +11,8 @@ with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 package body Serial is
 
-   Data_Ready : Suspension_Object;
    Input : Serial_Data;
    Input_Available : Suspension_Object;
-
-   protected IRQ_Handler is
-      procedure USART1;
-      pragma Attach_Handler (USART1, Ada.Interrupts.Names.USART1);
-   end IRQ_Handler;
-
-   ----------------------------------------------------------------------------
-
-   protected body IRQ_Handler is
-      procedure USART1 is
-      begin
-         USART1_Periph.ICR.TCCF := 1;
-         --  if USART1_Periph.ISR.RXNE = 1 then
-            Set_True (Data_Ready);
-         --  end if;
-      end USART1;
-   end IRQ_Handler;
 
    ----------------------------------------------------------------------------
 
@@ -64,15 +46,14 @@ package body Serial is
 
    ----------------------------------------------------------------------------
 
-   task Serial_Task with Storage_Size => 256;
+   task Serial_Task with Storage_Size => 384;
 
    task body Serial_Task is
    begin
       Serial.Write_Line ("Serial task starting" & Character'Val (10));
       USART1_Periph.CR1.RXNEIE := 1;
       loop
-         Set_False (Data_Ready);
-         Suspend_Until_True (Data_Ready);
+         Peripherals.IRQ_Handlers.USART.Wait;
          Peripherals.USART.DMA_Receive (10, Input.Data, Input.Length);
          if Input.Length > 0 then
             Set_True (Input_Available);

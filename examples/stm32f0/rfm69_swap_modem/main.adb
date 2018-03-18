@@ -11,9 +11,10 @@ with STM32GD.Board;
 with STM32GD.USART;
 
 with Peripherals;
+with Peripherals.IRQ_Handlers;
 with Serial;
 with Blink;
-with Modem;
+--  with Modem;
 
 procedure Main is
    Next_Release : Time := Clock;
