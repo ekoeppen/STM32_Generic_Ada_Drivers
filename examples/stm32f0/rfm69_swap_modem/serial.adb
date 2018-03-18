@@ -18,6 +18,7 @@ package body Serial is
 
    procedure Read_Line (Line : out Serial_Data) is
    begin
+      Input.Length := Input.Data'First;
       Set_False (Input_Available);
       Suspend_Until_True (Input_Available);
       Line := Input;
@@ -51,13 +52,10 @@ package body Serial is
    task body Serial_Task is
    begin
       Serial.Write_Line ("Serial task starting" & Character'Val (10));
-      USART1_Periph.CR1.RXNEIE := 1;
       loop
          Peripherals.IRQ_Handlers.USART.Wait;
          Peripherals.USART.DMA_Receive (10, Input.Data, Input.Length);
-         if Input.Length > 0 then
-            Set_True (Input_Available);
-         end if;
+         Set_True (Input_Available);
       end loop;
    end Serial_Task;
 

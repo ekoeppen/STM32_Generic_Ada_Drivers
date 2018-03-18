@@ -18,7 +18,7 @@ package STM32GD.USART.Peripheral is
 
    procedure DMA_Transmit (Data : in USART_Data; Count : in Natural);
    procedure DMA_Receive (Data : out USART_Data; Count : out Natural);
-   function DMA_Receive (Delimiter : in Byte; Data : out USART_Data; Count : out Natural) return Boolean;
+   function DMA_Receive (Delimiter : in Byte; Data : out USART_Data; Data_Index : in out Natural) return Boolean;
    procedure DMA_Receive (Delimiter : Byte; Data : out USART_Data; Count : out Natural);
 
 end STM32GD.USART.Peripheral;

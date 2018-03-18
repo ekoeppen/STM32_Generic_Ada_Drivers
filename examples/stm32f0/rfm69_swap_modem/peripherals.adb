@@ -12,6 +12,7 @@ package body Peripherals is
       Peripherals.RX.Init;
       Peripherals.TX.Init;
       Peripherals.USART.Init;
+      STM32_SVD.USART.USART1_Periph.CR1.RXNEIE := 1;
    end Init;
 
 end Peripherals;
