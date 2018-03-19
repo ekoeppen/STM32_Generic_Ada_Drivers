@@ -35,7 +35,7 @@ package body Modem is
    begin
       Serial.Write_Line ("Command task starting" & Character'Val (10));
       loop
-         Serial.Read_Line (Command_Line);
+         Serial.Input.Read (Command_Line);
          Handle_Command (Command_Line);
       end loop;
    end Command_Task;

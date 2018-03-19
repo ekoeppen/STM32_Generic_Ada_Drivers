@@ -11,7 +11,14 @@ package Serial is
       Length : Natural;
    end record;
 
-   procedure Read_Line (Line : out Serial_Data);
+   protected Input is
+      entry Read (Line : out Serial_Data);
+      procedure Set_Ready (Line : Serial_Data);
+   private
+      Buffer : Serial_Data;
+      Ready : Boolean := False;
+   end Input;
+
    procedure Write_Line (Line : in String);
    procedure Write_Line (Line : in Serial_Data);
 

@@ -1,6 +1,5 @@
-with Ada.Interrupts;
 with Ada.Interrupts.Names;
-with System;
+with STM32GD.USART; use STM32GD.USART;
 
 package Peripherals.IRQ_Handlers is
    protected USART is

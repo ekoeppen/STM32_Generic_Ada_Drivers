@@ -11,18 +11,25 @@ with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 package body Serial is
 
-   Input : Serial_Data;
-   Input_Available : Suspension_Object;
+   task Serial_Task with Storage_Size => 384;
 
    ----------------------------------------------------------------------------
 
-   procedure Read_Line (Line : out Serial_Data) is
-   begin
-      Input.Length := Input.Data'First;
-      Set_False (Input_Available);
-      Suspend_Until_True (Input_Available);
-      Line := Input;
-   end Read_Line;
+   protected body Input is
+      entry Read (Line : out Serial_Data) when Ready is
+      begin
+         Line := Buffer;
+         Ready := False;
+      end Read;
+
+      procedure Set_Ready (Line : Serial_Data) is
+      begin
+         Buffer := Line;
+         Ready := True;
+      end Set_Ready;
+   end Input;
+
+   ----------------------------------------------------------------------------
 
    procedure Write_Line (Line : in Serial_Data) is
    begin
@@ -41,21 +48,21 @@ package body Serial is
    procedure Test is
       RX_Data : Serial_Data;
    begin
-      Read_Line (RX_Data);
+      Input.Read (RX_Data);
       Write_Line (RX_Data);
    end Test;
 
-   ----------------------------------------------------------------------------
-
-   task Serial_Task with Storage_Size => 384;
-
    task body Serial_Task is
+      Buffer : Serial_Data;
    begin
       Serial.Write_Line ("Serial task starting" & Character'Val (10));
       loop
-         Peripherals.IRQ_Handlers.USART.Wait;
-         Peripherals.USART.DMA_Receive (10, Input.Data, Input.Length);
-         Set_True (Input_Available);
+         loop
+            Peripherals.IRQ_Handlers.USART.Wait;
+            exit when Peripherals.USART.DMA_Receive (10, Buffer.Data, Buffer.Length);
+         end loop;
+         Input.Set_Ready (Buffer);
+         Buffer.Length := Buffer.Data'First;
       end loop;
    end Serial_Task;
 
