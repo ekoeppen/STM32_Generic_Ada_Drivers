@@ -33,7 +33,7 @@ package body Blink is
 
    task body Blink_Task is
    begin
-      Serial.Write_Line ("Blink task starting" & Character'Val (10));
+      Serial.Output.Write_Line ("Blink task starting");
       loop
          STM32GD.Board.LED_RED.Toggle;
          Next_Release := Next_Release + Blink_Parameters.Get_Rate;

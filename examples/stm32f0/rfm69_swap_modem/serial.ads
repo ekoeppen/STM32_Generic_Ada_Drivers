@@ -12,15 +12,22 @@ package Serial is
    end record;
 
    protected Input is
-      entry Read (Line : out Serial_Data);
+      entry Read_Line (Line : out Serial_Data);
       procedure Set_Ready (Line : Serial_Data);
    private
       Buffer : Serial_Data;
       Ready : Boolean := False;
    end Input;
 
-   procedure Write_Line (Line : in String);
-   procedure Write_Line (Line : in Serial_Data);
+   package Output is
+      procedure Write (Data : in USART_Data; Length : in Natural);
+
+      procedure Write (Line : in Serial_Data);
+      procedure Write_Line (Line : in Serial_Data);
+      procedure Write (Line : in String);
+      procedure Write_Line (Line : in String);
+   end Output;
+
 
    procedure Test;
 

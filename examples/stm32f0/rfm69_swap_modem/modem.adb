@@ -15,7 +15,7 @@ package body Modem is
       Next_Release : Time := Clock;
       Period       : constant Time_Span := Milliseconds (500);
    begin
-      Serial.Write_Line ("Modem task starting" & Character'Val (10));
+      Serial.Output.Write_Line ("Modem task starting");
       loop
          Next_Release := Next_Release + Period;
          delay until Next_Release;
@@ -26,16 +26,16 @@ package body Modem is
 
    procedure Handle_Command (Line : Serial_Data) is
    begin
-      Serial.Write_Line ("Read: ");
-      Serial.Write_Line (Line);
+      Serial.Output.Write ("Read: ");
+      Serial.Output.Write (Line);
    end Handle_Command;
 
    task body Command_Task is
       Command_Line : Serial_Data;
    begin
-      Serial.Write_Line ("Command task starting" & Character'Val (10));
+      Serial.Output.Write_Line ("Command task starting");
       loop
-         Serial.Input.Read (Command_Line);
+         Serial.Input.Read_Line (Command_Line);
          Handle_Command (Command_Line);
       end loop;
    end Command_Task;
