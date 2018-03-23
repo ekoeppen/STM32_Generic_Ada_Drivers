@@ -35,7 +35,7 @@ package body Blink is
    begin
       Serial.Output.Write_Line ("Blink task starting");
       loop
-         STM32GD.Board.LED_RED.Toggle;
+         STM32GD.Board.LED_GREEN.Toggle;
          Next_Release := Next_Release + Blink_Parameters.Get_Rate;
          delay until Next_Release;
       end loop;
