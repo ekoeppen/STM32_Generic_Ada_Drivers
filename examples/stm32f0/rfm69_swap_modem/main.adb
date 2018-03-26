@@ -11,7 +11,6 @@ with STM32GD.Board;
 with STM32GD.USART;
 
 with Peripherals;
-with Peripherals.IRQ_Handlers;
 with Serial;
 with Blink;
 with Modem;

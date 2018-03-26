@@ -9,6 +9,21 @@ package body STM32GD.USART.Peripheral is
    function W is new Ada.Unchecked_Conversion (Address, UInt32);
    procedure DMA_Setup_Receive;
 
+   protected body IRQ_Handler is
+      entry Wait when Data_Available is
+      begin
+         Data_Available := False;
+      end Wait;
+
+      procedure Handler is
+      begin
+         USART.ICR.TCCF := 1;
+         USART.ICR.IDLECF := 1;
+         USART.ICR.EOBCF := 1;
+         Data_Available := True;
+      end Handler;
+   end IRQ_Handler;
+
    procedure Init is
       Clock        : constant UInt32 := 8_000_000;
       Int_Scale    : constant UInt32 := 4;

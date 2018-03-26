@@ -3,7 +3,6 @@ with STM32_SVD.USART; use STM32_SVD.USART;
 with STM32GD.USART; use STM32GD.USART;
 with STM32GD.Board;
 with Peripherals;
-with Peripherals.IRQ_Handlers;
 with Ada.Real_Time; use Ada.Real_Time;
 with Ada.Interrupts;
 with Ada.Interrupts.Names;
@@ -93,7 +92,7 @@ package body Serial is
       loop
          Buffer.Length := Buffer.Data'First;
          loop
-            Peripherals.IRQ_Handlers.USART.Wait;
+            Peripherals.USART.IRQ_Handler.Wait;
             exit when Peripherals.USART.DMA_Receive (10, Buffer.Data, Buffer.Length);
          end loop;
          Input.Set_Ready (Buffer);
