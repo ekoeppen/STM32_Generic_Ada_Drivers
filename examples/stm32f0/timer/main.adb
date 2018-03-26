@@ -21,8 +21,8 @@ begin
    Peripherals.Init;
    Serial.Output.Write_Line ("--------------------------------------------------------------------------");
    Serial.Output.Write_Line ("Main task starting");
-   -- Peripherals.Timer.Every (Milliseconds (1000), STM32GD.Board.LED_GREEN.Toggle'Access);
-   Peripherals.Timer.After (Milliseconds (5000), STM32GD.Board.LED_GREEN.Toggle'Access);
+   Peripherals.Timer.Every (Milliseconds (1000), STM32GD.Board.LED_GREEN.Toggle'Access);
+   --  Peripherals.Timer.After (Milliseconds (5000), STM32GD.Board.LED_GREEN.Toggle'Access);
    while True loop
       STM32GD.Board.LED_RED.Toggle;
       Next_Release := Next_Release + Period;

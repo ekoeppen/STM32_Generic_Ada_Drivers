@@ -9,6 +9,7 @@ package body STM32GD.Timer.Peripheral is
    Frequency : constant Natural := 1_000;
    CK_INT : constant Natural := 8_000_000;
    Repeat : Boolean;
+   First : Boolean;
 
    procedure Start (Time : Time_Span; Callback : Timer_Callback_Type);
 
@@ -19,10 +20,15 @@ package body STM32GD.Timer.Peripheral is
             TIM14_Periph.SR.UIF := 0;
          end if;
          if Timer_Callback /= null then
-            if not Repeat then
-               Stop;
+            if not First then
+               if not Repeat then
+                     Stop;
+               else
+                  Timer_Callback.all;
+               end if;
+            else
+               First := False;
             end if;
-            Timer_Callback.all;
          end if;
       end Handler;
    end IRQ_Handler;
@@ -32,6 +38,7 @@ package body STM32GD.Timer.Peripheral is
       if Timer = Timer_14 then
          RCC_Periph.APB1ENR.TIM14EN := 1;
          TIM14_Periph.PSC.PSC := UInt16 (CK_INT / Frequency);
+         TIM14_Periph.CR1.ARPE := 1;
       end if;
    end Init;
 
@@ -40,11 +47,12 @@ package body STM32GD.Timer.Peripheral is
    begin
       MS := UInt16 (To_Duration (Time) * 1_000);
       Timer_Callback := Callback;
+      First := True;
       if Timer = Timer_14 then
          TIM14_Periph.CNT.CNT := 0;
          TIM14_Periph.ARR.ARR := MS;
-         TIM14_Periph.DIER.UIE := 1;
          TIM14_Periph.CR1.CEN := 1;
+         TIM14_Periph.DIER.UIE := 1;
       end if;
    end Start;
 
