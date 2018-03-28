@@ -94,6 +94,26 @@ package body STM32GD.GPIO.Pin is
       return STM32GD.EXTI.External_Line_Number'Val (Index);
    end Interrupt_Line_Number;
 
+   procedure Wait_For_Trigger is
+   begin
+      null;
+   end Wait_For_Trigger;
+
+   procedure Clear_Trigger is
+   begin
+      null;
+   end Clear_Trigger;
+
+   function Triggered return Boolean is
+   begin
+      return True;
+   end Triggered;
+
+   procedure Cancel_Wait is
+   begin
+      null;
+   end Cancel_Wait;
+
    procedure Configure_Trigger (Trigger : EXTI.External_Triggers)
    is
       use STM32GD.EXTI;
