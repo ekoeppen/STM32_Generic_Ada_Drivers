@@ -1,30 +1,34 @@
+with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
+with Ada.Real_Time; use Ada.Real_Time;
+
 with Last_Chance_Handler;  pragma Unreferenced (Last_Chance_Handler);
+
 with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 with STM32GD.EXTI;
-with STM32_SVD.RCC;
-with IRQ;
+with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
 
    package GPIO renames STM32GD.GPIO;
+   package EXTI renames STM32GD.EXTI;
 
-   package LED is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Mode_Out);
-   package Button is new GPIO.Pin (Pin => GPIO.Pin_13, Port => GPIO.Port_C);
-
+   Next_Release : Time := Clock;
+   Period       : constant Time_Span := Milliseconds (50);
 
 begin
-   STM32_SVD.RCC.RCC_Periph.AHBENR.IOPAEN := True;
-   STM32_SVD.RCC.RCC_Periph.AHBENR.IOPCEN := True;
-   STM32_SVD.RCC.RCC_Periph.APB2ENR.SYSCFGEN := True;
-   Button.Init;
-   Button.Configure_Trigger (STM32GD.EXTI.Interrupt_Falling_Edge);
-   LED.Init;
-   LED.Set;
+   Init;
+   TX.Init;
+   USART.Init;
+   Button.Configure_Trigger (EXTI.Interrupt_Falling_Edge);
+   LED_GREEN.Set;
    loop
-      if IRQ.Status = True then
-         LED.Toggle;
+      if EXTI.IRQ_Handler.Status (EXTI.EXTI_Line_0) = True then
+         LED_GREEN.Toggle;
+         EXTI.IRQ_Handler.Reset_Status (EXTI.EXTI_Line_0);
       end if;
+      Next_Release := Next_Release + Period;
+      delay until Next_Release;
    end loop;
 end Main;
 
