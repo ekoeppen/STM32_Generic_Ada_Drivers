@@ -9,6 +9,10 @@ package STM32GD.SPI.Peripheral is
 
    procedure Init;
 
+   procedure Send (Data : in Byte);
+   procedure Send (Data : in SPI_Data_8b);
+   procedure Receive (Data : out Byte);
+   procedure Receive (Data : out SPI_Data_8b);
    procedure Transfer (Data : in out SPI_Data_8b)
    with
       Pre => Data_Size = Data_Size_8b;
