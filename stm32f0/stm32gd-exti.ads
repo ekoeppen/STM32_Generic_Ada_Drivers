@@ -99,6 +99,8 @@ package STM32GD.EXTI is
      with Inline;
 
    protected IRQ_Handler is
+      entry Wait;
+      procedure Cancel;
       function Status (Line : External_Line_Number) return Boolean;
       procedure Reset_Status (Line : External_Line_Number);
       procedure Handler;
@@ -108,6 +110,8 @@ package STM32GD.EXTI is
 
    private
       EXTI_Status : STM32_SVD.EXTI.PR_Field;
+      Cancelled : Boolean;
+      Triggered : Boolean;
    end IRQ_Handler;
 
 end STM32GD.EXTI;

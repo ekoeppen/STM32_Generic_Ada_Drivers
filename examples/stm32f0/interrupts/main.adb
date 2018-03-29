@@ -16,19 +16,32 @@ procedure Main is
    Next_Release : Time := Clock;
    Period       : constant Time_Span := Milliseconds (50);
 
+   procedure Polling_Test is
+   begin
+      loop
+         if EXTI.IRQ_Handler.Status (EXTI.EXTI_Line_0) = True then
+            LED_GREEN.Toggle;
+            EXTI.IRQ_Handler.Reset_Status (EXTI.EXTI_Line_0);
+         end if;
+         Next_Release := Next_Release + Period;
+         delay until Next_Release;
+      end loop;
+   end Polling_Test;
+
+   procedure Waiting_Test is
+   begin
+      loop
+         Button.Wait_For_Trigger;
+         LED_GREEN.Toggle;
+      end loop;
+   end Waiting_Test;
+
 begin
    Init;
    TX.Init;
    USART.Init;
    Button.Configure_Trigger (EXTI.Interrupt_Falling_Edge);
    LED_GREEN.Set;
-   loop
-      if EXTI.IRQ_Handler.Status (EXTI.EXTI_Line_0) = True then
-         LED_GREEN.Toggle;
-         EXTI.IRQ_Handler.Reset_Status (EXTI.EXTI_Line_0);
-      end if;
-      Next_Release := Next_Release + Period;
-      delay until Next_Release;
-   end loop;
+   Waiting_Test;
 end Main;
 

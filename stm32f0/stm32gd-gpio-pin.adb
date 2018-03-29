@@ -96,22 +96,22 @@ package body STM32GD.GPIO.Pin is
 
    procedure Wait_For_Trigger is
    begin
-      null;
+      STM32GD.EXTI.IRQ_Handler.Wait;
    end Wait_For_Trigger;
 
    procedure Clear_Trigger is
    begin
-      null;
+      STM32GD.EXTI.IRQ_Handler.Reset_Status (Interrupt_Line_Number);
    end Clear_Trigger;
 
    function Triggered return Boolean is
    begin
-      return True;
+      return STM32GD.EXTI.IRQ_Handler.Status (Interrupt_Line_Number);
    end Triggered;
 
    procedure Cancel_Wait is
    begin
-      null;
+      STM32GD.EXTI.IRQ_Handler.Cancel;
    end Cancel_Wait;
 
    procedure Configure_Trigger (Trigger : EXTI.External_Triggers)
