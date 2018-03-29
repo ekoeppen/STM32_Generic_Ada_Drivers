@@ -23,9 +23,8 @@ package body STM32GD.Timer.Peripheral is
             if not First then
                if not Repeat then
                      Stop;
-               else
-                  Timer_Callback.all;
                end if;
+               Timer_Callback.all;
             else
                First := False;
             end if;
