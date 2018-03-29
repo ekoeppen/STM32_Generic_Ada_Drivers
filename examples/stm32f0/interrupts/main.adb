@@ -6,7 +6,11 @@ with Last_Chance_Handler;  pragma Unreferenced (Last_Chance_Handler);
 with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 with STM32GD.EXTI;
+with STM32GD.Timer;
+with STM32GD.Timer.Peripheral;
 with STM32GD.Board; use STM32GD.Board;
+
+with Peripherals;
 
 procedure Main is
 
@@ -36,12 +40,29 @@ procedure Main is
       end loop;
    end Waiting_Test;
 
+   procedure Cancel_Test is
+   begin
+      Peripherals.Timer.Init;
+      loop
+         Peripherals.Timer.After (Milliseconds (5000), Button.Cancel_Wait'Access);
+         Button.Wait_For_Trigger;
+         if Button.Triggered then
+            LED_GREEN.Toggle;
+         else
+            LED_RED.Toggle;
+         end if;
+         Button.Clear_Trigger;
+      end loop;
+   end Cancel_Test;
+
 begin
    Init;
    TX.Init;
    USART.Init;
    Button.Configure_Trigger (EXTI.Interrupt_Falling_Edge);
    LED_GREEN.Set;
-   Waiting_Test;
+   --  Polling_Test;
+   --  Waiting_Test;
+   Cancel_Test;
 end Main;
 
