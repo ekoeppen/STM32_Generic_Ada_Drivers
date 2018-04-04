@@ -7,11 +7,17 @@ package body Peripherals is
 
    procedure Init is
    begin
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.USART1EN := 1;
-      STM32_SVD.RCC.RCC_Periph.AHBENR.DMAEN := 1;
-      Peripherals.TX.Init;
-      Peripherals.USART.Init;
-      Peripherals.Timer.Init;
+      STM32_SVD.RCC.RCC_Periph.APB2ENR.SPI1EN := 1;
+      CE.Init;
+      CSN.Init;
+      CSN.Set;
+      SCLK.Init;
+      MISO.Init;
+      MOSI.Init;
+      IRQ.Init;
+      SPI.Init;
+      Timer.Init;
+      Radio.Init;
    end Init;
 
 end Peripherals;

@@ -1,27 +1,49 @@
 with Last_Chance_Handler;  pragma Unreferenced (Last_Chance_Handler);
 
 with Ada.Real_Time; use Ada.Real_Time;
+with Ada.Text_IO; use Ada.Text_IO;
 
 with STM32GD.Board;
-with STM32GD.SPI;
 with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
-with STM32GD.SPI.Peripheral;
 
 with Peripherals; use Peripherals;
-with Drivers;
-with Drivers.NRF24;
 
 procedure Main is
 
    package GPIO renames STM32GD.GPIO;
 
-   package CSN is new GPIO.Pin (Pin => GPIO.Pin_8, Port => GPIO.Port_C, Mode => GPIO.Mode_Out);
-   package CE  is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_C, Mode => GPIO.Mode_Out);
-   package IRQ is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_C, Mode => GPIO.Mode_In);
-   package SPI is new STM32GD.SPI.Peripheral (SPI => STM32GD.SPI.SPI_1, Data_Size => STM32GD.SPI.Data_Size_8b);
+   procedure RX_Test is
+      RX_Address        : constant Radio.Address_Type := (16#00#, 16#F0#, 16#F0#, 16#F0#, 16#F0#);
+   begin
+      Put_Line ("Starting RX test");
+      Radio.Set_RX_Address (RX_Address);
+      Radio.RX_Mode;
+      loop
+         STM32GD.Board.LED_RED.Toggle;
+         Timer.After (Seconds (10), Radio.Cancel'Access);
+         if Radio.Wait_For_RX then
+            Put_Line ("Packet received");
+         end if;
+         Radio.Print_Registers;
+      end loop;
+   end RX_Test;
 
-   package Radio is new Drivers.NRF24 (SPI => SPI, Chip_Select => CSN, Chip_Enable => CE, IRQ => IRQ);
+   procedure TX_Test is
+      Period            : constant Time_Span := Seconds (3);
+      Broadcast_Address : constant Radio.Address_Type := (16#00#, 16#F0#, 16#F0#, 16#F0#, 16#F0#);
+      TX_Data           : constant Radio.Packet_Type := (16#00#, 16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#FF#, 16#55#);
+   begin
+      Put_Line ("Starting TX test");
+      Radio.Set_TX_Address (Broadcast_Address);
+      Radio.TX_Mode;
+      loop
+         STM32GD.Board.LED_RED.Toggle;
+         Radio.TX (TX_Data);
+         Radio.Print_Registers;
+         delay until Clock + Period;
+      end loop;
+   end TX_Test;
 
 begin
    STM32GD.Board.Init;
