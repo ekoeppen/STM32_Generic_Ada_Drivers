@@ -7,8 +7,7 @@ package body Peripherals is
    procedure Init is
    begin
       STM32_SVD.RCC.RCC_Periph.APB2ENR.SPI1EN := 1;
-      IRQ.Configure_Trigger (STM32GD.EXTI.Interrupt_Falling_Edge);
-      CE.Init;
+      --  IRQ.Configure_Trigger (STM32GD.EXTI.Interrupt_Falling_Edge);
       CSN.Init;
       CSN.Set;
       SCLK.Init;

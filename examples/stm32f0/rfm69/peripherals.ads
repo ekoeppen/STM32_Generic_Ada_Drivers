@@ -7,7 +7,7 @@ with STM32GD.SPI.Peripheral;
 with STM32GD.Timer;
 with STM32GD.Timer.Peripheral;
 with Drivers;
-with Drivers.NRF24;
+with Drivers.RFM69;
 
 package Peripherals is
 
@@ -18,11 +18,10 @@ package Peripherals is
    package MISO   is new GPIO.Pin (Pin => GPIO.Pin_6, Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
    package MOSI   is new GPIO.Pin (Pin => GPIO.Pin_7, Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
    package CSN    is new GPIO.Pin (Pin => GPIO.Pin_4, Port => GPIO.Port_A, Mode => GPIO.Mode_Out);
-   package CE     is new GPIO.Pin (Pin => GPIO.Pin_1, Port => GPIO.Port_A, Mode => GPIO.Mode_Out);
-   package IRQ    is new GPIO.Pin (Pin => GPIO.Pin_2, Port => GPIO.Port_A, Mode => GPIO.Mode_In);
+   package IRQ    is new GPIO.Pin (Pin => GPIO.Pin_3, Port => GPIO.Port_A, Mode => GPIO.Mode_In);
    package SPI    is new STM32GD.SPI.Peripheral (SPI => STM32GD.SPI.SPI_1);
 
-   package Radio  is new Drivers.NRF24 (SPI => SPI, Chip_Select => CSN, Chip_Enable => CE, IRQ => IRQ);
+   package Radio  is new Drivers.RFM69 (SPI => SPI, Chip_Select => CSN, IRQ => IRQ);
 
 
    procedure Init;

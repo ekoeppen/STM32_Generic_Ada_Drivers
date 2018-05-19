@@ -14,7 +14,7 @@ procedure Main is
    package GPIO renames STM32GD.GPIO;
 
    procedure RX_Test is
-      RX_Address        : constant Radio.Address_Type := (16#00#, 16#F0#, 16#F0#, 16#F0#, 16#F0#);
+      RX_Address        : constant Radio.Address_Type := 0;
    begin
       Put_Line ("Starting RX test");
       Radio.Set_RX_Address (RX_Address);
@@ -31,15 +31,16 @@ procedure Main is
 
    procedure TX_Test is
       Period            : constant Time_Span := Seconds (3);
-      Broadcast_Address : constant Radio.Address_Type := (16#00#, 16#F0#, 16#F0#, 16#F0#, 16#F0#);
+      Broadcast_Address : constant Radio.Address_Type := 0;
       TX_Data           : constant Radio.Packet_Type := (16#00#, 16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#FF#, 16#55#);
    begin
       Put_Line ("Starting TX test");
+      Radio.Set_Frequency (868);
       Radio.Set_TX_Address (Broadcast_Address);
       Radio.TX_Mode;
       loop
          STM32GD.Board.LED_RED.Toggle;
-         Radio.TX (TX_Data);
+         --  Radio.TX (TX_Data);
          Radio.Print_Registers;
          delay until Clock + Period;
       end loop;
@@ -48,7 +49,6 @@ procedure Main is
 begin
    STM32GD.Board.Init;
    Peripherals.Init;
-   Radio.Set_Channel (70);
    loop
       TX_Test;
    end loop;

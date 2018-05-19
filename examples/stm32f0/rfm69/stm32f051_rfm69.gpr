@@ -13,11 +13,5 @@ project STM32F051_RFM69 extends "../../common/common.gpr" is
    for Object_Dir use "stm32f051_rfm69";
    for Exec_Dir use "stm32f051_rfm69";
    for Runtime ("Ada") use RTS_Profile & "-stm32f0disco";
-   package Linker extends Common.Linker is
-      for Default_Switches ("ada") use ("-Wl,--defsym=__stack_size=256,--print-memory-usage");
-   end Linker;
-   package Compiler extends Common.Compiler is
-      for Local_Configuration_Pragmas use "gnat.adc";
-   end Compiler;
 
 end STM32F051_RFM69;

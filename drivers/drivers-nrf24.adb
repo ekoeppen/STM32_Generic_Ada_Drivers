@@ -310,7 +310,7 @@ package body Drivers.NRF24 is
    AW_Init           : constant Setup_AW_Register_Type   := (AW => AW_5_Bytes, others => False);
    EN_RXADDR_Init    : constant EN_RXADDR_Register_Type  := (ERX_P0 => True, ERX_P1 => True, others => False);
    RF_SETUP_Init     : constant RF_SETUP_Register_Type   := (RF_DR_LOW => True, RF_DR_HIGH => False, RF_PWR => 3, others => False);
-   FEATURE_Init      : constant FEATURE_Register_Type    := (EN_DPL => True, others => False);
+   FEATURE_Init      : constant FEATURE_Register_Type    := (EN_DPL => True, EN_DYN_ACK => True, others => False);
    DYNPD_Init        : constant DYNPD_Register_Type      := (DPL_P0 => True, DPL_P1 => True, others => False);
    RX_Mode_Setting   : constant Config_Register_Type     := (EN_CRC => True, PRIM_RX => True, PWR_UP => True, others => False);
    TX_Mode_Setting   : constant Config_Register_Type     := (EN_CRC => True, PWR_UP => True, others => False);
@@ -357,9 +357,15 @@ package body Drivers.NRF24 is
    begin
       Ada.Text_IO.Put_Line (
          "Status:" & Integer'Image (Integer (Read_Register (STATUS))) &
+         " Config:" & Integer'Image (Integer (Read_Register (CONFIG))) &
+         " RF CH:" & Integer'Image (Integer (Read_Register (RF_CH))) &
+         " RF Setup:" & Integer'Image (Integer (Read_Register (RF_SETUP))) &
+         " AW Setup:" & Integer'Image (Integer (Read_Register (SETUP_AW))) &
          " RX P0:" & Integer'Image (Integer (Read_Register (RX_PW_P0))) &
          " RX P1:" & Integer'Image (Integer (Read_Register (RX_PW_P1))) &
-         " FIFO Status:" & Integer'Image (Integer (Read_Register (FIFO_STATUS)))
+         " FIFO Status:" & Integer'Image (Integer (Read_Register (FIFO_STATUS))) &
+         " DYNPD:" & Integer'Image (Integer (Read_Register (DYNPD))) &
+         " Feature:" & Integer'Image (Integer (Read_Register (FEATURE)))
          );
    end Print_Registers;
 
