@@ -171,12 +171,7 @@ package body Drivers.RFM69 is
       TEMP1         => 16#4E#,
       TEMP2         => 16#4F#);
 
-   type OPMODE_Mode_Type is (
-      SLEEP,
-      STDBY,
-      FS,
-      TX,
-      RX)
+   type OPMODE_Mode_Type is (SLEEP, STDBY, FS, TX, RX)
    with Size => 3;
 
    for OPMODE_Mode_Type use (
@@ -186,9 +181,7 @@ package body Drivers.RFM69 is
       TX    => 2#011#,
       RX    => 2#100#);
 
-   type Command_Type is (
-      R_REGISTER,
-      W_REGISTER);
+   type Command_Type is (R_REGISTER, W_REGISTER);
 
    for Command_Type use (
       R_REGISTER           => 2#0000_0000#,
@@ -206,7 +199,7 @@ package body Drivers.RFM69 is
                Mode           : OPMODE_Mode_Type;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for OPMODE_Register_Type use
       record
@@ -257,7 +250,7 @@ package body Drivers.RFM69 is
                Sync_Address_Match   : Boolean;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for IRQFLAGS1_Register_Type use
       record
@@ -286,7 +279,7 @@ package body Drivers.RFM69 is
                CRC_Ok         : Boolean;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for IRQFLAGS2_Register_Type use
       record
@@ -299,6 +292,10 @@ package body Drivers.RFM69 is
          CRC_Ok         at 0 range 1 .. 1;
       end record;
 
+   type SYNCCONFIG_FIFO_Fill_Condition_Type is (Sync_Address, Always)
+      with Size => 1;
+   for SYNCCONFIG_FIFO_Fill_Condition_Type use
+      (Sync_Address => 2#0#, Always => 2#1#);
    type SYNCCONFIG_Register_Type (As_Value : Boolean := False) is
       record
          case As_Value is
@@ -306,12 +303,12 @@ package body Drivers.RFM69 is
                Val : Byte;
             when False =>
                Sync_On              : Boolean;
-               FIFO_Fill_Condition  : Boolean;
+               FIFO_Fill_Condition  : SYNCCONFIG_FIFO_Fill_Condition_Type;
                Sync_Size            : UInt3;
                Sync_Tol             : UInt3;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for SYNCCONFIG_Register_Type use
       record
@@ -322,17 +319,26 @@ package body Drivers.RFM69 is
       end record;
 
    type DATAMODUL_Data_Mode_Type is (Packet_Mode, Continuous_Synchronizer,
-      Continuous_No_Synchronizer);
-   type DATAMODUL_Modulation_Type is (FSK, OOK);
-   type FSK_Shaping is (No_Shaping, BT_1_0, BT_0_5, BT_0_3);
-   type OOK_Shaping is (No_Shaping, BR, BR_x2);
-   type DATAMODUL_Modulation_Shaping (FSK : Boolean := True) is
-      record
-         case FSK is
-            when True => FSK_Modulation : FSK_Shaping;
-            when False => OOK_Modulation : OOK_Shaping;
-         end case;
-      end record;
+      Continuous_No_Synchronizer)
+      with Size => 2;
+   for DATAMODUL_Data_Mode_Type use (
+      Packet_Mode                => 2#00#,
+      Continuous_Synchronizer    => 2#10#,
+      Continuous_No_Synchronizer => 2#11#);
+
+   type DATAMODUL_Modulation_Type is (FSK, OOK)
+      with Size => 2;
+   for DATAMODUL_Modulation_Type use (
+      FSK   => 2#00#,
+      OOK   => 2#01#);
+
+   type DATAMODUL_Modulation_Shaping is (No_Shaping, Shaping_1, Shaping_2,
+      Shaping_3);
+   for DATAMODUL_Modulation_Shaping use (
+      No_Shaping  => 0,
+      Shaping_1   => 1,
+      Shaping_2   => 2,
+      Shaping_3   => 3);
 
    type DATAMODUL_Register_Type (As_Value : Boolean := False) is
       record
@@ -345,13 +351,36 @@ package body Drivers.RFM69 is
                Modulation_Shaping   : DATAMODUL_Modulation_Shaping;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for DATAMODUL_Register_Type use
       record
          Data_Mode            at 0 range 5 .. 6;
          Modulation_Type      at 0 range 3 .. 4;
          Modulation_Shaping   at 0 range 0 .. 2;
+      end record;
+
+   type FIFOTHRESH_Start_Condition_Type is (FIFO_Level, FIFO_Not_Empty);
+   for FIFOTHRESH_Start_Condition_Type use (
+      FIFO_Level     => 2#0#,
+      FIFO_Not_Empty => 2#1#);
+
+   type FIFOTHRESH_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               Start_Condition   : FIFOTHRESH_Start_Condition_Type;
+               FIFO_Threshold    : UInt7;
+         end case;
+      end record
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for FIFOTHRESH_Register_Type use
+      record
+         Start_Condition   at 0 range 7 .. 7;
+         FIFO_Threshold    at 0 range 0 .. 6;
       end record;
 
    type RXBW_Register_Type (As_Value : Boolean := False) is
@@ -365,7 +394,7 @@ package body Drivers.RFM69 is
                RX_BW_Exp   : UInt3;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for RXBW_Register_Type use
       record
@@ -385,7 +414,7 @@ package body Drivers.RFM69 is
                RX_BW_Exp_AFC  : UInt3;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for AFCBW_Register_Type use
       record
@@ -394,36 +423,86 @@ package body Drivers.RFM69 is
          RX_BW_Exp_AFC  at 0 range 0 .. 2;
       end record;
 
+   type PACKETCONFIG1_Packet_Format_Type is (Fixed_Length, Variable_Length)
+      with Size => 1;
+   for PACKETCONFIG1_Packet_Format_Type use (
+      Fixed_Length      => 2#0#,
+      Variable_Length   => 2#1#);
+
+   type PACKETCONFIG1_DC_Free_Type is (None, Manchester, Whitening)
+      with Size => 2;
+   for PACKETCONFIG1_DC_Free_Type use (
+      None        => 2#00#,
+      Manchester  => 2#01#,
+      Whitening   => 2#10#);
+
+   type PACKETCONFIG1_Address_Filtering_Type is (None, Node_Address,
+      Node_or_Broadcast_Address)
+      with Size => 2;
+   for PACKETCONFIG1_Address_Filtering_Type use (
+      None                       => 2#00#,
+      Node_Address               => 2#01#,
+      Node_or_Broadcast_Address  => 2#10#);
+
    type PACKETCONFIG1_Register_Type (As_Value : Boolean := False) is
       record
          case As_Value is
             when True =>
                Val : Byte;
             when False =>
-               Packet_Format_Variable : Boolean;
-               DC_Free : PACKETCONFIG1_DC_Free_Type;
-               CRC_On : Boolean;
-               CRC_Auto_Clear_Off : Boolean;
-               Address_Filtering : PACKETCONFIG1_Address_Filtering_Type;
+               Packet_Format        : PACKETCONFIG1_Packet_Format_Type;
+               DC_Free              : PACKETCONFIG1_DC_Free_Type;
+               CRC_On               : Boolean;
+               CRC_Auto_Clear_Off   : Boolean;
+               Address_Filtering    : PACKETCONFIG1_Address_Filtering_Type;
          end case;
       end record
-   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
 
    for PACKETCONFIG1_Register_Type use
       record
-         Packet_Format_Variable at 0 range 7 .. 7;
-         DC_Free at 0 range 5 .. 6;
-         CRC_On at 0 range 4 .. 4;
-         CRC_Auto_Clear_Off at 0 range 3 .. 3;
-         Address_Filtering at 0 range 1 .. 2;
+         Packet_Format        at 0 range 7 .. 7;
+         DC_Free              at 0 range 5 .. 6;
+         CRC_On               at 0 range 4 .. 4;
+         CRC_Auto_Clear_Off   at 0 range 3 .. 3;
+         Address_Filtering    at 0 range 1 .. 2;
       end record;
 
-   OPMODE_Init          : constant OPMODE_Register_Type;
-   SYNCCONFIG_Init      : constant SYNCCONFIG_Register_Type;
-   PACKETCONFIG1_Init   : constant PACKETCONFIG1_Register_Type;
-   DATAMODUL_Init       : constant DATAMODUL_Register_Type;
-   RXBW_Init            : constant RXBW_Register_Type;
-   AFCBW_Init           : constant AFCBW_Register_Type;
+   OPMODE_Init          : constant OPMODE_Register_Type := (
+      Mode                    => STDBY,
+      others                  => False);
+   SYNCCONFIG_Init      : constant SYNCCONFIG_Register_Type := (
+      As_Value                => False,
+      Sync_On                 => True,
+      FIFO_Fill_Condition     => Sync_Address,
+      Sync_Size               => 3,
+      Sync_Tol                => 0);
+   PACKETCONFIG1_Init   : constant PACKETCONFIG1_Register_Type := (
+      As_Value                => False,
+      Packet_Format           => Fixed_Length,
+      DC_Free                 => None,
+      CRC_On                  => True,
+      CRC_Auto_Clear_Off      => False,
+      Address_Filtering       => None);
+   DATAMODUL_Init       : constant DATAMODUL_Register_Type := (
+      As_Value                => False,
+      Data_Mode               => Packet_Mode,
+      Modulation_Type         => FSK,
+      Modulation_Shaping      => No_Shaping);
+   FIFOTHRESH_Init      : constant FIFOTHRESH_Register_Type := (
+      As_Value                => False,
+      Start_Condition         => FIFO_Not_Empty,
+      FIFO_Threshold          => UInt7 (Packet_Size / 2));
+   RXBW_Init            : constant RXBW_Register_Type := (
+      As_Value                => False,
+      DCC_Freq                => 2,
+      RX_BW_Mant              => 0,
+      RX_BW_Exp               => 2);
+   AFCBW_Init           : constant AFCBW_Register_Type := (
+      As_Value                => False,
+      DCC_Freq_AFC            => 2,
+      RX_BW_Mant_AFC          => 0,
+      RX_BW_Exp_AFC           => 2);
 
    procedure Write_Register (Register : Register_Type; Value : Byte);
    procedure Read_Register (Register : Register_Type; Value : out Byte);
@@ -471,10 +550,11 @@ package body Drivers.RFM69 is
          " OpMode: " & To_Hex_String (Read_Register (OPMODE)) &
          " IrqFlags: " & To_Hex_String (Read_Register (IRQFLAGS1)) & " " &
             To_Hex_String (Read_Register (IRQFLAGS2)) &
-         " PacketConfig: " & To_Hex_String (Read_Register (PACKETCONFIG1)) & " " &
-            To_Hex_String (Read_Register (PACKETCONFIG2)) &
-         " PayloadLength: " & To_Hex_String (Read_Register (PAYLOADLENGTH)) &
-         " FifoThresh: " & To_Hex_String (Read_Register (FIFOTHRESH)) &
+         " PacketConfig: " & To_Hex_String (Read_Register (PACKETCONFIG1)) &
+            " " & To_Hex_String (Read_Register (PACKETCONFIG2)) &
+         " PayloadLength: " & To_Hex_String (Read_Register (PAYLOADLENGTH)));
+      Ada.Text_IO.Put_Line (
+         "FifoThresh: " & To_Hex_String (Read_Register (FIFOTHRESH)) &
          " RSSIConfig: " & To_Hex_String (Read_Register (RSSICONFIG)) &
          " RSSIValue: " & To_Hex_String (Read_Register (RSSIVALUE)) &
          " SyncConfig: " & To_Hex_String (Read_Register (SYNCCONFIG)) &
@@ -485,44 +565,27 @@ package body Drivers.RFM69 is
          " Bitrate: " & To_Hex_String (Read_Register (BITRATEMSB)) & " " &
             To_Hex_String (Read_Register (BITRATELSB))
          );
-      --  RX (FIFO);
-      --  for D of FIFO loop
-      --     Ada.Text_IO.Put (To_Hex_String (D));
-      --     Ada.Text_IO.New_Line;
-      --  end loop;
    end Print_Registers;
 
    procedure Init is
    begin
       Write_Register (OPMODE, OPMODE_Init.Val);
       Write_Register (PAYLOADLENGTH, Byte (Packet_Size));
-      Write_Register (SYNCCONFIG,      2#1_0_011_000#);
-      Write_Register (PACKETCONFIG1,   2#0_00_0_1_00_0#);
-      Write_Register (RSSITHRESH,      80 * 2);
-      Write_Register (FIFOTHRESH,      2#0_0000111#);
-      Write_Register (SYNCVALUE1,      16#F0#);
-      Write_Register (SYNCVALUE2,      16#78#);
-      Write_Register (SYNCVALUE3,      16#34#);
-      Write_Register (SYNCVALUE4,      16#AB#);
-      Write_Register (DATAMODUL,       2#0_00_01_0_00#);
-      Write_Register (FDEVLSB,         16#05#);
-      Write_Register (FDEVMSB,         16#C3#);
-      Write_Register (RXBW,            16#42#);
-      Write_Register (AFCBW,           16#42#);
-      Write_Register (PREAMBLELSB,     16#02#);
+      Write_Register (FIFOTHRESH, FIFOTHRESH_Init.Val);
+      Write_Register (PACKETCONFIG1, PACKETCONFIG1_Init.Val);
+      Write_Register (RSSITHRESH, 80 * 2);
+      Write_Register (SYNCCONFIG, SYNCCONFIG_Init.Val);
+      Write_Register (SYNCVALUE1, 16#F0#);
+      Write_Register (SYNCVALUE2, 16#78#);
+      Write_Register (SYNCVALUE3, 16#34#);
+      Write_Register (SYNCVALUE4, 16#AB#);
+      Write_Register (PREAMBLELSB, 2);
+      Write_Register (DATAMODUL, DATAMODUL_Init.Val);
+      Write_Register (FDEVMSB, 195);
+      Write_Register (FDEVLSB, 5);
+      Write_Register (RXBW, RXBW_Init.Val);
+      Write_Register (AFCBW, AFCBW_Init.Val);
       Set_Frequency (Frequency);
-      if False then
-         Write_Register (DATAMODUL, 16#00#);
-         Write_Register (PAYLOADLENGTH, Byte (Packet_Size));
-         Write_Register (BITRATEMSB, 16#02#);
-         Write_Register (BITRATELSB, 16#8A#);
-         Write_Register (FDEVLSB, 16#05#);
-         Write_Register (FDEVMSB, 16#C3#);
-         Write_Register (RXBW, 16#42#);
-         Write_Register (AFCBW, 16#42#);
-         Write_Register (AFCFEI, 16#0C#);
-         Write_Register (PREAMBLELSB, 16#05#);
-      end if;
    end Init;
 
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type) is
