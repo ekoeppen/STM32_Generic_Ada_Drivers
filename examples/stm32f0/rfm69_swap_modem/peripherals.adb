@@ -7,7 +7,6 @@ with STM32GD.Board;     use STM32GD.Board;
 package body Peripherals is
 
    procedure Init is
-      Sync_Word : Radio.Sync_Word_Type := (16#D9#, 16#21#);
    begin
       RCC.RCC_Periph.APB2ENR.USART1EN := 1;
       RCC.RCC_Periph.APB2ENR.SPI1EN := 1;
@@ -23,7 +22,6 @@ package body Peripherals is
       IRQ.Init;
       SPI.Init;
       Radio.Init;
-      Radio.Set_Sync_Word (Sync_Word);
 
       RX.Init;
       TX.Init;

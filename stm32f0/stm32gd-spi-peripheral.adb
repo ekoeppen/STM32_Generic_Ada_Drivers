@@ -3,7 +3,8 @@ package body STM32GD.SPI.Peripheral is
    procedure Init is
       CR1 : STM32_SVD.SPI.CR1_Register;
    begin
-      SPI.CR1 := (MSTR => 1, SSI => 1, SSM => 1, BR => 0, Reserved_16_31 => 0, others => 0);
+      SPI.CR1 := (MSTR => 1, SSI => 1, SSM => 1, BR => 3,
+         Reserved_16_31 => 0, others => 0);
       SPI.CR2 := (DS => 7, FRXTH => 1, Reserved_15_31 => 0,  others => 0);
       SPI.CR1.SPE := 1;
    end Init;

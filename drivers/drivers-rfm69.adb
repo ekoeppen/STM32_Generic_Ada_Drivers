@@ -299,7 +299,131 @@ package body Drivers.RFM69 is
          CRC_Ok         at 0 range 1 .. 1;
       end record;
 
-   OPMODE_Init       : constant OPMODE_Register_Type     := (Mode => STDBY, others => False);
+   type SYNCCONFIG_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               Sync_On              : Boolean;
+               FIFO_Fill_Condition  : Boolean;
+               Sync_Size            : UInt3;
+               Sync_Tol             : UInt3;
+         end case;
+      end record
+   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for SYNCCONFIG_Register_Type use
+      record
+         Sync_On              at 0 range 7 .. 7;
+         FIFO_Fill_Condition  at 0 range 6 .. 6;
+         Sync_Size            at 0 range 3 .. 5;
+         Sync_Tol             at 0 range 0 .. 2;
+      end record;
+
+   type DATAMODUL_Data_Mode_Type is (Packet_Mode, Continuous_Synchronizer,
+      Continuous_No_Synchronizer);
+   type DATAMODUL_Modulation_Type is (FSK, OOK);
+   type FSK_Shaping is (No_Shaping, BT_1_0, BT_0_5, BT_0_3);
+   type OOK_Shaping is (No_Shaping, BR, BR_x2);
+   type DATAMODUL_Modulation_Shaping (FSK : Boolean := True) is
+      record
+         case FSK is
+            when True => FSK_Modulation : FSK_Shaping;
+            when False => OOK_Modulation : OOK_Shaping;
+         end case;
+      end record;
+
+   type DATAMODUL_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               Data_Mode            : DATAMODUL_Data_Mode_Type;
+               Modulation_Type      : DATAMODUL_Modulation_Type;
+               Modulation_Shaping   : DATAMODUL_Modulation_Shaping;
+         end case;
+      end record
+   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for DATAMODUL_Register_Type use
+      record
+         Data_Mode            at 0 range 5 .. 6;
+         Modulation_Type      at 0 range 3 .. 4;
+         Modulation_Shaping   at 0 range 0 .. 2;
+      end record;
+
+   type RXBW_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               DCC_Freq    : UInt3;
+               RX_BW_Mant  : UInt2;
+               RX_BW_Exp   : UInt3;
+         end case;
+      end record
+   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for RXBW_Register_Type use
+      record
+         DCC_Freq    at 0 range 5 .. 7;
+         RX_BW_Mant  at 0 range 3 .. 4;
+         RX_BW_Exp   at 0 range 0 .. 2;
+      end record;
+
+   type AFCBW_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               DCC_Freq_AFC   : UInt3;
+               RX_BW_Mant_AFC : UInt2;
+               RX_BW_Exp_AFC  : UInt3;
+         end case;
+      end record
+   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for AFCBW_Register_Type use
+      record
+         DCC_Freq_AFC   at 0 range 5 .. 7;
+         RX_BW_Mant_AFC at 0 range 3 .. 4;
+         RX_BW_Exp_AFC  at 0 range 0 .. 2;
+      end record;
+
+   type PACKETCONFIG1_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               Packet_Format_Variable : Boolean;
+               DC_Free : PACKETCONFIG1_DC_Free_Type;
+               CRC_On : Boolean;
+               CRC_Auto_Clear_Off : Boolean;
+               Address_Filtering : PACKETCONFIG1_Address_Filtering_Type;
+         end case;
+      end record
+   with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for PACKETCONFIG1_Register_Type use
+      record
+         Packet_Format_Variable at 0 range 7 .. 7;
+         DC_Free at 0 range 5 .. 6;
+         CRC_On at 0 range 4 .. 4;
+         CRC_Auto_Clear_Off at 0 range 3 .. 3;
+         Address_Filtering at 0 range 1 .. 2;
+      end record;
+
+   OPMODE_Init          : constant OPMODE_Register_Type;
+   SYNCCONFIG_Init      : constant SYNCCONFIG_Register_Type;
+   PACKETCONFIG1_Init   : constant PACKETCONFIG1_Register_Type;
+   DATAMODUL_Init       : constant DATAMODUL_Register_Type;
+   RXBW_Init            : constant RXBW_Register_Type;
+   AFCBW_Init           : constant AFCBW_Register_Type;
 
    procedure Write_Register (Register : Register_Type; Value : Byte);
    procedure Read_Register (Register : Register_Type; Value : out Byte);
@@ -340,6 +464,7 @@ package body Drivers.RFM69 is
    end Read_Registers;
 
    procedure Print_Registers is
+      FIFO : Packet_Type;
    begin
       Ada.Text_IO.Put_Line (
          "Version: " & To_Hex_String (Read_Register (VERSION)) &
@@ -348,18 +473,56 @@ package body Drivers.RFM69 is
             To_Hex_String (Read_Register (IRQFLAGS2)) &
          " PacketConfig: " & To_Hex_String (Read_Register (PACKETCONFIG1)) & " " &
             To_Hex_String (Read_Register (PACKETCONFIG2)) &
+         " PayloadLength: " & To_Hex_String (Read_Register (PAYLOADLENGTH)) &
+         " FifoThresh: " & To_Hex_String (Read_Register (FIFOTHRESH)) &
+         " RSSIConfig: " & To_Hex_String (Read_Register (RSSICONFIG)) &
+         " RSSIValue: " & To_Hex_String (Read_Register (RSSIVALUE)) &
+         " SyncConfig: " & To_Hex_String (Read_Register (SYNCCONFIG)) &
+         " DataModul: " & To_Hex_String (Read_Register (DATAMODUL)) &
          " Frequency: " & To_Hex_String (Read_Register (FRFMSB)) &
             To_Hex_String (Read_Register (FRFMID)) &
             To_Hex_String (Read_Register (FRFLSB)) &
          " Bitrate: " & To_Hex_String (Read_Register (BITRATEMSB)) & " " &
             To_Hex_String (Read_Register (BITRATELSB))
          );
+      --  RX (FIFO);
+      --  for D of FIFO loop
+      --     Ada.Text_IO.Put (To_Hex_String (D));
+      --     Ada.Text_IO.New_Line;
+      --  end loop;
    end Print_Registers;
 
    procedure Init is
    begin
-      Power_Down;
       Write_Register (OPMODE, OPMODE_Init.Val);
+      Write_Register (PAYLOADLENGTH, Byte (Packet_Size));
+      Write_Register (SYNCCONFIG,      2#1_0_011_000#);
+      Write_Register (PACKETCONFIG1,   2#0_00_0_1_00_0#);
+      Write_Register (RSSITHRESH,      80 * 2);
+      Write_Register (FIFOTHRESH,      2#0_0000111#);
+      Write_Register (SYNCVALUE1,      16#F0#);
+      Write_Register (SYNCVALUE2,      16#78#);
+      Write_Register (SYNCVALUE3,      16#34#);
+      Write_Register (SYNCVALUE4,      16#AB#);
+      Write_Register (DATAMODUL,       2#0_00_01_0_00#);
+      Write_Register (FDEVLSB,         16#05#);
+      Write_Register (FDEVMSB,         16#C3#);
+      Write_Register (RXBW,            16#42#);
+      Write_Register (AFCBW,           16#42#);
+      Write_Register (PREAMBLELSB,     16#02#);
+      Set_Frequency (Frequency);
+      if False then
+         Write_Register (DATAMODUL, 16#00#);
+         Write_Register (PAYLOADLENGTH, Byte (Packet_Size));
+         Write_Register (BITRATEMSB, 16#02#);
+         Write_Register (BITRATELSB, 16#8A#);
+         Write_Register (FDEVLSB, 16#05#);
+         Write_Register (FDEVMSB, 16#C3#);
+         Write_Register (RXBW, 16#42#);
+         Write_Register (AFCBW, 16#42#);
+         Write_Register (AFCFEI, 16#0C#);
+         Write_Register (PREAMBLELSB, 16#05#);
+      end if;
    end Init;
 
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type) is
@@ -401,42 +564,72 @@ package body Drivers.RFM69 is
 
    procedure Set_Mode (Mode : OPMODE_Mode_Type) is
       M : OPMODE_Register_Type;
+      F : IRQFLAGS1_Register_Type;
       R : Byte;
    begin
       Read_Register (OPMODE, R);
       M.Val := R;
       M.Mode := Mode;
       Write_Register (OPMODE, M.Val);
+      loop
+         Read_Register (IRQFLAGS1, R);
+         F.Val := R;
+         exit when F.Mode_Ready;
+      end loop;
    end Set_Mode;
 
    procedure TX_Mode is
    begin
-      Set_Mode (TX);
+      null;
    end TX_Mode;
 
    procedure RX_Mode is
    begin
       Set_Mode (RX);
+      Write_Register (IRQFLAGS1, 2#0000_1001#);
    end RX_Mode;
 
    procedure TX (Packet: Packet_Type) is
    begin
+      Set_Mode (TX);
+      Ada.Text_IO.Put ("TX on ");
       Chip_Select.Clear;
       SPI.Send (FIFO'Enum_Rep + W_REGISTER'Enum_Rep);
       for B of Packet loop
          SPI.Send (B);
       end loop;
       Chip_Select.Set;
+      Ada.Text_IO.Put ("FIFO filled ");
+      while not TX_Complete loop
+         null;
+      end loop;
+      Ada.Text_IO.Put ("Packet sent ");
+      Set_Mode (STDBY);
+      Ada.Text_IO.Put_Line ("Standby ");
    end TX;
 
-   function Wait_For_RX return Boolean is
+   function TX_Complete return Boolean is
       Flags : IRQFLAGS2_Register_Type;
       F : Byte;
    begin
+      Read_Register (IRQFLAGS2, F);
+      Flags.Val := F;
+      return Flags.Packet_Sent;
+   end TX_Complete;
+
+   function RX_Available return Boolean is
+      Flags : IRQFLAGS2_Register_Type;
+      F : Byte;
+   begin
+      Read_Register (IRQFLAGS2, F);
+      Flags.Val := F;
+      return Flags.Payload_Ready;
+   end RX_Available;
+
+   function Wait_For_RX return Boolean is
+   begin
       loop
-         Read_Register (IRQFLAGS2, F);
-         Flags.Val := F;
-         exit when Flags.Payload_Ready;
+         exit when RX_Available;
       end loop;
       return True;
    end Wait_For_RX;
