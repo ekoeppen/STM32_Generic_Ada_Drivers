@@ -1,6 +1,6 @@
 with STM32_SVD; use STM32_SVD;
 with Serial; use Serial;
-with STM32GD.Board;
+with STM32GD.Board; use STM32GD.Board;
 with STM32GD.USART; use STM32GD.USART;
 with Ada.Real_Time; use Ada.Real_Time;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
@@ -24,34 +24,54 @@ package body Modem is
    -----------------------------------------------------------------------------
 
    task body Modem_Task is
-      Next_Release : Time := Clock;
-      Period       : constant Time_Span := Milliseconds (500);
-      Data         : Radio.Packet_Type;
+      Next_Release   : Time := Clock;
+      Period         : constant Time_Span := Milliseconds (1000);
+      Data           : Radio.Packet_Type;
       Data_Available : Boolean;
+
+      procedure TX_Once is
+      begin
+         Serial.Output.Write_Line ("Sending packet");
+         LED_YELLOW.Set;
+         Radio.TX (Data);
+         LED_YELLOW.Clear;
+      end TX_Once;
+
+      procedure TX_Loop is
+      begin
+         loop
+            TX_Once;
+            Next_Release := Next_Release + Period;
+            delay until Next_Release;
+         end loop;
+      end TX_Loop;
+
+      procedure RX_Once is
+      begin
+         LED_RED.Set;
+         Serial.Output.Write_Line ("Packet received");
+         Radio.Print_Registers;
+         Radio.RX (Data);
+         for D of Data loop
+            Serial.Output.Write (To_Hex_String (D));
+         end loop;
+         Serial.Output.Write_Line ("");
+         LED_RED.Clear;
+      end RX_Once;
+
    begin
       Serial.Output.Write_Line ("Modem task starting");
       Radio.RX_Mode;
       loop
          TX_Data.Get_Data (Data_Available, Data);
          if Data_Available then
-            Radio.TX_Mode;
-            loop
-               Serial.Output.Write_Line ("Sending packet");
-               Radio.TX (Data);
-               Next_Release := Next_Release + Period;
-               delay until Next_Release;
-            end loop;
+            TX_Once;
             Radio.RX_Mode;
          end if;
          if Radio.RX_Available then
-            Serial.Output.Write_Line ("Packet received");
-            Radio.Print_Registers;
-            Radio.RX (Data);
-            for D of Data loop
-               Serial.Output.Write (To_Hex_String (D));
-            end loop;
-            Serial.Output.Write_Line ("");
+            RX_Once;
          end if;
+
          Next_Release := Next_Release + Period;
          delay until Next_Release;
       end loop;
@@ -94,6 +114,9 @@ package body Modem is
             TX_Data.Set_Data (Test_Data);
          elsif Line.Data (1) = Receive_Cmd then
             Serial.Output.Write_Line ("Receiving");
+            if Radio.Wait_For_RX then
+               Serial.Output.Write_Line ("Got packet");
+            end if;
          elsif Line.Data (1) = Status_Cmd then
             Serial.Output.Write_Line ("Status");
             Radio.Print_Registers;

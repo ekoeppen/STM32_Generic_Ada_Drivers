@@ -23,6 +23,7 @@ begin
    Peripherals.Init;
    Serial.Output.Write_Line ("--------------------------------------------------------------------------");
    Serial.Output.Write_Line ("Main task starting");
+   Blink.Blink_Parameters.Start (Blink.Green, Blink.Repeat, 1);
    while True loop
       Next_Release := Next_Release + Period;
       delay until Next_Release;

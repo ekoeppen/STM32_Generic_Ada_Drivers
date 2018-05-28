@@ -4,39 +4,72 @@ with Serial;
 package body Blink is
 
    Next_Release : Time := Clock;
-   Period       : constant Time_Span := Milliseconds (500);
+   Period_On    : constant Time_Span := Milliseconds (200);
+   Period_Off   : constant Time_Span := Milliseconds (200);
+   Period_Pause : constant Time_Span := Milliseconds (2500);
+
 
    task Blink_Task with Storage_Size => 384;
 
    protected body Blink_Parameters is
-      procedure Set_Rate (R : Time_Span) is
+      procedure Start (LED : LED_Type ; M : Mode_Type ; C : Blink_Count_Type) is
       begin
-         Rate := R;
-      end Set_Rate;
+         Mode (LED) := M;
+         Blink_Count (LED) := C;
+         Remaining_Toggles (LED) := C * 2;
+      end Start;
 
-      procedure Set_Blinks (C : Natural) is
+      function Get_Mode (LED : LED_Type) return Mode_Type is
       begin
-         Count := C;
-      end Set_Blinks;
+         return Mode (LED);
+      end Get_Mode;
 
-      function Get_Rate return Time_Span is
+      function Get_Blink_Count (LED : LED_Type) return Blink_Count_Type is
       begin
-         return Rate;
-      end Get_Rate;
+         return Blink_Count (LED);
+      end Get_Blink_Count;
 
-      function Get_Blinks return Natural is
+      procedure Toggle (LED : LED_Type; Toggled : out Boolean) is
       begin
-         return Count;
-      end Get_Blinks;
+         Toggled := False;
+         if Mode (LED) /= Off then
+            case LED is
+               when Green => STM32GD.Board.LED_GREEN.Toggle;
+               when Yellow => STM32GD.Board.LED_Yellow.Toggle;
+               when Red => STM32GD.Board.LED_RED.Toggle;
+            end case;
+            Remaining_Toggles (LED) := Remaining_Toggles (LED) - 1;
+            if Remaining_Toggles (LED) = 0 then
+               if Mode (LED) = Repeat then
+                  Remaining_Toggles (LED) := Blink_Count (LED) * 2;
+               else
+                  Mode (LED) := Off;
+               end if;
+            else
+               Toggled := True;
+            end if;
+         end if;
+      end Toggle;
 
    end Blink_Parameters;
 
    task body Blink_Task is
+      Skip           : Time_Span;
+      Pause          : Time_Span := Period_Pause;
+      Green_Toggled  : Boolean;
+      Red_Toggled    : Boolean;
+      Yellow_Toggled : Boolean;
    begin
-      Serial.Output.Write_Line ("Blink task starting");
       loop
-         STM32GD.Board.LED_GREEN.Toggle;
-         Next_Release := Next_Release + Blink_Parameters.Get_Rate;
+         Blink_Parameters.Toggle (Green, Green_Toggled);
+         Blink_Parameters.Toggle (Red, Red_Toggled);
+         Blink_Parameters.Toggle (Yellow, Yellow_Toggled);
+         if Green_Toggled or Red_Toggled or Yellow_Toggled then
+            Skip := Period_On;
+         else
+            Skip := Pause;
+         end if;
+         Next_Release := Next_Release + Skip;
          delay until Next_Release;
       end loop;
    end Blink_Task;

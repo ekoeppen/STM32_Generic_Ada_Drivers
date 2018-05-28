@@ -503,6 +503,13 @@ package body Drivers.RFM69 is
       DCC_Freq_AFC            => 2,
       RX_BW_Mant_AFC          => 0,
       RX_BW_Exp_AFC           => 2);
+   RSSITHRESH_Init      : constant Byte := 80 * 2;
+   SYNCVALUE1_Init      : constant Byte := 16#F0#;
+   SYNCVALUE2_Init      : constant Byte := 16#12#;
+   SYNCVALUE3_Init      : constant Byte := 16#78#;
+   PREAMBLELSB_Init     : constant Byte := 4;
+   FDEVMSB_Init         : constant Byte := 195;
+   FDEVLSB_Init         : constant Byte := 5;
 
    procedure Write_Register (Register : Register_Type; Value : Byte);
    procedure Read_Register (Register : Register_Type; Value : out Byte);
@@ -543,7 +550,6 @@ package body Drivers.RFM69 is
    end Read_Registers;
 
    procedure Print_Registers is
-      FIFO : Packet_Type;
    begin
       Ada.Text_IO.Put_Line (
          "Version: " & To_Hex_String (Read_Register (VERSION)) &
@@ -573,19 +579,18 @@ package body Drivers.RFM69 is
       Write_Register (PAYLOADLENGTH, Byte (Packet_Size));
       Write_Register (FIFOTHRESH, FIFOTHRESH_Init.Val);
       Write_Register (PACKETCONFIG1, PACKETCONFIG1_Init.Val);
-      Write_Register (RSSITHRESH, 80 * 2);
+      Write_Register (RSSITHRESH, RSSITHRESH_Init);
       Write_Register (SYNCCONFIG, SYNCCONFIG_Init.Val);
-      Write_Register (SYNCVALUE1, 16#F0#);
-      Write_Register (SYNCVALUE2, 16#78#);
-      Write_Register (SYNCVALUE3, 16#34#);
-      Write_Register (SYNCVALUE4, 16#AB#);
-      Write_Register (PREAMBLELSB, 2);
+      Write_Register (SYNCVALUE1, SYNCVALUE1_Init);
+      Write_Register (SYNCVALUE2, SYNCVALUE2_Init);
+      Write_Register (SYNCVALUE3, SYNCVALUE3_Init);
+      Write_Register (PREAMBLELSB, PREAMBLELSB_Init);
       Write_Register (DATAMODUL, DATAMODUL_Init.Val);
-      Write_Register (FDEVMSB, 195);
-      Write_Register (FDEVLSB, 5);
+      Write_Register (FDEVMSB, FDEVMSB_Init);
+      Write_Register (FDEVLSB, FDEVLSB_Init);
       Write_Register (RXBW, RXBW_Init.Val);
       Write_Register (AFCBW, AFCBW_Init.Val);
-      Set_Frequency (Frequency);
+      --  Set_Frequency (Frequency);
    end Init;
 
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type) is
@@ -597,17 +602,23 @@ package body Drivers.RFM69 is
       F : Natural;
    begin
       F := (Frequency / 1_000_000) * (2 ** 19) / (F_Osc / 1_000_000);
-      Write_Register (FRFMSB, Byte ((F / (2 ** 16)) mod 2 ** 8));
-      Write_Register (FRFMID, Byte ((F / (2 ** 8)) mod 2 ** 8));
-      Write_Register (FRFLSB, Byte (F mod 2 ** 8));
+      Chip_Select.Clear;
+      SPI.Send (FRFMSB'Enum_Rep + W_REGISTER'Enum_Rep);
+      SPI.Send (Byte ((F / (2 ** 16)) mod 2 ** 8));
+      SPI.Send (Byte ((F / (2 ** 8)) mod 2 ** 8));
+      SPI.Send (Byte (F mod 2 ** 8));
+      Chip_Select.Set;
    end Set_Frequency;
 
    procedure Set_Bitrate (Bitrate : Natural) is
       B : Natural;
    begin
       B := F_Osc / Bitrate;
-      Write_Register (BITRATEMSB, Byte ((B / (2 ** 8)) mod 2 ** 8));
-      Write_Register (BITRATELSB, Byte (B mod 2 ** 8));
+      Chip_Select.Clear;
+      SPI.Send (BITRATEMSB'Enum_Rep + W_REGISTER'Enum_Rep);
+      SPI.Send (Byte ((B / (2 ** 8)) mod 2 ** 8));
+      SPI.Send (Byte (B mod 2 ** 8));
+      Chip_Select.Set;
    end Set_Bitrate;
 
    procedure Set_Broadcast_Address (Address : Address_Type) is
@@ -680,13 +691,18 @@ package body Drivers.RFM69 is
       return Flags.Packet_Sent;
    end TX_Complete;
 
-   function RX_Available return Boolean is
+   function RX_Available_Reg return Boolean is
       Flags : IRQFLAGS2_Register_Type;
       F : Byte;
    begin
       Read_Register (IRQFLAGS2, F);
       Flags.Val := F;
       return Flags.Payload_Ready;
+   end RX_Available_Reg;
+
+   function RX_Available return Boolean is
+   begin
+      return IRQ.Is_Set;
    end RX_Available;
 
    function Wait_For_RX return Boolean is
