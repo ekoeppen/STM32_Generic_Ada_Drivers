@@ -12,7 +12,7 @@ package body Blink is
    task Blink_Task with Storage_Size => 384;
 
    protected body Blink_Parameters is
-      procedure Start (LED : LED_Type ; M : Mode_Type ; C : Blink_Count_Type) is
+      procedure Start (LED : LED_Type ; M : Mode_Type ; C : Positive) is
       begin
          Mode (LED) := M;
          Blink_Count (LED) := C;
@@ -24,7 +24,7 @@ package body Blink is
          return Mode (LED);
       end Get_Mode;
 
-      function Get_Blink_Count (LED : LED_Type) return Blink_Count_Type is
+      function Get_Blink_Count (LED : LED_Type) return Positive is
       begin
          return Blink_Count (LED);
       end Get_Blink_Count;
