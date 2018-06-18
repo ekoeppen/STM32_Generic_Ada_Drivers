@@ -163,50 +163,52 @@ package body CBOR is
       Buffer : in out Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Success : Boolean := False;
+      Last_Position : Buffer_Size_Type := Position;
    begin
       case Encoding_Byte.Value is
          when  Additional_8Bit =>
             Value := Integer (Buffer (Position));
             Position := Position + 1;
-            Success := True;
+            return True;
          when Additional_16Bit =>
             Value := Integer (Buffer (Position)) * 2**8 +
                Integer (Buffer (Position + 1));
             Position := Position + 2;
-            Success := True;
+            return True;
          when Additional_32Bit =>
             Value := Integer (Buffer (Position)) * 2**24 +
                Integer (Buffer (Position + 1)) * 2**16 +
                Integer (Buffer (Position + 2)) * 2**8 +
                Integer (Buffer (Position + 3));
             Position := Position + 4;
-            Success := True;
+            return True;
          when Additional_64Bit =>
-            Success := False;
+            Position := Last_Position;
+            return False;
          when others =>
             Value := Encoding_Byte.Value;
-            Success := True;
+            return True;
       end case;
-      return Success;
    end Decode_Additional_Data;
 
    function Decode_Integer (Value : out Integer;
       Buffer : in out Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
-      Success : Boolean := False;
+      Last_Position : Buffer_Size_Type := Position;
    begin
       Encoding_Byte.Val := Buffer (Position);
       Position := Position + 1;
       if Decode_Additional_Data (Value, Encoding_Byte, Buffer, Position) then
          if Encoding_Byte.Major = Unsigned_Integer then
-            Success := True;
+            return True;
          elsif Encoding_Byte.Major = Negative_Integer then
             Value := -1 - Value;
-            Success := True;
+            return True;
          end if;
       end if;
-      return Success;
+      Position := Last_Position;
+      return False;
    end Decode_Integer;
 
    function Decode_Byte_String (Start : out Buffer_Size_Type;
@@ -214,17 +216,19 @@ package body CBOR is
       Buffer : in out Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
-      Success : Boolean := False;
+      Last_Position : Buffer_Size_Type := Position;
    begin
       Encoding_Byte.Val := Buffer (Position);
       Position := Position + 1;
       if Encoding_Byte.Major = Byte_String and then
          Decode_Additional_Data (Size, Encoding_Byte, Buffer, Position) then
-         Success := True;
          Start := Position;
          Position := Position + Buffer_Size_Type (Size);
+         return True;
+      else
+         Position := Last_Position;
+         return False;
       end if;
-      return Success;
    end Decode_Byte_String;
 
    function Decode_UTF8_String return Boolean is
@@ -236,15 +240,17 @@ package body CBOR is
       Buffer : in out Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
-      Success : Boolean := False;
+      Last_Position : Buffer_Size_Type := Position;
    begin
       Encoding_Byte.Val := Buffer (Position);
       Position := Position + 1;
-      if Encoding_Byte.Major = Item_Array then
-         Success := Decode_Additional_Data (Count, Encoding_Byte, Buffer,
-            Position);
+      if Encoding_Byte.Major = Item_Array and then
+         Decode_Additional_Data (Count, Encoding_Byte, Buffer, Position) then
+         return True;
+      else
+         Position := Last_Position;
+         return False;
       end if;
-      return Success;
    end Decode_Array;
 
    function Decode_Map return Boolean is
@@ -256,13 +262,17 @@ package body CBOR is
       Buffer : in out Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
-      Success : Boolean := False;
+      Last_Position : Buffer_Size_Type := Position;
    begin
       Encoding_Byte.Val := Buffer (Position);
       Position := Position + 1;
-      Success := Encoding_Byte.Major = Tag and then
-         Decode_Additional_Data (Value, Encoding_Byte, Buffer, Position);
-      return Success;
+      if Encoding_Byte.Major = Tag and then
+         Decode_Additional_Data (Value, Encoding_Byte, Buffer, Position) then
+         return True;
+      else
+         Position := Last_Position;
+         return False;
+      end if;
    end Decode_Tag;
 
    function Decode_Null return Boolean is
@@ -293,23 +303,21 @@ package body CBOR is
    function Decode_Decimal_Fraction (Value : out Integer;
       Mantissa : out Integer; Buffer : in out Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
-      Success : Boolean := False;
       Tag : Integer;
       Count : Integer;
       Last_Position : Buffer_Size_Type := Position;
    begin
       if Decode_Tag (Tag, Buffer, Position) and then
-         Tag = Decimal_Fraction_Tag then
-         if Decode_Array (Count, Buffer, Position) and then Count = 2 then
-            if Decode_Integer (Value, Buffer, Position) then
-               Success := Decode_Integer (Mantissa, Buffer, Position);
-            end if;
-         end if;
-      end if;
-      if not Success then
+         Tag = Decimal_Fraction_Tag and then
+         Decode_Array (Count, Buffer, Position) and then
+         Count = 2 and then
+         Decode_Integer (Value, Buffer, Position) and then
+         Decode_Integer (Mantissa, Buffer, Position) then
+         return True;
+      else
          Position := Last_Position;
+         return False;
       end if;
-      return Success;
    end Decode_Decimal_Fraction;
 
 end CBOR;

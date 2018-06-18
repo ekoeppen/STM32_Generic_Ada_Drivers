@@ -7,12 +7,23 @@ with Ada.Synchronous_Task_Control;  use Ada.Synchronous_Task_Control;
 with Peripherals;                   use Peripherals;
 with Utils;                         use Utils;
 with Modem;                         use Modem;
+with CBOR;
 
 package body Controller is
 
    task Controller_Task with Storage_Size => 512;
 
    -----------------------------------------------------------------------------
+
+   package Observation_Encoder is new CBOR (
+      Buffer_Size_Type => Radio.Packet_Size_Type,
+      Buffer_Type => Radio.Packet_Type);
+
+   procedure Encode_Test_Packet (Packet : in out Radio.Packet_Type) is
+      Position	     : Natural := 0;
+   begin
+      Observation_Encoder.Encode_Integer (55, Packet, Position);
+   end  Encode_Test_Packet;
 
    procedure Handle_Command (Line : Serial_Data) is
       Transmit_Cmd   : Byte := Character'Pos ('t');
@@ -22,6 +33,7 @@ package body Controller is
       Test_Data      : Radio.Packet_Type := (7, 1, 2, 3, 4, 5, 6, 7);
    begin
       Serial.Output.Write (Line);
+      Encode_Test_Packet (Test_Data);
       if Line.Length > 1 then
          if Line.Data (1) = Transmit_Cmd then
             Serial.Output.Write_Line ("Transmitting");
