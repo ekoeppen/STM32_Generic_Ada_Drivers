@@ -1,11 +1,11 @@
-with STM32_SVD; use STM32_SVD;
-with Serial; use Serial;
-with STM32GD.Board; use STM32GD.Board;
-with STM32GD.USART; use STM32GD.USART;
-with Ada.Real_Time; use Ada.Real_Time;
+with STM32_SVD;                    use STM32_SVD;
+with Serial;                       use Serial;
+with STM32GD.Board;                use STM32GD.Board;
+with STM32GD.USART;                use STM32GD.USART;
+with Ada.Real_Time;                use Ada.Real_Time;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
-with Peripherals; use Peripherals;
-with Utils; use Utils;
+with Peripherals;                  use Peripherals;
+with Utils;                        use Utils;
 
 package body Modem is
 

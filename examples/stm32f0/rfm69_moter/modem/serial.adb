@@ -1,9 +1,9 @@
-with STM32_SVD; use STM32_SVD;
-with STM32_SVD.USART; use STM32_SVD.USART;
-with STM32GD.USART; use STM32GD.USART;
+with STM32_SVD;                    use STM32_SVD;
+with STM32_SVD.USART;              use STM32_SVD.USART;
+with STM32GD.USART;                use STM32GD.USART;
 with STM32GD.Board;
 with Peripherals;
-with Ada.Real_Time; use Ada.Real_Time;
+with Ada.Real_Time;                use Ada.Real_Time;
 with Ada.Interrupts;
 with Ada.Interrupts.Names;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;

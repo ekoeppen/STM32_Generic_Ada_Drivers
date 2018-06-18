@@ -1,9 +1,5 @@
-with Last_Chance_Handler;  pragma Unreferenced (Last_Chance_Handler);
-
-with System; use System;
-with System.Machine_Code;
-
-with Ada.Real_Time; use Ada.Real_Time;
+with System;                       use System;
+with Ada.Real_Time;                use Ada.Real_Time;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
 

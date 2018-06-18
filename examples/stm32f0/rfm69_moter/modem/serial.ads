@@ -7,16 +7,16 @@ package Serial is
 
    type Serial_Data is
    record
-      Data : USART_Data (Line_Length);
-      Length : Natural;
+      Data     : USART_Data (Line_Length);
+      Length   : Natural;
    end record;
 
    protected Input is
       entry Read_Line (Line : out Serial_Data);
       procedure Set_Ready (Line : Serial_Data);
    private
-      Buffer : Serial_Data;
-      Ready : Boolean := False;
+      Buffer   : Serial_Data;
+      Ready    : Boolean := False;
    end Input;
 
    package Output is
