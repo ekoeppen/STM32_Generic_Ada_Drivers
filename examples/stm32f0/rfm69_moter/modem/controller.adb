@@ -7,6 +7,7 @@ with Ada.Synchronous_Task_Control;  use Ada.Synchronous_Task_Control;
 with Peripherals;                   use Peripherals;
 with Utils;                         use Utils;
 with Modem;                         use Modem;
+with Packet;                        use Packet;
 with CBOR;
 
 package body Controller is
@@ -18,19 +19,24 @@ package body Controller is
    package Observation_Encoder is new CBOR (
       Buffer_Size_Type => Radio.Packet_Size_Type,
       Buffer_Type => Radio.Packet_Type);
+   use Observation_Encoder;
 
    procedure Encode_Test_Packet (Packet : in out Radio.Packet_Type) is
       Position	     : Natural := 0;
    begin
-      Observation_Encoder.Encode_Integer (55, Packet, Position);
-   end  Encode_Test_Packet;
+      Encode_Tag (Sensor_Reading_Tag, Packet, Position);
+      Encode_Array (2, Packet, Position);
+      Encode_Byte_String ("Test", Packet, Position);
+      Encode_Tag (Voltage_Tag, Packet, Position);
+      Encode_Decimal_Fraction (33, -1, Packet, Position);
+   end Encode_Test_Packet;
 
    procedure Handle_Command (Line : Serial_Data) is
       Transmit_Cmd   : Byte := Character'Pos ('t');
       Continuous_Cmd : Byte := Character'Pos ('c');
       Receive_Cmd    : Byte := Character'Pos ('r');
       Status_Cmd     : Byte := Character'Pos ('s');
-      Test_Data      : Radio.Packet_Type := (7, 1, 2, 3, 4, 5, 6, 7);
+      Test_Data      : Radio.Packet_Type;
    begin
       Serial.Output.Write (Line);
       Encode_Test_Packet (Test_Data);

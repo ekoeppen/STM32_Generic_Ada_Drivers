@@ -7,7 +7,8 @@ project STM32F051_RFM69 extends "../../../common/common.gpr" is
       "../../../../stm32f0/",
       "../../../../common/",
       "../../../../drivers/",
-      "../../../boards/stm32f051_rfm69/");
+      "../../../boards/stm32f051_rfm69/",
+      "../common/");
 
    for Main use ("main");
    for Object_Dir use "stm32f051_rfm69";

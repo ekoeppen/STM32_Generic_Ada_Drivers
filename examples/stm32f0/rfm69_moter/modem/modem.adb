@@ -44,13 +44,14 @@ package body Modem is
       Serial.Output.Write_Line ("Modem task starting");
       Radio.RX_Mode;
       loop
+         if Radio.RX_Available then
+            Receive;
+         end if;
+
          TX.Get_Data (Data_Available, Data);
          if Data_Available then
             Transmit;
             Radio.RX_Mode;
-         end if;
-         if Radio.RX_Available then
-            Receive;
          end if;
 
          Next_Release := Next_Release + Period;
