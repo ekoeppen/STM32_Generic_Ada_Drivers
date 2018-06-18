@@ -503,11 +503,11 @@ package body Drivers.RFM69 is
       DCC_Freq_AFC            => 2,
       RX_BW_Mant_AFC          => 0,
       RX_BW_Exp_AFC           => 2);
-   RSSITHRESH_Init      : constant Byte := 80 * 2;
+   RSSITHRESH_Init      : constant Byte := 100 * 2;
    SYNCVALUE1_Init      : constant Byte := 16#F0#;
    SYNCVALUE2_Init      : constant Byte := 16#12#;
    SYNCVALUE3_Init      : constant Byte := 16#78#;
-   PREAMBLELSB_Init     : constant Byte := 4;
+   PREAMBLELSB_Init     : constant Byte := 6;
    FDEVMSB_Init         : constant Byte := 195;
    FDEVLSB_Init         : constant Byte := 5;
 
