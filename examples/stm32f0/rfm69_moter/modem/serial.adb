@@ -22,6 +22,11 @@ package body Serial is
          Ready := False;
       end Read_Line;
 
+      function Is_Ready return Boolean is
+      begin
+         return Ready;
+      end Is_Ready;
+
       procedure Set_Ready (Line : Serial_Data) is
       begin
          Buffer := Line;

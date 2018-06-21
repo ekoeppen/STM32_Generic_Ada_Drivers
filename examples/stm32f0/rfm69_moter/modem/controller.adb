@@ -14,6 +14,13 @@ package body Controller is
 
    task Controller_Task with Storage_Size => 512;
 
+   Test_Data      : Radio.Packet_Type;
+
+   Transmit_Cmd   : constant Byte := Character'Pos ('t');
+   Continuous_Cmd : constant Byte := Character'Pos ('c');
+   Receive_Cmd    : constant Byte := Character'Pos ('r');
+   Status_Cmd     : constant Byte := Character'Pos ('s');
+
    -----------------------------------------------------------------------------
 
    package Observation_Encoder is new CBOR (
@@ -21,25 +28,19 @@ package body Controller is
       Buffer_Type => Radio.Packet_Type);
    use Observation_Encoder;
 
-   procedure Encode_Test_Packet (Packet : in out Radio.Packet_Type) is
+   procedure Encode_Test_Packet is
       Position	     : Natural := 0;
    begin
-      Encode_Tag (Sensor_Reading_Tag, Packet, Position);
-      Encode_Array (2, Packet, Position);
-      Encode_Byte_String ("Test", Packet, Position);
-      Encode_Tag (Voltage_Tag, Packet, Position);
-      Encode_Decimal_Fraction (33, -1, Packet, Position);
+      Encode_Tag (Sensor_Reading_Tag, Test_Data, Position);
+      Encode_Array (2, Test_Data, Position);
+      Encode_Byte_String ("Test", Test_Data, Position);
+      Encode_Tag (Voltage_Tag, Test_Data, Position);
+      Encode_Decimal_Fraction (33, -1, Test_Data, Position);
    end Encode_Test_Packet;
 
    procedure Handle_Command (Line : Serial_Data) is
-      Transmit_Cmd   : Byte := Character'Pos ('t');
-      Continuous_Cmd : Byte := Character'Pos ('c');
-      Receive_Cmd    : Byte := Character'Pos ('r');
-      Status_Cmd     : Byte := Character'Pos ('s');
-      Test_Data      : Radio.Packet_Type;
    begin
-      Serial.Output.Write (Line);
-      Encode_Test_Packet (Test_Data);
+      Serial.Output.Write_Line (Line);
       if Line.Length > 1 then
          if Line.Data (1) = Transmit_Cmd then
             Serial.Output.Write_Line ("Transmitting");
@@ -51,9 +52,6 @@ package body Controller is
          elsif Line.Data (1) = Receive_Cmd then
             Serial.Output.Write_Line ("Receiving");
             Modem.TX.Cancel_Send_Repeatedly;
-            --  if Radio.Wait_For_RX then
-            --     Serial.Output.Write_Line ("Got packet");
-            --  end if;
          elsif Line.Data (1) = Status_Cmd then
             Serial.Output.Write_Line ("Status");
             Radio.Print_Registers;
@@ -63,12 +61,24 @@ package body Controller is
 
    task body Controller_Task is
       Command_Line : Serial_Data;
+      Packet       : Radio.Packet_Type;
+      Packet_Ready : Boolean;
    begin
-      Serial.Output.Write_Line ("Command task starting");
+      Encode_Test_Packet;
       loop
-         Serial.Output.Write ("Command: ");
-         Serial.Input.Read_Line (Command_Line);
-         Handle_Command (Command_Line);
+         Serial.Output.Write_Line ("Enter command:");
+         if Serial.Input.Is_Ready then
+            Serial.Input.Read_Line (Command_Line);
+            Handle_Command (Command_Line);
+         end if;
+         Modem.RX.Get_Data (Packet_Ready, Packet);
+         if Packet_Ready then
+            Serial.Output.Write_Line ("Got packet");
+            for D of Packet loop
+               Serial.Output.Write (To_Hex_String (D));
+            end loop;
+            Serial.Output.Write_Line ("");
+         end if;
       end loop;
    end Controller_Task;
 

@@ -1,5 +1,4 @@
 with STM32_SVD;                    use STM32_SVD;
-with Serial;                       use Serial;
 with STM32GD.Board;                use STM32GD.Board;
 with STM32GD.USART;                use STM32GD.USART;
 with Ada.Real_Time;                use Ada.Real_Time;
@@ -21,7 +20,6 @@ package body Modem is
 
       procedure Transmit is
       begin
-         Serial.Output.Write_Line ("Sending packet");
          LED_YELLOW.Set;
          Radio.TX (Data);
          LED_YELLOW.Clear;
@@ -30,18 +28,13 @@ package body Modem is
       procedure Receive is
       begin
          LED_RED.Set;
-         Serial.Output.Write_Line ("Packet received");
          Radio.Print_Registers;
          Radio.RX (Data);
-         for D of Data loop
-            Serial.Output.Write (To_Hex_String (D));
-         end loop;
-         Serial.Output.Write_Line ("");
+         RX.Receive (Data);
          LED_RED.Clear;
       end Receive;
 
    begin
-      Serial.Output.Write_Line ("Modem task starting");
       Radio.RX_Mode;
       loop
          if Radio.RX_Available then
@@ -63,8 +56,7 @@ package body Modem is
 
    protected body TX is
 
-     entry Send (Data : in Radio.Packet_Type; Repeat : Boolean := False)
-     when No_Data is
+     procedure Send (Data : in Radio.Packet_Type; Repeat : Boolean := False) is
      begin
         TX.Data := Data;
         TX.No_Data := False;
@@ -88,5 +80,27 @@ package body Modem is
      end Get_Data;
 
    end TX;
+
+   -----------------------------------------------------------------------------
+
+   protected body RX is
+
+     procedure Receive (Data : in Radio.Packet_Type) is
+     begin
+        RX.Data := Data;
+        RX.No_Data := False;
+     end Receive;
+
+     procedure Get_Data (Data_Available : out Boolean;
+        Data : out Radio.Packet_Type) is
+     begin
+        Data_Available := not RX.No_Data;
+        if Data_Available then
+           RX.No_Data := True;
+           Data := RX.Data;
+        end if;
+     end Get_Data;
+
+   end RX;
 
 end Modem;

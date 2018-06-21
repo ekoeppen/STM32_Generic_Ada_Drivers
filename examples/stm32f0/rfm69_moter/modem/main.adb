@@ -7,7 +7,6 @@ with STM32GD.Board;
 with STM32GD.USART;
 
 with Peripherals;
-with Serial;
 with Blink;
 with Modem;
 with Controller;
@@ -18,8 +17,6 @@ procedure Main is
 begin
    STM32GD.Board.Init;
    Peripherals.Init;
-   Serial.Output.Write_Line ("--------------------------------------------------------------------------");
-   Serial.Output.Write_Line ("Main task starting");
    Blink.Blink_Parameters.Start (Blink.Green, Blink.Repeat, 1);
    while True loop
       Next_Release := Next_Release + Period;

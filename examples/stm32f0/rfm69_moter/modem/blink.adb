@@ -1,5 +1,4 @@
 with STM32GD.Board;
-with Serial;
 
 package body Blink is
 

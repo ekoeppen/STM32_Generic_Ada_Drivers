@@ -13,6 +13,7 @@ package Serial is
 
    protected Input is
       entry Read_Line (Line : out Serial_Data);
+      function Is_Ready return Boolean;
       procedure Set_Ready (Line : Serial_Data);
    private
       Buffer   : Serial_Data;
