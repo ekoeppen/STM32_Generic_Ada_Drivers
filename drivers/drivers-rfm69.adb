@@ -666,20 +666,16 @@ package body Drivers.RFM69 is
    procedure TX (Packet: Packet_Type) is
    begin
       Set_Mode (TX);
-      Ada.Text_IO.Put ("TX on ");
       Chip_Select.Clear;
       SPI.Send (FIFO'Enum_Rep + W_REGISTER'Enum_Rep);
       for B of Packet loop
          SPI.Send (B);
       end loop;
       Chip_Select.Set;
-      Ada.Text_IO.Put ("FIFO filled ");
       while not TX_Complete loop
          null;
       end loop;
-      Ada.Text_IO.Put ("Packet sent ");
       Set_Mode (STDBY);
-      Ada.Text_IO.Put_Line ("Standby ");
    end TX;
 
    function TX_Complete return Boolean is
