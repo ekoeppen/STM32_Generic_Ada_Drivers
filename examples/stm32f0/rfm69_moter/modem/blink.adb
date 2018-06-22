@@ -18,6 +18,18 @@ package body Blink is
          Remaining_Toggles (LED) := C * 2;
       end Start;
 
+      procedure Increase_Blink_Count (LED : LED_Type) is
+      begin
+         Blink_Count (LED) := Blink_Count (LED) + 1;
+      end Increase_Blink_Count;
+
+      procedure Decrease_Blink_Count (LED : LED_Type) is
+      begin
+         if Blink_Count (LED) > 2 then
+            Blink_Count (LED) := Blink_Count (LED) - 1;
+         end if;
+      end Decrease_Blink_Count;
+
       function Get_Mode (LED : LED_Type) return Mode_Type is
       begin
          return Mode (LED);

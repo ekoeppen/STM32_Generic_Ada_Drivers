@@ -14,6 +14,8 @@ package Blink is
 
    protected Blink_Parameters is
       procedure Start (LED: LED_Type ; M : Mode_Type; C : Positive);
+      procedure Increase_Blink_Count (LED : LED_Type);
+      procedure Decrease_Blink_Count (LED : LED_Type);
 
       function Get_Mode (LED: LED_Type) return Mode_Type;
       function Get_Blink_Count (LED: LED_Type) return Positive;
