@@ -30,7 +30,7 @@ package body Controller is
    use Observation_Encoder;
 
    procedure Encode_Test_Packet is
-      Position	     : Natural := 0;
+      Position	     : Natural := Test_Data'First;
    begin
       Encode_Tag (Sensor_Reading_Tag, Test_Data, Position);
       Encode_Array (2, Test_Data, Position);

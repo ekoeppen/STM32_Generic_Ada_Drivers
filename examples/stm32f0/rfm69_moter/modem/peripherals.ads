@@ -20,7 +20,7 @@ package Peripherals is
    package SPI is new STM32GD.SPI.Peripheral (SPI => STM32GD.SPI.SPI_1);
 
    package Radio is new Drivers.RFM69 (SPI => SPI, Chip_Select => CSN,
-      IRQ => IRQ, Packet_Size => 8, Frequency => 868_000_000);
+      IRQ => IRQ, Packet_Size => 62, Frequency => 868_000_000);
    package USART is new STM32GD.USART.Peripheral (
       USART => STM32GD.USART.USART_1, Speed => 115200, RX_DMA_Buffer_Size => 64,
       IRQ => Ada.Interrupts.Names.USART1);
