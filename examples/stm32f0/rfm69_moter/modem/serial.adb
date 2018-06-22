@@ -7,6 +7,7 @@ with Ada.Real_Time;                use Ada.Real_Time;
 with Ada.Interrupts;
 with Ada.Interrupts.Names;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
+with Blink;
 
 package body Serial is
 
@@ -93,7 +94,7 @@ package body Serial is
    task body Serial_Task is
       Buffer : Serial_Data;
    begin
-      Serial.Write_Line ("Serial task starting" & Character'Val (10));
+      Blink.Blink_Parameters.Increase_Blink_Count (Blink.Green);
       loop
          Buffer.Length := Buffer.Data'First;
          loop

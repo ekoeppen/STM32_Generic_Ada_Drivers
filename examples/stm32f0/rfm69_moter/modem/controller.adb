@@ -9,6 +9,7 @@ with Utils;                         use Utils;
 with Modem;                         use Modem;
 with Packet;                        use Packet;
 with CBOR;
+with Blink;
 
 package body Controller is
 
@@ -63,10 +64,13 @@ package body Controller is
       Command_Line : Serial_Data;
       Packet       : Radio.Packet_Type;
       Packet_Ready : Boolean;
+      Next_Release : Time := Clock;
+      Period       : constant Time_Span := Milliseconds (100);
    begin
+      Blink.Blink_Parameters.Increase_Blink_Count (Blink.Green);
       Encode_Test_Packet;
+      Serial.Output.Write_Line ("Enter command:");
       loop
-         Serial.Output.Write_Line ("Enter command:");
          if Serial.Input.Is_Ready then
             Serial.Input.Read_Line (Command_Line);
             Handle_Command (Command_Line);
@@ -79,6 +83,8 @@ package body Controller is
             end loop;
             Serial.Output.Write_Line ("");
          end if;
+         Next_Release := Next_Release + Period;
+         delay until Next_Release;
       end loop;
    end Controller_Task;
 

@@ -13,7 +13,7 @@ with Controller;
 
 procedure Main is
    Next_Release : Time := Clock;
-   Period       : constant Time_Span := Milliseconds (100);
+   Period       : constant Time_Span := Milliseconds (1000);
 begin
    STM32GD.Board.Init;
    Peripherals.Init;
