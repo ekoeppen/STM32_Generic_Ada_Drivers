@@ -22,12 +22,20 @@ package body Controller is
    Receive_Cmd    : constant Byte := Character'Pos ('r');
    Status_Cmd     : constant Byte := Character'Pos ('s');
 
+   subtype Response_Size_Type is Positive range 1 .. 64;
+   subtype Response_Type is USART_Data (Response_Size_Type);
+   Response : Response_Type;
+
    -----------------------------------------------------------------------------
 
    package Observation_Encoder is new CBOR (
       Buffer_Size_Type => Packet_Size_Type,
       Buffer_Type => Packet_Type);
    use Observation_Encoder;
+
+   package Response_Encoder is new CBOR (
+      Buffer_Size_Type => Response_Size_Type,
+      Buffer_Type => Response_Type);
 
    procedure Encode_Test_Packet is
       Position	: Packet_Size_Type := Test_Data'First;
@@ -39,28 +47,29 @@ package body Controller is
       Encode_Decimal_Fraction (33, -1, Test_Data, Position);
    end Encode_Test_Packet;
 
-   procedure Decode_Value (Packet : in Packet_Type;
-      Position : in out Packet_Size_Type) is
+   procedure Send_Log_Message (Message : String) is
+      Position	: Integer := Response'First;
    begin
-      null;
-   end Decode_Value;
+      Response_Encoder.Encode_Tag (Log_Message_Tag, Response, Position);
+      Response_Encoder.Encode_Byte_String (Message, Response, Position);
+      Output.Write (Response, Position - Response'First);
+   end Send_Log_Message;
 
    procedure Handle_Command (Line : Serial_Data) is
    begin
-      Output.Write_Line (Line);
       if Line.Length > 1 then
          if Line.Data (1) = Transmit_Cmd then
-            Output.Write_Line ("Transmitting");
+            Send_Log_Message ("Transmitting");
             Modem.TX.Cancel_Send_Repeatedly;
             Modem.TX.Send (Test_Data);
          elsif Line.Data (1) = Continuous_Cmd then
-            Output.Write_Line ("Continuously transmitting");
+            Send_Log_Message ("Continuously transmitting");
             Modem.TX.Send (Test_Data, Repeat => True);
          elsif Line.Data (1) = Receive_Cmd then
-            Output.Write_Line ("Receiving");
+            Send_Log_Message ("Receiving");
             Modem.TX.Cancel_Send_Repeatedly;
          elsif Line.Data (1) = Status_Cmd then
-            Output.Write_Line ("Status");
+            Send_Log_Message ("Status");
             Print_Registers;
          end if;
       end if;
@@ -82,11 +91,10 @@ package body Controller is
          end if;
          Modem.RX.Get_Data (Packet_Ready, Packet);
          if Packet_Ready then
-            Output.Write_Line ("Got packet");
-            for D of Packet loop
-               Output.Write (To_Hex_String (D));
+            for I in Packet'Range loop
+               Response (I) := Packet (I);
             end loop;
-            Output.Write_Line ("");
+            Output.Write (Response, Packet'Length);
          end if;
          Next_Release := Next_Release + Period;
          delay until Next_Release;
