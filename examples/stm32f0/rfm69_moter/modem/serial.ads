@@ -1,4 +1,5 @@
 with STM32GD.USART; use STM32GD.USART;
+with STM32_SVD;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 package Serial is
@@ -23,6 +24,7 @@ package Serial is
    package Output is
       procedure Write (Data : in USART_Data; Length : in Natural);
 
+      procedure Write (Character : in STM32_SVD.Byte);
       procedure Write (Line : in Serial_Data);
       procedure Write_Line (Line : in Serial_Data);
       procedure Write (Line : in String);

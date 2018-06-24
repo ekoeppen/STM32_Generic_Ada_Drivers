@@ -41,6 +41,11 @@ package body Serial is
          Peripherals.USART.DMA_Transmit (Data, Length);
       end Write;
 
+      procedure Write (Character : in Byte) is
+      begin
+         Peripherals.USART.Transmit (Character);
+      end Write;
+
       procedure Write (Line : in Serial_Data) is
       begin
          Write (Line.Data, Line.Length);
