@@ -160,7 +160,7 @@ package body CBOR is
 
    function Decode_Additional_Data (Value : out Integer;
       Encoding_Byte : Encoding_Type;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Success : Boolean := False;
       Last_Position : Buffer_Size_Type := Position;
@@ -192,7 +192,7 @@ package body CBOR is
    end Decode_Additional_Data;
 
    function Decode_Integer (Value : out Integer;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
       Last_Position : Buffer_Size_Type := Position;
@@ -213,7 +213,7 @@ package body CBOR is
 
    function Decode_Byte_String (Start : out Buffer_Size_Type;
       Size : out Natural;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
       Last_Position : Buffer_Size_Type := Position;
@@ -237,7 +237,7 @@ package body CBOR is
    end Decode_UTF8_String;
 
    function Decode_Array (Count : out Natural;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
       Last_Position : Buffer_Size_Type := Position;
@@ -259,7 +259,7 @@ package body CBOR is
    end Decode_Map;
 
    function Decode_Tag (Value : out Integer;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Encoding_Byte : Encoding_Type;
       Last_Position : Buffer_Size_Type := Position;
@@ -301,7 +301,7 @@ package body CBOR is
    end Decode_Float ;
 
    function Decode_Decimal_Fraction (Value : out Integer;
-      Mantissa : out Integer; Buffer : in out Buffer_Type;
+      Mantissa : out Integer; Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean is
       Tag : Integer;
       Count : Integer;

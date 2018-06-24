@@ -67,19 +67,19 @@ package CBOR is
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type);
 
    function Decode_Integer (Value : out Integer;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean;
    function Decode_Byte_String (Start : out Buffer_Size_Type;
       Size : out Natural;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean;
    function Decode_UTF8_String return Boolean;
    function Decode_Array (Count : out Natural;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type)  return Boolean;
    function Decode_Map return Boolean;
    function Decode_Tag (Value : out Integer;
-      Buffer : in out Buffer_Type;
+      Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean;
    function Decode_Null return Boolean;
    function Decode_Boolean return Boolean;
@@ -87,7 +87,7 @@ package CBOR is
    function Decode_Simple_Value return Boolean;
    function Decode_Float return Boolean;
    function Decode_Decimal_Fraction (Value : out Integer;
-      Mantissa : out Integer; Buffer : in out Buffer_Type;
+      Mantissa : out Integer; Buffer : in Buffer_Type;
       Position : in out Buffer_Size_Type) return Boolean;
 
 end CBOR;
