@@ -27,11 +27,6 @@ package Serial is
       procedure Write (Character : in STM32_SVD.Byte);
       procedure Write (Line : in Serial_Data);
       procedure Write_Line (Line : in Serial_Data);
-      procedure Write (Line : in String);
-      procedure Write_Line (Line : in String);
    end Output;
-
-
-   procedure Test;
 
 end Serial;

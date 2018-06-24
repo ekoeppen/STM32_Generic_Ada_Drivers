@@ -45,46 +45,6 @@ package body Controller is
       null;
    end Decode_Value;
 
-   function Decode_Observation (Packet : in Packet_Type ;
-      Position : in out Packet_Size_Type) return Boolean is
-      Tag : Natural;
-   begin
-      if Decode_Tag (Tag, Packet, Position) then
-         case Tag is
-            when Voltage_Tag     => Output.Write ("/Voltage ");
-            when Temperature_Tag => Output.Write ("/Temperature ");
-            when Humidity_Tag    => Output.Write ("/Humidity ");
-            when others          => null;
-         end case;
-         return Decode_Observation (Packet, Position);
-      else
-         return False;
-      end if;
-   end Decode_Observation;
-
-   procedure Decode_Packet (Packet : in Packet_Type) is
-      Position   : Packet_Size_Type := Packet'First;
-      Tag        : Natural;
-      Count      : Natural;
-      Name_Start : Packet_Size_Type;
-   begin
-      if Decode_Tag (Tag, Packet, Position) and then
-         Tag = Sensor_Reading_Tag and then
-         Decode_Array (Count, Packet, Position) and then
-         Count >= 1 and then
-         Decode_Byte_String (Name_Start, Count, Packet, Position) then
-         while Count > 0 loop
-            Output.Write (Character'Pos ('/'));
-            for I in Name_Start .. Name_Start + Packet_Size_Type (Count) loop
-               Output.Write (Packet (I));
-            end loop;
-            exit when not Decode_Observation (Packet, Position);
-            Count := Count - 1;
-            Output.Write (10);
-         end loop;
-      end if;
-   end Decode_Packet;
-
    procedure Handle_Command (Line : Serial_Data) is
    begin
       Output.Write_Line (Line);
@@ -115,7 +75,6 @@ package body Controller is
    begin
       Blink.Blink_Parameters.Increase_Blink_Count (Blink.Green);
       Encode_Test_Packet;
-      Output.Write_Line ("Enter command:");
       loop
          if Input.Is_Ready then
             Input.Read_Line (Command_Line);

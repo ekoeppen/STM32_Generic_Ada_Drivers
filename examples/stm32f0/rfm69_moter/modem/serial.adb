@@ -75,27 +75,6 @@ package body Serial is
 
    ----------------------------------------------------------------------------
 
-   procedure Write_Line (Line : in Serial_Data) is
-   begin
-      Peripherals.USART.DMA_Transmit (Line.Data, Line.Length);
-   end Write_Line;
-
-   procedure Write_Line (Line : in String) is
-      TX_Buffer : USART_Data (1 .. Line'Length);
-   begin
-      for I in Line'Range loop
-         TX_Buffer (I) := Character'Pos (Line (I));
-      end loop;
-      Peripherals.USART.DMA_Transmit (TX_Buffer, TX_Buffer'Length);
-   end Write_Line;
-
-   procedure Test is
-      RX_Data : Serial_Data;
-   begin
-      Input.Read_Line (RX_Data);
-      Output.Write (RX_Data);
-   end Test;
-
    task body Serial_Task is
       Buffer : Serial_Data;
    begin
