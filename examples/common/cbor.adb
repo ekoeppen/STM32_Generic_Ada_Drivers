@@ -58,6 +58,32 @@ package body CBOR is
       Buffer (Encoding_Position) := Encoding_Byte.Val;
    end Encode_Additional_Data;
 
+   procedure Encode_Additional_Data (Value : Integer; Major : Major_Type) is
+      Encoding_Byte : Encoding_Type;
+   begin
+      Encoding_Byte.Major := Major;
+      if Value in Additional_Value_Type then
+         Encoding_Byte.Value := Value;
+         Write (Encoding_Byte.Val);
+      elsif Value <= Integer (Byte'Last) then
+         Encoding_Byte.Value := Additional_8Bit;
+         Write (Encoding_Byte.Val);
+         Write (Byte (Value));
+      elsif Value <= Integer (UInt16'Last) then
+         Encoding_Byte.Value := Additional_16Bit;
+         Write (Encoding_Byte.Val);
+         Write (Byte (Value / 2**8));
+         Write (Byte (Value mod 2**8));
+      elsif Value <= Integer'Last then
+         Encoding_Byte.Value := Additional_32Bit;
+         Write (Encoding_Byte.Val);
+         Write (Byte ((Value / 2**24) mod 2**8));
+         Write (Byte ((Value / 2**16) mod 2**8));
+         Write (Byte ((Value / 2**8)  mod 2**8));
+         Write (Byte (Value mod 2**8));
+      end if;
+   end Encode_Additional_Data;
+
    procedure Encode_Integer (Value : Integer;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
       Major : Major_Type;
@@ -73,6 +99,20 @@ package body CBOR is
       Encode_Additional_Data (Positive_Value, Major, Buffer, Position);
    end Encode_Integer;
 
+   procedure Encode_Integer (Value : Integer) is
+      Major : Major_Type;
+      Positive_Value : Integer;
+   begin
+      if Value >= 0 then
+         Major := Unsigned_Integer;
+         Positive_Value := Value;
+      else
+         Major := Negative_Integer;
+         Positive_Value := -1 - Value;
+      end if;
+      Encode_Additional_Data (Positive_Value, Major);
+   end Encode_Integer;
+
    procedure Encode_Byte_String (Value : String;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
    begin
@@ -83,8 +123,21 @@ package body CBOR is
       end loop;
    end Encode_Byte_String;
 
+   procedure Encode_Byte_String (Value : String) is
+   begin
+      Encode_Additional_Data (Value'Length, Byte_String);
+      for C of Value loop
+         Write (Character'Pos (C));
+      end loop;
+   end Encode_Byte_String;
+
    procedure Encode_UTF8_String (Value : String;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
+   begin
+      null;
+   end Encode_UTF8_String;
+
+   procedure Encode_UTF8_String (Value : String) is
    begin
       null;
    end Encode_UTF8_String;
@@ -95,10 +148,20 @@ package body CBOR is
       Encode_Additional_Data (Count, Item_Array, Buffer, Position);
    end Encode_Array;
 
+   procedure Encode_Array (Count : Natural) is
+   begin
+      Encode_Additional_Data (Count, Item_Array);
+   end Encode_Array;
+
    procedure Encode_Map (Count : Natural;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
    begin
       Encode_Additional_Data (Count, Item_Map, Buffer, Position);
+   end Encode_Map;
+
+   procedure Encode_Map (Count : Natural) is
+   begin
+      Encode_Additional_Data (Count, Item_Map);
    end Encode_Map;
 
    procedure Encode_Tag (Value : Natural;
@@ -107,8 +170,18 @@ package body CBOR is
       Encode_Additional_Data (Value, Tag, Buffer, Position);
    end Encode_Tag;
 
+   procedure Encode_Tag (Value : Natural) is
+   begin
+      Encode_Additional_Data (Value, Tag);
+   end Encode_Tag;
+
    procedure Encode_Null (
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
+   begin
+      null;
+   end Encode_Null;
+
+   procedure Encode_Null is
    begin
       null;
    end Encode_Null;
@@ -119,8 +192,18 @@ package body CBOR is
       null;
    end Encode_False;
 
+   procedure Encode_False is
+   begin
+      null;
+   end Encode_False;
+
    procedure Encode_True (
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
+   begin
+      null;
+   end Encode_True;
+
+   procedure Encode_True is
    begin
       null;
    end Encode_True;
@@ -131,8 +214,18 @@ package body CBOR is
       null;
    end Encode_Undefined;
 
+   procedure Encode_Undefined is
+   begin
+      null;
+   end Encode_Undefined;
+
    procedure Encode_Simple_Value (Value : Integer;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
+   begin
+      null;
+   end Encode_Simple_Value;
+
+   procedure Encode_Simple_Value (Value : Integer) is
    begin
       null;
    end Encode_Simple_Value;
@@ -143,8 +236,18 @@ package body CBOR is
       null;
    end Encode_Float;
 
+   procedure Encode_Float (Value : Short_Float) is
+   begin
+      null;
+   end Encode_Float;
+
    procedure Encode_Float (Value : Float;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type) is
+   begin
+      null;
+   end Encode_Float;
+
+   procedure Encode_Float (Value : Float) is
    begin
       null;
    end Encode_Float;
@@ -156,6 +259,14 @@ package body CBOR is
       Encode_Array (2, Buffer, Position);
       Encode_Integer (Mantissa, Buffer, Position);
       Encode_Integer (Value, Buffer, Position);
+   end Encode_Decimal_Fraction;
+
+   procedure Encode_Decimal_Fraction (Value : Integer; Mantissa : Integer) is
+   begin
+      Encode_Tag (Decimal_Fraction_Tag);
+      Encode_Array (2);
+      Encode_Integer (Mantissa);
+      Encode_Integer (Value);
    end Encode_Decimal_Fraction;
 
    function Decode_Additional_Data (Value : out Integer;

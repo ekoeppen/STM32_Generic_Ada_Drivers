@@ -4,6 +4,8 @@ generic
 
    type Buffer_Size_Type is range <>;
    type Buffer_Type is array (Buffer_Size_Type) of Byte;
+   with procedure Write (Data : Byte);
+   with function Read return Byte;
 
 package CBOR is
 
@@ -65,6 +67,21 @@ package CBOR is
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type);
    procedure Encode_Decimal_Fraction (Value : Integer; Mantissa : Integer;
       Buffer : in out Buffer_Type; Position : in out Buffer_Size_Type);
+
+   procedure Encode_Integer (Value : Integer);
+   procedure Encode_Byte_String (Value : String);
+   procedure Encode_UTF8_String (Value : String);
+   procedure Encode_Array (Count : Natural);
+   procedure Encode_Map (Count : Natural);
+   procedure Encode_Tag (Value : Natural);
+   procedure Encode_Null;
+   procedure Encode_False;
+   procedure Encode_True;
+   procedure Encode_Undefined;
+   procedure Encode_Simple_Value (Value : Integer);
+   procedure Encode_Float (Value : Short_Float);
+   procedure Encode_Float (Value : Float);
+   procedure Encode_Decimal_Fraction (Value : Integer; Mantissa : Integer);
 
    function Decode_Integer (Value : out Integer;
       Buffer : in Buffer_Type;
