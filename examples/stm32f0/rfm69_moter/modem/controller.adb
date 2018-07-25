@@ -25,34 +25,67 @@ package body Controller is
    subtype Response_Size_Type is Positive range 1 .. 64;
    subtype Response_Type is USART_Data (Response_Size_Type);
    Response : Response_Type;
+   Response_Index : Response_Size_Type;
+
+   procedure Write_To_Response (Data : Byte);
+   function Read_From_Response return Byte;
 
    -----------------------------------------------------------------------------
 
-   package Observation_Encoder is new CBOR (
-      Buffer_Size_Type => Packet_Size_Type,
-      Buffer_Type => Packet_Type);
-   use Observation_Encoder;
-
    package Response_Encoder is new CBOR (
       Buffer_Size_Type => Response_Size_Type,
-      Buffer_Type => Response_Type);
+      Buffer_Type => Response_Type,
+      Write => Write_To_Response,
+      Read => Read_From_Response);
+
+   procedure Start_Response is
+   begin
+      Response_Index := Response'First;
+      Write_to_Response (16#10#);
+      Write_to_Response (16#02#);
+   end Start_Response;
+
+   procedure End_Response is
+   begin
+      Write_to_Response (16#03#);
+   end End_Response;
+
+   procedure Write_To_Response (Data : Byte) is
+   begin
+      Response (Response_Index) := Data;
+      Response_Index := Response_Index + 1;
+   end Write_To_Response;
+
+   function Read_From_Response return Byte is
+      B : Byte;
+   begin
+      B := Response (Response_Index);
+      Response_Index := Response_Index + 1;
+      if B = 16#10# then
+         B := Response (Response_Index);
+         Response_Index := Response_Index + 1;
+      end if;
+      return B;
+   end Read_From_Response;
 
    procedure Encode_Test_Packet is
-      Position	: Packet_Size_Type := Test_Data'First;
    begin
-      Encode_Tag (Sensor_Reading_Tag, Test_Data, Position);
-      Encode_Array (2, Test_Data, Position);
-      Encode_Byte_String ("Test", Test_Data, Position);
-      Encode_Tag (Voltage_Tag, Test_Data, Position);
-      Encode_Decimal_Fraction (33, -1, Test_Data, Position);
+      Start_Response;
+      Response_Encoder.Encode_Tag (Sensor_Reading_Tag);
+      Response_Encoder.Encode_Array (2);
+      Response_Encoder.Encode_Byte_String ("Test");
+      Response_Encoder.Encode_Tag (Voltage_Tag);
+      Response_Encoder.Encode_Decimal_Fraction (33, -1);
+      End_Response;
    end Encode_Test_Packet;
 
    procedure Send_Log_Message (Message : String) is
-      Position	: Integer := Response'First;
    begin
-      Response_Encoder.Encode_Tag (Log_Message_Tag, Response, Position);
-      Response_Encoder.Encode_Byte_String (Message, Response, Position);
-      Output.Write (Response, Position - Response'First);
+      Start_Response;
+      Response_Encoder.Encode_Tag (Log_Message_Tag);
+      Response_Encoder.Encode_Byte_String (Message);
+      End_Response;
+      Output.Write (Response, Response'Length);
    end Send_Log_Message;
 
    procedure Handle_Command (Line : Serial_Data) is
