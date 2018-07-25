@@ -33,8 +33,6 @@ package body Controller is
    -----------------------------------------------------------------------------
 
    package Response_Encoder is new CBOR (
-      Buffer_Size_Type => Response_Size_Type,
-      Buffer_Type => Response_Type,
       Write => Write_To_Response,
       Read => Read_From_Response);
 
