@@ -1,7 +1,7 @@
 with System;
 with Ada.Text_IO; use Ada.Text_IO;
 
-package body CBOR is
+package body CBOR_Codec is
 
    subtype Additional_Value_Type is Integer range 0 .. 31;
    Additional_8Bit   : constant Additional_Value_Type := 24;
@@ -267,4 +267,4 @@ package body CBOR is
       end if;
    end Decode_Decimal_Fraction;
 
-end CBOR;
+end CBOR_Codec;

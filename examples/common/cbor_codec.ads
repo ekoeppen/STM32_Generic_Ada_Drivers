@@ -5,7 +5,7 @@ generic
    with procedure Write (Data : Byte);
    with function Read return Byte;
 
-package CBOR is
+package CBOR_Codec is
 
    type Major_Type is (Unsigned_Integer, Negative_Integer, Byte_String,
       UTF8_String, Item_Array, Item_Map, Tag, Simple_Or_Float)
@@ -66,4 +66,4 @@ package CBOR is
    function Decode_Decimal_Fraction (Value : out Integer;
       Mantissa : out Integer) return Boolean;
 
-end CBOR;
+end CBOR_Codec;

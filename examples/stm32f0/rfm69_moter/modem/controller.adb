@@ -8,7 +8,7 @@ with Peripherals;                   use Peripherals; use Peripherals.Radio;
 with Utils;                         use Utils;
 with Modem;                         use Modem;
 with Packet;                        use Packet;
-with CBOR;
+with CBOR_Codec;
 with Blink;
 
 package body Controller is
@@ -25,7 +25,7 @@ package body Controller is
 
    -----------------------------------------------------------------------------
 
-   package Response_Encoder is new CBOR (
+   package CBOR is new CBOR_Codec (
       Write => Write_To_Response,
       Read => Read_From_Response);
 
@@ -66,8 +66,8 @@ package body Controller is
    procedure Send_Log_Message (Message : String) is
    begin
       Start_Response;
-      Response_Encoder.Encode_Tag (Log_Message_Tag);
-      Response_Encoder.Encode_Byte_String (Message);
+      CBOR.Encode_Tag (Log_Message_Tag);
+      CBOR.Encode_Byte_String (Message);
       End_Response;
       Output.Write (Response, Response_Index - Response'First);
    end Send_Log_Message;
