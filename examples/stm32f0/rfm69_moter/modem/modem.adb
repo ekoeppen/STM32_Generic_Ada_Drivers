@@ -58,25 +58,18 @@ package body Modem is
 
    protected body TX is
 
-     procedure Send (Data : in Radio.Packet_Type; Repeat : Boolean := False) is
+     procedure Send (Data : in Radio.Packet_Type) is
      begin
         TX.Data := Data;
-        TX.No_Data := False;
-        TX.Repeat := Repeat;
+        TX.Data_Available := True;
      end Send;
-
-     procedure Cancel_Send_Repeatedly is
-     begin
-        TX.Repeat := False;
-        TX.No_Data := True;
-     end Cancel_Send_Repeatedly;
 
      procedure Get_Data (Data_Available : out Boolean;
         Data : out Radio.Packet_Type) is
      begin
-        Data_Available := not TX.No_Data;
+        Data_Available := TX.Data_Available;
         if Data_Available then
-           TX.No_Data := not Repeat;
+           TX.Data_Available := True;
            Data := TX.Data;
         end if;
      end Get_Data;
@@ -90,15 +83,15 @@ package body Modem is
      procedure Receive (Data : in Radio.Packet_Type) is
      begin
         RX.Data := Data;
-        RX.No_Data := False;
+        RX.Data_Available := True;
      end Receive;
 
      procedure Get_Data (Data_Available : out Boolean;
         Data : out Radio.Packet_Type) is
      begin
-        Data_Available := not RX.No_Data;
+        Data_Available := RX.Data_Available;
         if Data_Available then
-           RX.No_Data := True;
+           RX.Data_Available := False;
            Data := RX.Data;
         end if;
      end Get_Data;
