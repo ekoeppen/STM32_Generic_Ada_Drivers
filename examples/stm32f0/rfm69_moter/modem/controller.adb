@@ -17,17 +17,26 @@ package body Controller is
 
    subtype Host_Message_Size_Type is Positive range 1 .. 64;
    subtype Host_Message_Type is USART_Data (Host_Message_Size_Type);
-   Host_Message : Host_Message_Type;
+   Host_Message       : Host_Message_Type;
    Host_Message_Index : Host_Message_Size_Type;
+   RF_Message         : Packet_Type;
+   RF_Message_Index   : Packet_Size_Type;
 
    procedure Write_To_Host_Message (Data : Byte);
    function Read_From_Host_Message return Byte;
 
+   procedure Write_To_RF_Message (Data : Byte);
+   function Read_From_RF_Message return Byte;
+
    -----------------------------------------------------------------------------
 
-   package CBOR is new CBOR_Codec (
+   package Host_CBOR is new CBOR_Codec (
       Write => Write_To_Host_Message,
       Read => Read_From_Host_Message);
+
+   package RF_CBOR is new CBOR_Codec (
+      Write => Write_To_RF_Message,
+      Read => Read_From_RF_Message);
 
    procedure Send_Host_Message is
    begin
@@ -68,24 +77,49 @@ package body Controller is
       return B;
    end Read_From_Host_Message;
 
+   procedure Start_RF_Message is
+   begin
+      RF_Message_Index := RF_Message'First;
+   end Start_RF_Message;
+
+   procedure End_RF_Message is
+   begin
+      null;
+   end End_RF_Message;
+
+   procedure Write_To_RF_Message (Data : Byte) is
+   begin
+      RF_Message (RF_Message_Index) := Data;
+      RF_Message_Index := RF_Message_Index + 1;
+   end Write_To_RF_Message;
+
+   function Read_From_RF_Message return Byte is
+      B : Byte;
+   begin
+      B := RF_Message (RF_Message_Index);
+      RF_Message_Index := RF_Message_Index + 1;
+      return B;
+   end Read_From_RF_Message;
+
    procedure Send_Log_Message (Message : String) is
    begin
       Start_Host_Message;
-      CBOR.Encode_Tag (Log_Message_Tag);
-      CBOR.Encode_Byte_String (Message);
+      Host_CBOR.Encode_Tag (Log_Message_Tag);
+      Host_CBOR.Encode_Byte_String (Message);
       End_Host_Message;
       Send_Host_Message;
    end Send_Log_Message;
 
    task body Controller_Task is
-      Next_Tick    : Time := Clock;
-      Tick_Period  : constant Time_Span := Milliseconds (100);
+      Next_Tick   : Time := Clock;
+      Tick_Period : constant Time_Span := Milliseconds (100);
+      Heartbeat   : Integer := 0;
 
       procedure Handle_Command (Line : Serial_Data) is
          Tag        : Integer;
       begin
          Host_Message_Index := Host_Message'First;
-         if CBOR.Decode_Tag (Tag) then
+         if Host_CBOR.Decode_Tag (Tag) then
             case Tag is
                when Reset_Cmd_Tag => null;
                when Ping_Cmd_Tag => null;
@@ -126,7 +160,14 @@ package body Controller is
          Ticks_to_Heartbeat := Ticks_To_Heartbeat - 1;
          if Ticks_To_Heartbeat = 0 then
             Ticks_To_Heartbeat := Heartbeat_Period / Tick_Period;
-            Send_Log_Message ("Ping");
+            Heartbeat := Heartbeat + 1;
+            Start_Host_Message;
+            Host_CBOR.Encode_Tag (Heartbeat_Tag);
+            Host_CBOR.Encode_Array (2);
+            Host_CBOR.Encode_Byte_String ("Modem");
+            Host_CBOR.Encode_Integer (Heartbeat);
+            End_Host_Message;
+            Send_Host_Message;
          end if;
       end Send_Heartbeat;
 
@@ -137,6 +178,11 @@ package body Controller is
          Ticks_to_Ping := Ticks_To_Ping - 1;
          if Ticks_To_Ping = 0 then
             Ticks_To_Ping := Ping_Period / Tick_Period;
+            Start_RF_Message;
+            RF_CBOR.Encode_Tag (Ping_Tag);
+            RF_CBOR.Encode_Byte_String ("Modem");
+            End_RF_Message;
+            Modem.TX.Send (RF_Message);
             Send_Log_Message ("Ping");
          end if;
       end Send_Ping;
