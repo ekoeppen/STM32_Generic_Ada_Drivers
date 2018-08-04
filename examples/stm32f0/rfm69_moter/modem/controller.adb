@@ -77,8 +77,17 @@ package body Controller is
       Tick_Period  : constant Time_Span := Milliseconds (100);
 
       procedure Handle_Command (Line : Serial_Data) is
+         Tag        : Integer;
       begin
-         null;
+         Response_Index := Response'First;
+         if CBOR.Decode_Tag (Tag) then
+            case Tag is
+               when Reset_Cmd_Tag => null;
+               when Ping_Cmd_Tag => null;
+               when Status_Cmd_Tag => null;
+               when others => null;
+            end case;
+         end if;
       end Handle_Command;
 
       procedure Handle_Host_Data is
