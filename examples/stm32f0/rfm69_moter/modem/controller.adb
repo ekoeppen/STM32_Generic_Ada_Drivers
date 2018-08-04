@@ -81,16 +81,16 @@ package body Controller is
          null;
       end Handle_Command;
 
-      procedure Handle_Serial_Data is
+      procedure Handle_Host_Data is
          Command_Line : Serial_Data;
       begin
          if Input.Is_Ready then
             Input.Read_Line (Command_Line);
             Handle_Command (Command_Line);
          end if;
-      end Handle_Serial_Data;
+      end Handle_Host_Data;
 
-      procedure Handle_Modem_Data is
+      procedure Handle_RF_Data is
          Packet       : Packet_Type;
          Packet_Ready : Boolean;
       begin
@@ -103,7 +103,7 @@ package body Controller is
             End_Response;
             Output.Write (Response, Response_Index - Response'First);
          end if;
-      end Handle_Modem_Data;
+      end Handle_RF_Data;
 
       procedure Send_Heartbeat is
          Heartbeat_Period   : constant Time_Span := Seconds (5);
@@ -116,17 +116,29 @@ package body Controller is
          end if;
       end Send_Heartbeat;
 
+      procedure Send_Ping is
+         Ping_Period   : constant Time_Span := Seconds (2);
+         Ticks_To_Ping : Integer := Ping_Period / Tick_Period;
+      begin
+         Ticks_to_Ping := Ticks_To_Ping - 1;
+         if Ticks_To_Ping = 0 then
+            Ticks_To_Ping := Ping_Period / Tick_Period;
+            Send_Log_Message ("Ping");
+         end if;
+      end Send_Ping;
+
       procedure Periodic_Tasks is
       begin
          Send_Heartbeat;
+         Send_Ping;
       end Periodic_Tasks;
 
    begin
       Blink.Blink_Parameters.Increase_Blink_Count (Blink.Green);
       Send_Log_Message ("Ready");
       loop
-         Handle_Serial_Data;
-         Handle_Modem_Data;
+         Handle_Host_Data;
+         Handle_RF_Data;
          Periodic_Tasks;
          Next_Tick := Next_Tick + Tick_Period;
          delay until Next_Tick;
