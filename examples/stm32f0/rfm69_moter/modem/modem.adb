@@ -21,18 +21,13 @@ package body Modem is
 
       procedure Transmit is
       begin
-         LED_YELLOW.Set;
          Radio.TX (Data);
-         LED_YELLOW.Clear;
       end Transmit;
 
       procedure Receive is
       begin
-         LED_RED.Set;
-         Radio.Print_Registers;
          Radio.RX (Data);
          RX.Receive (Data);
-         LED_RED.Clear;
       end Receive;
 
    begin
