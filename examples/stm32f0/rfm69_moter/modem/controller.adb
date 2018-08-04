@@ -15,61 +15,66 @@ package body Controller is
 
    task Controller_Task with Storage_Size => 512;
 
-   subtype Response_Size_Type is Positive range 1 .. 64;
-   subtype Response_Type is USART_Data (Response_Size_Type);
-   Response : Response_Type;
-   Response_Index : Response_Size_Type;
+   subtype Host_Message_Size_Type is Positive range 1 .. 64;
+   subtype Host_Message_Type is USART_Data (Host_Message_Size_Type);
+   Host_Message : Host_Message_Type;
+   Host_Message_Index : Host_Message_Size_Type;
 
-   procedure Write_To_Response (Data : Byte);
-   function Read_From_Response return Byte;
+   procedure Write_To_Host_Message (Data : Byte);
+   function Read_From_Host_Message return Byte;
 
    -----------------------------------------------------------------------------
 
    package CBOR is new CBOR_Codec (
-      Write => Write_To_Response,
-      Read => Read_From_Response);
+      Write => Write_To_Host_Message,
+      Read => Read_From_Host_Message);
 
-   procedure Start_Response is
+   procedure Send_Host_Message is
    begin
-      Response_Index := Response'First;
-      Write_to_Response (16#10#);
-      Write_to_Response (16#02#);
-   end Start_Response;
+      Output.Write (Host_Message, Host_Message_Index - Host_Message'First);
+   end Send_Host_Message;
 
-   procedure End_Response is
+   procedure Start_Host_Message is
    begin
-      Write_to_Response (16#03#);
-   end End_Response;
+      Host_Message_Index := Host_Message'First;
+      Write_to_Host_Message (16#10#);
+      Write_to_Host_Message (16#02#);
+   end Start_Host_Message;
 
-   procedure Write_To_Response (Data : Byte) is
+   procedure End_Host_Message is
+   begin
+      Write_to_Host_Message (16#03#);
+   end End_Host_Message;
+
+   procedure Write_To_Host_Message (Data : Byte) is
    begin
       if Data = 16#10# then
-         Response (Response_Index) := Data;
-         Response_Index := Response_Index + 1;
+         Host_Message (Host_Message_Index) := Data;
+         Host_Message_Index := Host_Message_Index + 1;
       end if;
-      Response (Response_Index) := Data;
-      Response_Index := Response_Index + 1;
-   end Write_To_Response;
+      Host_Message (Host_Message_Index) := Data;
+      Host_Message_Index := Host_Message_Index + 1;
+   end Write_To_Host_Message;
 
-   function Read_From_Response return Byte is
+   function Read_From_Host_Message return Byte is
       B : Byte;
    begin
-      B := Response (Response_Index);
-      Response_Index := Response_Index + 1;
+      B := Host_Message (Host_Message_Index);
+      Host_Message_Index := Host_Message_Index + 1;
       if B = 16#10# then
-         B := Response (Response_Index);
-         Response_Index := Response_Index + 1;
+         B := Host_Message (Host_Message_Index);
+         Host_Message_Index := Host_Message_Index + 1;
       end if;
       return B;
-   end Read_From_Response;
+   end Read_From_Host_Message;
 
    procedure Send_Log_Message (Message : String) is
    begin
-      Start_Response;
+      Start_Host_Message;
       CBOR.Encode_Tag (Log_Message_Tag);
       CBOR.Encode_Byte_String (Message);
-      End_Response;
-      Output.Write (Response, Response_Index - Response'First);
+      End_Host_Message;
+      Send_Host_Message;
    end Send_Log_Message;
 
    task body Controller_Task is
@@ -79,7 +84,7 @@ package body Controller is
       procedure Handle_Command (Line : Serial_Data) is
          Tag        : Integer;
       begin
-         Response_Index := Response'First;
+         Host_Message_Index := Host_Message'First;
          if CBOR.Decode_Tag (Tag) then
             case Tag is
                when Reset_Cmd_Tag => null;
@@ -105,12 +110,12 @@ package body Controller is
       begin
          Modem.RX.Get_Data (Packet_Ready, Packet);
          if Packet_Ready then
-            Start_Response;
+            Start_Host_Message;
             for I in Packet'Range loop
-               Write_To_Response (Packet (I));
+               Write_To_Host_Message (Packet (I));
             end loop;
-            End_Response;
-            Output.Write (Response, Response_Index - Response'First);
+            End_Host_Message;
+            Send_Host_Message;
          end if;
       end Handle_RF_Data;
 
