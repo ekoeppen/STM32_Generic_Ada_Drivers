@@ -116,11 +116,16 @@ package body Controller is
    end Send_Log_Message;
 
    task body Controller_Task is
-      Next_Tick   : Time := Clock;
-      Tick_Period : constant Time_Span := Milliseconds (100);
-      Heartbeat   : Integer := 0;
+      Next_Tick          : Time := Clock;
+      Tick_Period        : constant Time_Span := Milliseconds (100);
+      Heartbeat_Period   : constant Time_Span := Seconds (5);
+      Ticks_To_Heartbeat : Integer := Heartbeat_Period / Tick_Period;
+      Ping_Period        : constant Time_Span := Seconds (2);
+      Ticks_To_Ping      : Integer := Ping_Period / Tick_Period;
+      Heartbeat          : Integer := 0;
+      Ping_Count         : Natural := 0;
 
-      procedure Handle_Command (Line : Serial_Data) is
+      procedure Handle_Command is
          Tag        : Integer;
       begin
          Host_Message_Index := Host_Message'First;
@@ -139,7 +144,8 @@ package body Controller is
       begin
          if Input.Is_Ready then
             Input.Read_Line (Command_Line);
-            Handle_Command (Command_Line);
+            Host_Message := Command_Line.Data;
+            Handle_Command;
          end if;
       end Handle_Host_Data;
 
@@ -159,8 +165,6 @@ package body Controller is
       end Handle_RF_Data;
 
       procedure Send_Heartbeat is
-         Heartbeat_Period   : constant Time_Span := Seconds (5);
-         Ticks_To_Heartbeat : Integer := Heartbeat_Period / Tick_Period;
       begin
          Ticks_to_Heartbeat := Ticks_To_Heartbeat - 1;
          if Ticks_To_Heartbeat = 0 then
@@ -177,18 +181,19 @@ package body Controller is
       end Send_Heartbeat;
 
       procedure Send_Ping is
-         Ping_Period   : constant Time_Span := Seconds (2);
-         Ticks_To_Ping : Integer := Ping_Period / Tick_Period;
       begin
-         Ticks_to_Ping := Ticks_To_Ping - 1;
-         if Ticks_To_Ping = 0 then
-            Ticks_To_Ping := Ping_Period / Tick_Period;
-            Start_RF_Message;
-            RF_CBOR.Encode_Tag (Ping_Tag);
-            RF_CBOR.Encode_Byte_String ("Modem");
-            End_RF_Message;
-            Modem.TX.Send (RF_Message);
-            Send_Log_Message ("Ping");
+         if Ping_Count > 0 then
+            Ping_Count := Ping_Count - 1;
+            Ticks_to_Ping := Ticks_To_Ping - 1;
+            if Ticks_To_Ping = 0 then
+               Ticks_To_Ping := Ping_Period / Tick_Period;
+               Start_RF_Message;
+               RF_CBOR.Encode_Tag (Ping_Tag);
+               RF_CBOR.Encode_Byte_String ("Modem");
+               End_RF_Message;
+               Modem.TX.Send (RF_Message);
+               Send_Log_Message ("Ping");
+            end if;
          end if;
       end Send_Ping;
 
