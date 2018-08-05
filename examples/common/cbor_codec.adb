@@ -31,7 +31,7 @@ package body CBOR_Codec is
       Encoding_Byte : Encoding_Type;
    begin
       Encoding_Byte.Major := Major;
-      if Value in Additional_Value_Type then
+      if Value <= Additional_8Bit - 1 then
          Encoding_Byte.Value := Value;
          Write (Encoding_Byte.Val);
       elsif Value <= Integer (Byte'Last) then
