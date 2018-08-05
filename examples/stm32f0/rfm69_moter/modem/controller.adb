@@ -45,14 +45,16 @@ package body Controller is
 
    procedure Start_Host_Message is
    begin
-      Host_Message_Index := Host_Message'First;
-      Write_to_Host_Message (16#10#);
-      Write_to_Host_Message (16#02#);
+      Host_Message (Host_Message'First) := 16#10#;
+      Host_Message (Host_Message'First + 1) := 16#02#;
+      Host_Message_Index := Host_Message'First + 2;
    end Start_Host_Message;
 
    procedure End_Host_Message is
    begin
-      Write_to_Host_Message (16#03#);
+      Host_Message (Host_Message_Index) := 16#10#;
+      Host_Message (Host_Message_Index + 1) := 16#03#;
+      Host_Message_Index := Host_Message_Index + 2;
    end End_Host_Message;
 
    procedure Write_To_Host_Message (Data : Byte) is
@@ -72,6 +74,9 @@ package body Controller is
       Host_Message_Index := Host_Message_Index + 1;
       if B = 16#10# then
          B := Host_Message (Host_Message_Index);
+         if B = 16#03# then
+            B := 16#FF#;
+         end if;
          Host_Message_Index := Host_Message_Index + 1;
       end if;
       return B;
