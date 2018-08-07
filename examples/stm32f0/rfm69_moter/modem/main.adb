@@ -2,6 +2,7 @@ with System;                       use System;
 with Ada.Real_Time;                use Ada.Real_Time;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
+with Last_Chance_Handler;
 
 with STM32GD.Board;
 with STM32GD.USART;
