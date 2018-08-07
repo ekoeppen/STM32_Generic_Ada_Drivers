@@ -16,12 +16,12 @@ package body Serial is
    ----------------------------------------------------------------------------
 
    protected body Input is
-      entry Read_Line (Line : out Serial_Data) when Ready is
+      entry Read (Data : out Serial_Data) when Ready is
       begin
-         Line.Data := Buffer.Data;
-         Line.Length := Buffer.Length - 1;
+         Data.Data := Buffer.Data;
+         Data.Length := Buffer.Length - 1;
          Ready := False;
-      end Read_Line;
+      end Read;
 
       function Is_Ready return Boolean is
       begin
@@ -45,46 +45,50 @@ package body Serial is
       begin
          Peripherals.USART.Transmit (Character);
       end Write;
-
-      procedure Write (Line : in Serial_Data) is
-      begin
-         Write (Line.Data, Line.Length);
-      end Write;
-
-      procedure Write_Line (Line : in Serial_Data) is
-      begin
-         Write (Line.Data, Line.Length);
-         Peripherals.USART.Transmit (10);
-      end Write_Line;
-
-      procedure Write (Line : in String) is
-         TX_Buffer : USART_Data (1 .. Line'Length);
-      begin
-         for I in Line'Range loop
-            TX_Buffer (I) := Character'Pos (Line (I));
-         end loop;
-         Write (TX_Buffer, TX_Buffer'Length);
-      end Write;
-
-      procedure Write_Line (Line : in String) is
-      begin
-         Write (Line);
-         Peripherals.USART.Transmit (10);
-      end Write_Line;
    end Output;
 
    ----------------------------------------------------------------------------
 
    task body Serial_Task is
       Buffer : Serial_Data;
+
+      procedure Wait_For_Packet is
+         C1 : Byte;
+         C2 : Byte;
+      begin
+         loop
+            C1 := Peripherals.USART.DMA_Receive;
+            C2 := Peripherals.USART.DMA_Receive;
+            exit when C1 = 16#10# and C2 = 16#02#;
+         end loop;
+      end Wait_For_Packet;
+
+      procedure Read_Packet is
+         C : Byte;
+      begin
+         loop
+            C := Peripherals.USART.DMA_Receive;
+            if C /= 16#10# then
+               Buffer.Data (Buffer.Length) := C;
+               Buffer.Length := Buffer.Length + 1;
+            else
+               C := Peripherals.USART.DMA_Receive;
+               if C = 16#10# then
+                  Buffer.Data (Buffer.Length) := C;
+                  Buffer.Length := Buffer.Length + 1;
+               else
+                  exit when C = 16#03#;
+               end if;
+            end if;
+         end loop;
+      end Read_Packet;
+
    begin
       Blink.Blink_Parameters.Increase_Blink_Count (Blink.Green);
       loop
          Buffer.Length := Buffer.Data'First;
-         loop
-            Peripherals.USART.IRQ_Handler.Wait;
-            exit when Peripherals.USART.DMA_Receive (10, Buffer.Data, Buffer.Length);
-         end loop;
+         Wait_For_Packet;
+         Read_Packet;
          Input.Set_Ready (Buffer);
       end loop;
    end Serial_Task;

@@ -13,7 +13,7 @@ package Serial is
    end record;
 
    protected Input is
-      entry Read_Line (Line : out Serial_Data);
+      entry Read (Data : out Serial_Data);
       function Is_Ready return Boolean;
       procedure Set_Ready (Line : Serial_Data);
    private
@@ -23,10 +23,7 @@ package Serial is
 
    package Output is
       procedure Write (Data : in USART_Data; Length : in Natural);
-
       procedure Write (Character : in STM32_SVD.Byte);
-      procedure Write (Line : in Serial_Data);
-      procedure Write_Line (Line : in Serial_Data);
    end Output;
 
 end Serial;

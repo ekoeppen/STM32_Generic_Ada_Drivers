@@ -72,13 +72,6 @@ package body Controller is
    begin
       B := Host_Message (Host_Message_Index);
       Host_Message_Index := Host_Message_Index + 1;
-      if B = 16#10# then
-         B := Host_Message (Host_Message_Index);
-         if B = 16#03# then
-            B := 16#FF#;
-         end if;
-         Host_Message_Index := Host_Message_Index + 1;
-      end if;
       return B;
    end Read_From_Host_Message;
 
@@ -143,7 +136,7 @@ package body Controller is
          Command_Line : Serial_Data;
       begin
          if Input.Is_Ready then
-            Input.Read_Line (Command_Line);
+            Input.Read (Command_Line);
             Host_Message := Command_Line.Data;
             Handle_Command;
          end if;
