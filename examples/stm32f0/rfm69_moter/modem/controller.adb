@@ -10,10 +10,12 @@ with Modem;                         use Modem;
 with Packet;                        use Packet;
 with CBOR_Codec;
 with Blink;
+with System;
 
 package body Controller is
 
-   task Controller_Task with Storage_Size => 512;
+   task Controller_Task
+      with Storage_Size => 384, Secondary_Stack_Size => 32;
 
    subtype Host_Message_Size_Type is Positive range 1 .. 64;
    subtype Host_Message_Type is USART_Data (Host_Message_Size_Type);

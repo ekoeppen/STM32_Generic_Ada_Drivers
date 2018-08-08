@@ -11,7 +11,7 @@ with Blink;
 
 package body Serial is
 
-   task Serial_Task with Storage_Size => 384;
+   task Serial_Task with Storage_Size => 256, Secondary_Stack_Size => 32;
 
    ----------------------------------------------------------------------------
 

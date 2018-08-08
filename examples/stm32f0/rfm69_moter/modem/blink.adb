@@ -8,7 +8,7 @@ package body Blink is
    Period_Pause : constant Time_Span := Milliseconds (2500);
 
 
-   task Blink_Task with Storage_Size => 384;
+   task Blink_Task with Storage_Size => 256, Secondary_Stack_Size => 32;
 
    protected body Blink_Parameters is
       procedure Start (LED : LED_Type ; M : Mode_Type ; C : Positive) is
