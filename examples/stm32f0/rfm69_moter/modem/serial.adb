@@ -38,7 +38,16 @@ package body Serial is
    package body Output is
       procedure Write (Data : in USART_Data; Length : in Natural) is
       begin
-         Peripherals.USART.DMA_Transmit (Data, Length);
+         Write (16#10#);
+         Write (16#02#);
+         for I in Natural range Data'First .. Data'First + Length loop
+            Write (Data (I));
+            if Data (I) = 16#10# then
+               Write (Data (I));
+            end if;
+         end loop;
+         Write (16#10#);
+         Write (16#03#);
       end Write;
 
       procedure Write (Character : in Byte) is
