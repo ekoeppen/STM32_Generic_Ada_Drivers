@@ -15,8 +15,10 @@ package Packet is
    Heartbeat_Tag      : constant Natural := 65;
    Log_Message_Tag    : constant Natural := 66;
    Ping_Tag           : constant Natural := 67;
-   Status_Cmd_Tag     : constant Natural := 68;
-   Ping_Cmd_Tag       : constant Natural := 69;
-   Reset_Cmd_Tag      : constant Natural := 70;
+   Register_Value_Tag : constant Natural := 68;
+   Error_Message_Tag  : constant Natural := 69;
+   Status_Cmd_Tag     : constant Natural := 256;
+   Ping_Cmd_Tag       : constant Natural := 257;
+   Reset_Cmd_Tag      : constant Natural := 258;
 
 end Packet;
