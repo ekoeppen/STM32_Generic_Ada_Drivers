@@ -47,24 +47,11 @@ package body Controller is
 
    procedure Start_Host_Message is
    begin
-      Host_Message (Host_Message'First) := 16#10#;
-      Host_Message (Host_Message'First + 1) := 16#02#;
-      Host_Message_Index := Host_Message'First + 2;
+      Host_Message_Index := Host_Message'First;
    end Start_Host_Message;
-
-   procedure End_Host_Message is
-   begin
-      Host_Message (Host_Message_Index) := 16#10#;
-      Host_Message (Host_Message_Index + 1) := 16#03#;
-      Host_Message_Index := Host_Message_Index + 2;
-   end End_Host_Message;
 
    procedure Write_To_Host_Message (Data : Byte) is
    begin
-      if Data = 16#10# then
-         Host_Message (Host_Message_Index) := Data;
-         Host_Message_Index := Host_Message_Index + 1;
-      end if;
       Host_Message (Host_Message_Index) := Data;
       Host_Message_Index := Host_Message_Index + 1;
    end Write_To_Host_Message;
@@ -81,11 +68,6 @@ package body Controller is
    begin
       RF_Message_Index := RF_Message'First;
    end Start_RF_Message;
-
-   procedure End_RF_Message is
-   begin
-      null;
-   end End_RF_Message;
 
    procedure Write_To_RF_Message (Data : Byte) is
    begin
@@ -106,7 +88,6 @@ package body Controller is
       Start_Host_Message;
       Host_CBOR.Encode_Tag (Log_Message_Tag);
       Host_CBOR.Encode_Byte_String (Message);
-      End_Host_Message;
       Send_Host_Message;
    end Send_Log_Message;
 
@@ -122,13 +103,46 @@ package body Controller is
 
       procedure Handle_Command is
          Tag        : Integer;
+
+         procedure Set_Ping_Count is
+            Count : Integer;
+         begin
+            if Host_CBOR.Decode_Integer (Count) and then Count >= 0 then
+               Send_Log_Message ("Setting ping count");
+               Ping_Count := Count;
+            end if;
+         end Set_Ping_Count;
+
+         procedure Reset is
+            SCB_AIRCR : aliased STM32_SVD.UInt32
+              with Import, Address => System'To_Address (16#E000ED0C#);
+         begin
+            Send_Log_Message ("Resetting");
+            SCB_AIRCR := 16#05FA_0004#;
+         end Reset;
+
+         procedure Report_Modem_Status is
+            Registers : Radio.Raw_Register_Array;
+         begin
+            Send_Log_Message ("Modem status");
+            Radio.Read_Registers (Registers);
+            for I in Registers'Range loop
+               Start_Host_Message;
+               Host_CBOR.Encode_Tag (Register_Value_Tag);
+               Host_CBOR.Encode_Array (2);
+               Host_CBOR.Encode_Integer (I);
+               Host_CBOR.Encode_Integer (Integer (Registers (I)));
+               Send_Host_Message;
+            end loop;
+         end Report_Modem_Status;
+
       begin
          Host_Message_Index := Host_Message'First;
          if Host_CBOR.Decode_Tag (Tag) then
             case Tag is
-               when Reset_Cmd_Tag => null;
-               when Ping_Cmd_Tag => null;
-               when Status_Cmd_Tag => null;
+               when Reset_Cmd_Tag => Reset;
+               when Ping_Cmd_Tag => Set_Ping_Count;
+               when Status_Cmd_Tag => Report_Modem_Status;
                when others => null;
             end case;
          end if;
@@ -154,7 +168,6 @@ package body Controller is
             for I in Packet'Range loop
                Write_To_Host_Message (Packet (I));
             end loop;
-            End_Host_Message;
             Send_Host_Message;
          end if;
       end Handle_RF_Data;
@@ -170,7 +183,6 @@ package body Controller is
             Host_CBOR.Encode_Array (2);
             Host_CBOR.Encode_Byte_String ("Modem");
             Host_CBOR.Encode_Integer (Heartbeat);
-            End_Host_Message;
             Send_Host_Message;
          end if;
       end Send_Heartbeat;
@@ -178,14 +190,13 @@ package body Controller is
       procedure Send_Ping is
       begin
          if Ping_Count > 0 then
-            Ping_Count := Ping_Count - 1;
             Ticks_to_Ping := Ticks_To_Ping - 1;
             if Ticks_To_Ping = 0 then
+               Ping_Count := Ping_Count - 1;
                Ticks_To_Ping := Ping_Period / Tick_Period;
                Start_RF_Message;
                RF_CBOR.Encode_Tag (Ping_Tag);
                RF_CBOR.Encode_Byte_String ("Modem");
-               End_RF_Message;
                Modem.TX.Send (RF_Message);
                Send_Log_Message ("Ping");
             end if;
