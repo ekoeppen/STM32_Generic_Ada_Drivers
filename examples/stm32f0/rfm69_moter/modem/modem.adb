@@ -64,7 +64,7 @@ package body Modem is
      begin
         Data_Available := TX.Data_Available;
         if Data_Available then
-           TX.Data_Available := True;
+           TX.Data_Available := False;
            Data := TX.Data;
         end if;
      end Get_Data;

@@ -94,7 +94,7 @@ package body Controller is
    task body Controller_Task is
       Next_Tick          : Time := Clock;
       Tick_Period        : constant Time_Span := Milliseconds (100);
-      Heartbeat_Period   : constant Time_Span := Seconds (5);
+      Heartbeat_Period   : constant Time_Span := Seconds (60);
       Ticks_To_Heartbeat : Integer := Heartbeat_Period / Tick_Period;
       Ping_Period        : constant Time_Span := Seconds (2);
       Ticks_To_Ping      : Integer := Ping_Period / Tick_Period;
