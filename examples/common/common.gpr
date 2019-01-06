@@ -21,10 +21,11 @@ project Common is
       case Build is
          when "Production" =>
             for Default_Switches ("Ada") use
-              ("-g", "-Os", "-gnatp", "-gnatn");
+              ("-g", "-Os", "-gnatp", "-gnatn", "-ffunction-sections",
+              "-fdata-sections");
          when "Debug" =>
             for Default_Switches ("Ada") use
-              ("-g", "-O0", "-gnata");
+              ("-g", "-O0", "-gnata", "-ffunction-sections", "-fdata-sections");
       end case;
    end Compiler;
 
