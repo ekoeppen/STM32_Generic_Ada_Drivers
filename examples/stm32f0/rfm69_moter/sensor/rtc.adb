@@ -60,13 +60,15 @@ package body RTC is
    end Add_Minutes;
 
    procedure Set_Alarm (Date_Time : Date_Time_Type) is
+      Wait : Natural;
    begin
       Set_False (RTC_IRQ.Alarm_Occurred);
       Unlock;
       RTC_Periph.ISR.ALRAF := 0;
       RTC_Periph.CR.ALRAE := 0;
-      while RTC_Periph.ISR.ALRAWF = 0 loop
-         null;
+      Wait := 10000;
+      while RTC_Periph.ISR.ALRAWF = 0 and Wait > 0 loop
+         Wait := Wait - 1;
       end loop;
       RTC_Periph.ALRMAR := (
          MSK1 => 0,

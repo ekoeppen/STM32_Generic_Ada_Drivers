@@ -25,6 +25,11 @@ package body STM32GD.GPIO.Pin is
       Port.MODER.Arr (Index) := Pin_IO_Modes'Enum_Rep (Mode);
    end Set_Mode;
 
+   procedure Set_Type (Pin_Type : Pin_Output_Types) is
+   begin
+      Port.OTYPER.OT.Arr (Index) := Pin_Output_Types'Enum_Rep (Pin_Type);
+   end Set_Type;
+
    function Get_Pull_Resistor return Internal_Pin_Resistors is
    begin
       if Port.PUPDR.Arr (Index) = 0 then

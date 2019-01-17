@@ -664,6 +664,7 @@ package body Drivers.RFM69 is
    end RX_Mode;
 
    procedure TX (Packet: Packet_Type) is
+      Wait : Natural;
    begin
       Set_Mode (TX);
       Chip_Select.Clear;
@@ -672,8 +673,9 @@ package body Drivers.RFM69 is
          SPI.Send (B);
       end loop;
       Chip_Select.Set;
-      while not TX_Complete loop
-         null;
+      Wait := 100000;
+      while not TX_Complete and Wait > 0 loop
+         Wait := Wait - 1;
       end loop;
       Set_Mode (STDBY);
    end TX;

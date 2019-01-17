@@ -1,6 +1,7 @@
 with System;
 with STM32_SVD;         use STM32_SVD;
 with STM32_SVD.RCC;     use STM32_SVD.RCC;
+with STM32_SVD.ADC;     use STM32_SVD.ADC;
 with STM32_SVD.DMA;     use STM32_SVD.DMA;
 with STM32_SVD.USART;   use STM32_SVD.USART;
 with STM32_SVD.PWR;     use STM32_SVD.PWR;
@@ -16,10 +17,9 @@ package body Peripherals is
       Power_Up;
       RFM69_RESET.Clear;
       SPI.Init;
+      I2C.Init;
       Radio.Init;
-      RX.Init;
-      TX.Init;
-      USART.Init;
+      STM32GD.Board.USART.Init;
    end Init;
 
    procedure Enable_Stop_Mode (Low_Power : Boolean) is
@@ -42,6 +42,26 @@ package body Peripherals is
       SCB_SCR := SCR;
    end Disable_Stop_Mode;
 
+   procedure Power_Up is
+   begin
+      STM32GD.Board.Init;
+      RCC_Periph.APB2ENR.SPI1EN := 1;
+      RCC_Periph.APB2ENR.USART1EN := 1;
+      RCC_Periph.APB2ENR.ADCEN := 1;
+      RCC_Periph.APB1ENR.I2C1EN := 1;
+      RFM69_RESET.Init;
+      SCL.Init;
+      SDA.Init;
+      CSN.Init;
+      CSN.Set;
+      SCLK.Init;
+      MISO.Init;
+      MOSI.Init;
+      IRQ.Init;
+      RX.Init;
+      TX.Init;
+   end Power_Up;
+
    procedure Power_Down is
    begin
       Radio.Power_Down;
@@ -50,7 +70,7 @@ package body Peripherals is
       RCC_Periph.AHBENR.IOPCEN := 1;
       RCC_Periph.AHBENR.IOPDEN := 1;
       RCC_Periph.AHBENR.IOPFEN := 1;
-      GPIOA_Periph.MODER.Val := 16#FFFF_FFFF#;
+      --  GPIOA_Periph.MODER.Val := 16#28FF_FFFF#;
       GPIOB_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOC_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOD_Periph.MODER.Val := 16#FFFF_FFFF#;
@@ -67,23 +87,27 @@ package body Peripherals is
       RCC_Periph.AHBENR.IOPFEN := 0;
       RCC_Periph.APB2ENR.USART1EN := 0;
       RCC_Periph.APB2ENR.SPI1EN := 0;
+      RCC_Periph.APB1ENR.I2C1EN := 0;
       RCC_Periph.AHBENR.DMAEN := 0;
    end Power_Down;
 
-   procedure Power_Up is
+   function Supply_Voltage return Millivolts is
+      V : Millivolts;
    begin
-      STM32GD.Board.Init;
-      RCC.RCC_Periph.APB2ENR.SPI1EN := 1;
-      RCC.RCC_Periph.APB2ENR.USART1EN := 1;
-      RFM69_RESET.Init;
-      CSN.Init;
-      CSN.Set;
-      SCLK.Init;
-      MISO.Init;
-      MOSI.Init;
-      IRQ.Init;
-      RX.Init;
-      TX.Init;
-   end Power_Up;
+      ADC.ADC_Periph.CR.ADEN := 0;
+      ADC.ADC_Periph.CR.ADEN := 1;
+      ADC.ADC_Periph.CCR.VREFEN := 1;
+      while ADC.ADC_Periph.ISR.ADRDY = 0 loop
+         null;
+      end loop;
+      ADC.ADC_Periph.CHSELR.CHSEL.Arr (17) := 1;
+      ADC.ADC_Periph.CR.ADSTART := 1;
+      while ADC.ADC_Periph.ISR.EOC = 0 loop
+         null;
+      end loop;
+      V :=  1200 * 4096 / Standard.Integer (ADC.ADC_Periph.DR.Data);
+      ADC.ADC_Periph.CR.ADDIS := 1;
+      return V;
+   end Supply_Voltage;
 
 end Peripherals;

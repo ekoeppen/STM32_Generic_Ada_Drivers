@@ -164,11 +164,13 @@ package body Controller is
       begin
          Modem.RX.Get_Data (Packet_Ready, Packet);
          if Packet_Ready then
+            LED_RED.Set;
             Start_Host_Message;
             for I in Packet'Range loop
                Write_To_Host_Message (Packet (I));
             end loop;
             Send_Host_Message;
+            LED_RED.Clear;
          end if;
       end Handle_RF_Data;
 
