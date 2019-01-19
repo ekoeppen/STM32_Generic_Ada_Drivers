@@ -2,7 +2,6 @@ with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC;
 with STM32_SVD.NVIC;
 with STM32_SVD.GPIO;
-with Ada.Text_IO;
 
 package body STM32GD.Board is
 
@@ -15,6 +14,9 @@ package body STM32GD.Board is
       LED_RED.Init;
       LED_GREEN.Init;
       LED_YELLOW.Init;
+      TX.Init;
+      RX.Init;
+      USART.Init;
    end Init;
 
 end STM32GD.Board;

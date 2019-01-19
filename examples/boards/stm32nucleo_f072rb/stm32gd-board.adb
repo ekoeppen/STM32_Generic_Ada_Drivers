@@ -1,20 +1,21 @@
 with STM32_SVD; use STM32_SVD;
-with STM32_SVD.RCC;
-with STM32_SVD.NVIC;
-with STM32_SVD.GPIO;
-with Ada.Text_IO;
+with STM32_SVD.RCC; use STM32_SVD.RCC;
 
 package body STM32GD.Board is
 
    procedure Init is
    begin
-      STM32_SVD.RCC.RCC_Periph.AHBENR.IOPAEN := 1;
-      STM32_SVD.RCC.RCC_Periph.AHBENR.IOPBEN := 1;
-      STM32_SVD.RCC.RCC_Periph.AHBENR.IOPCEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.SYSCFGEN := 1;
+      RCC_Periph.AHBENR.IOPAEN := 1;
+      RCC_Periph.AHBENR.IOPBEN := 1;
+      RCC_Periph.AHBENR.IOPCEN := 1;
+      RCC_Periph.APB2ENR.SYSCFGEN := 1;
+      RCC_Periph.APB1ENR.USART2EN := 1;
       BUTTON.Init;
       LED_RED.Init;
       LED_GREEN.Init;
+      TX.Init;
+      RX.Init;
+      USART.Init;
    end Init;
 
 end STM32GD.Board;

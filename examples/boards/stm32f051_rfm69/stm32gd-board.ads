@@ -1,6 +1,9 @@
+with Ada.Interrupts.Names;
 with STM32GD.GPIO; use STM32GD.GPIO;
 
 with STM32GD.GPIO.Pin;
+with STM32GD.USART;
+with STM32GD.USART.Peripheral;
 
 package STM32GD.Board is
 
