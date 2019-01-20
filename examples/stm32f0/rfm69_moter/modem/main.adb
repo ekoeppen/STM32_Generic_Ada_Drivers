@@ -8,7 +8,6 @@ with STM32GD.Board;
 with STM32GD.USART;
 
 with Peripherals;
-with Blink;
 with Modem;
 with Controller;
 
@@ -37,7 +36,6 @@ procedure Main is
 begin
    STM32GD.Board.Init;
    Peripherals.Init;
-   Blink.Blink_Parameters.Start (Blink.Green, Blink.Repeat, 1);
    Controller.Send_Log_Message ("Ready");
    while True loop
       Controller.Handle_Host_Data;

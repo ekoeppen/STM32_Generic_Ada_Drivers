@@ -9,7 +9,6 @@ with Utils;                         use Utils;
 with Modem;                         use Modem;
 with Packet;                        use Packet;
 with CBOR_Codec;
-with Blink;
 with System;
 
 package body Controller is

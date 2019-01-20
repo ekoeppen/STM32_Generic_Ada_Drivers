@@ -5,7 +5,6 @@ with Ada.Real_Time;                use Ada.Real_Time;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 with Peripherals;                  use Peripherals;
 with Utils;                        use Utils;
-with Blink;
 
 package body Modem is
 
@@ -31,7 +30,6 @@ package body Modem is
       end Receive;
 
    begin
-      Blink.Blink_Parameters.Increase_Blink_Count (Blink.Green);
       Radio.RX_Mode;
       loop
          if Radio.RX_Available then
