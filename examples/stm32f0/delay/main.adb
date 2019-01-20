@@ -16,7 +16,9 @@ procedure Main is
 begin
    Init;
    LED_GREEN.Set;
+   USART.Put_Line ("Starting");
    loop
+      USART.Put_Line ("Waiting");
       Next_Release := Next_Release + Period;
       delay until Next_Release;
       LED_GREEN.Toggle;
