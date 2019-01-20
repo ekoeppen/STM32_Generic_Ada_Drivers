@@ -1,5 +1,4 @@
 with System;
-with Ada.Text_IO;
 with Ada.Real_Time;  use Ada.Real_Time;
 with Utils;          use Utils;
 
@@ -551,7 +550,7 @@ package body Drivers.RFM69 is
 
    procedure Print_Registers is
    begin
-      Ada.Text_IO.Put_Line (
+      Output.Put_Line (
          "Version: " & To_Hex_String (Read_Register (VERSION)) &
          " OpMode: " & To_Hex_String (Read_Register (OPMODE)) &
          " IrqFlags: " & To_Hex_String (Read_Register (IRQFLAGS1)) & " " &
@@ -559,7 +558,7 @@ package body Drivers.RFM69 is
          " PacketConfig: " & To_Hex_String (Read_Register (PACKETCONFIG1)) &
             " " & To_Hex_String (Read_Register (PACKETCONFIG2)) &
          " PayloadLength: " & To_Hex_String (Read_Register (PAYLOADLENGTH)));
-      Ada.Text_IO.Put_Line (
+      Output.Put_Line (
          "FifoThresh: " & To_Hex_String (Read_Register (FIFOTHRESH)) &
          " RSSIConfig: " & To_Hex_String (Read_Register (RSSICONFIG)) &
          " RSSIValue: " & To_Hex_String (Read_Register (RSSIVALUE)) &

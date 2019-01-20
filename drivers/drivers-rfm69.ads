@@ -1,5 +1,6 @@
 with Ada.Real_Time; use Ada.Real_Time;
 with STM32_SVD; use STM32_SVD;
+with Drivers.Text_IO;
 with HAL;
 
 generic
@@ -41,6 +42,8 @@ package Drivers.RFM69 is
    procedure Power_Down;
    procedure Cancel;
    procedure Read_Registers (Registers : out Raw_Register_Array);
+   generic
+      with package Output is new Drivers.Text_IO (<>);
    procedure Print_Registers;
 
 end Drivers.RFM69;
