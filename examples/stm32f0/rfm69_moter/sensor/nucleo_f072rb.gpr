@@ -1,0 +1,26 @@
+project Nucleo_F072RB extends "../../../common/common.gpr" is
+
+   for Source_Dirs use (
+      ".",
+      "../common/",
+      "../../../common/",
+      "../../../boards/stm32nucleo_f072rb",
+      "../../../../stm32f0/",
+      "../../../../stm32f0/stm32f072x/svd/",
+      "../../../../common/",
+      "../../../../drivers/");
+
+   for Main use ("main");
+   for Object_Dir use "nucleo_f072rb";
+   for Exec_Dir use "nucleo_f072rb";
+   for Runtime ("Ada") use "stm32f072";
+   Linker_File := "stm32f072rb.ld";
+   package Linker is
+      for Default_Switches ("Ada") use (
+         "-T" & Linker_File,
+         "-Wl,--gc-sections",
+         "-Wl,--print-memory-usage");
+      for Map_File_Option use "-Wl,-Map,";
+   end Linker;
+
+end Nucleo_F072RB;

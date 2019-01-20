@@ -9,7 +9,7 @@ with Blink;
 
 package body Modem is
 
-   task Modem_Task with Storage_Size => 256, Secondary_Stack_Size => 32;
+   task Modem_Task with Storage_Size => 768;
 
    -----------------------------------------------------------------------------
 

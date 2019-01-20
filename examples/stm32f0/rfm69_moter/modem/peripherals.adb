@@ -25,7 +25,7 @@ package body Peripherals is
 
       RX.Init;
       TX.Init;
-      USART.Init;
+      STM32GD.Board.USART.Init;
       USART1_Periph.CR1.RXNEIE := 1;
 
    end Init;

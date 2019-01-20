@@ -1,9 +1,7 @@
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
-with Ada.Text_IO;                  use Ada.Text_IO;
 
 with STM32_SVD;                    use STM32_SVD;
 with STM32GD.Board;                use STM32GD.Board;
-with STM32GD.SysTick;              use STM32GD.SysTick;
 
 with Packet;                       use Packet;
 with CBOR_Codec;
@@ -13,6 +11,9 @@ with Peripherals;
 with Utils;
 
 procedure Main is
+
+   package Text_IO renames Peripherals.Text_IO;
+
    Date_Time    : RTC.Date_Time_Type;
    Temperature  : Peripherals.Si7006.Temperature_Type;
    Humidity     : Peripherals.Si7006.Humidity_Type;
@@ -72,11 +73,11 @@ procedure Main is
       RF_CBOR.Encode_Decimal_Fraction (Temperature, -2);
       RF_CBOR.Encode_Tag (Humidity_Tag);
       RF_CBOR.Encode_Decimal_Fraction (Humidity, 0);
-      Put ("Packet: ");
+      Text_IO.Put ("Packet: ");
       for I in Integer range RF_Message'First .. RF_Message_Index loop
-         Put (Utils.To_Hex_String (RF_Message (I)));
+         Text_IO.Put (Utils.To_Hex_String (RF_Message (I)));
       end loop;
-      New_Line;
+      Text_IO.New_Line;
       Peripherals.Radio.TX (RF_Message);
    end Send_Sensor_Data;
 
@@ -85,22 +86,22 @@ begin
    RTC.Init;
    Peripherals.Init;
    RTC.Read (Date_Time);
-   Put_Line ("Sensor starting");
+   Text_IO.Put_Line ("Sensor starting");
    loop
       LED_GREEN.Set;
-      --  Put_Line ("Reading sensor data");
+      Text_IO.Put_Line ("Reading sensor data");
       Read_Sensor_Data;
       Send_Sensor_Data;
       RTC.Read (Date_Time);
       RTC.Add_Seconds (Date_Time, 4);
       RTC.Set_Alarm (Date_Time);
       LED_GREEN.Clear;
-      --  Put_Line ("Entering sleep");
+      Text_IO.Put_Line ("Entering sleep");
       Peripherals.Power_Down;
-      --  Peripherals.Enable_Stop_Mode (True);
+      Peripherals.Enable_Stop_Mode (True);
       Suspend_Until_True (RTC_IRQ.Alarm_Occurred);
-      --  Peripherals.Enable_Stop_Mode (False);
+      Peripherals.Enable_Stop_Mode (False);
       Peripherals.Power_Up;
-      --  Put_Line ("Exited sleep");
+      Text_IO.Put_Line ("Exited sleep");
    end loop;
 end Main;

@@ -1,14 +1,14 @@
+with STM32GD.Board;
 with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 with STM32GD.SPI;
 with STM32GD.SPI.Peripheral;
 with STM32GD.I2C;
 with STM32GD.I2C.Peripheral;
-with STM32GD.USART;
-with STM32GD.USART.Peripheral;
 with Drivers;
 with Drivers.RFM69;
 with Drivers.Si7006;
+with Drivers.Text_IO;
 with Ada.Interrupts.Names;
 with System;
 
@@ -34,8 +34,9 @@ package Peripherals is
       I2C => STM32GD.I2C.I2C_1);
 
    package Radio is new Drivers.RFM69 (SPI => SPI, Chip_Select => CSN,
-      IRQ => IRQ, Packet_Size => 62, Frequency => 868_000_000);
+      IRQ => IRQ, Packet_Size => 62, Frequency => 915_000_000);
    package Si7006 is new Drivers.Si7006 (I2C => I2C);
+   package Text_IO is new Drivers.Text_IO (USART => STM32GD.Board.USART);
 
    procedure Init;
    procedure Power_Down;

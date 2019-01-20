@@ -11,7 +11,7 @@ with Blink;
 
 package body Serial is
 
-   task Serial_Task with Storage_Size => 256, Secondary_Stack_Size => 32;
+   task Serial_Task with Storage_Size => 512;
 
    ----------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ package body Serial is
 
       procedure Write (Character : in Byte) is
       begin
-         Peripherals.USART.Transmit (Character);
+         STM32GD.Board.USART.Transmit (Character);
       end Write;
    end Output;
 
@@ -66,8 +66,8 @@ package body Serial is
          C2 : Byte;
       begin
          loop
-            C1 := Peripherals.USART.DMA_Receive;
-            C2 := Peripherals.USART.DMA_Receive;
+            C1 := STM32GD.Board.USART.DMA_Receive;
+            C2 := STM32GD.Board.USART.DMA_Receive;
             exit when C1 = 16#10# and C2 = 16#02#;
          end loop;
       end Wait_For_Packet;
@@ -76,12 +76,12 @@ package body Serial is
          C : Byte;
       begin
          loop
-            C := Peripherals.USART.DMA_Receive;
+            C := STM32GD.Board.USART.DMA_Receive;
             if C /= 16#10# then
                Buffer.Data (Buffer.Length) := C;
                Buffer.Length := Buffer.Length + 1;
             else
-               C := Peripherals.USART.DMA_Receive;
+               C := STM32GD.Board.USART.DMA_Receive;
                if C = 16#10# then
                   Buffer.Data (Buffer.Length) := C;
                   Buffer.Length := Buffer.Length + 1;

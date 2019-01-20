@@ -14,12 +14,35 @@ with Controller;
 
 procedure Main is
    Next_Release : Time := Clock;
-   Period       : constant Time_Span := Milliseconds (1000);
+   Period       : constant Time_Span := Milliseconds (100);
+
+   Minimum_Storage_Size : Integer := 256;
+   pragma Export (
+      Convention => C,
+      Entity => Minimum_Storage_Size,
+      External_Name => "_minimum_storage_size");
+
+   Main_Task_Storage_Size : Integer := 1024;
+   pragma Export (
+      Convention => C,
+      Entity => Main_Task_Storage_Size,
+      External_Name => "_environment_task_storage_size");
+
+   Secondary_Stack_Size : Integer := 16;
+   pragma Export (
+      Convention => C,
+      Entity => Secondary_Stack_Size,
+      External_Name => "_gnat_default_ss_size");
+
 begin
    STM32GD.Board.Init;
    Peripherals.Init;
    Blink.Blink_Parameters.Start (Blink.Green, Blink.Repeat, 1);
+   Controller.Send_Log_Message ("Ready");
    while True loop
+      Controller.Handle_Host_Data;
+      Controller.Handle_RF_Data;
+      Controller.Periodic_Tasks;
       Next_Release := Next_Release + Period;
       delay until Next_Release;
    end loop;

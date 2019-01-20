@@ -1,20 +1,20 @@
-project STM32F051_RFM69 extends "../../../common/common.gpr" is
+project Nucleo_F072RB extends "../../../common/common.gpr" is
 
    for Source_Dirs use (
       ".",
-      "../../../../stm32f0/stm32f051x/svd/",
-      "../../../../stm32f0/stm32f051x/",
+      "../common/",
+      "../../../common/",
+      "../../../boards/stm32nucleo_f072rb",
       "../../../../stm32f0/",
+      "../../../../stm32f0/stm32f072x/svd/",
       "../../../../common/",
-      "../../../../drivers/",
-      "../../../boards/stm32f051_rfm69/",
-      "../common/");
+      "../../../../drivers/");
 
    for Main use ("main");
-   for Object_Dir use "stm32f051_rfm69";
-   for Exec_Dir use "stm32f051_rfm69";
-   for Runtime ("Ada") use "stm32f051";
-   Linker_File := "stm32f051x8.ld";
+   for Object_Dir use "nucleo_f072rb";
+   for Exec_Dir use "nucleo_f072rb";
+   for Runtime ("Ada") use "stm32f072";
+   Linker_File := "stm32f072xb.ld";
    package Linker is
       for Default_Switches ("Ada") use (
          "-T" & Linker_File,
@@ -26,4 +26,4 @@ project STM32F051_RFM69 extends "../../../common/common.gpr" is
       for Local_Configuration_Pragmas use "gnat.adc";
    end Compiler;
 
-end STM32F051_RFM69;
+end Nucleo_F072RB;
