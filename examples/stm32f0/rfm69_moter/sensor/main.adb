@@ -1,4 +1,5 @@
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
+with System.Machine_Code;
 
 with STM32_SVD;                    use STM32_SVD;
 with STM32GD.Board;                use STM32GD.Board;
@@ -92,8 +93,9 @@ begin
       Text_IO.Put_Line ("Reading sensor data");
       Read_Sensor_Data;
       Send_Sensor_Data;
+      Peripherals.Radio.Power_Down;
       RTC.Read (Date_Time);
-      RTC.Add_Seconds (Date_Time, 4);
+      RTC.Add_Seconds (Date_Time, 15);
       RTC.Set_Alarm (Date_Time);
       LED_GREEN.Clear;
       Text_IO.Put_Line ("Entering sleep");

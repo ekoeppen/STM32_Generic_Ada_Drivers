@@ -1,4 +1,4 @@
-project STM32Nucleo_F303RE extends "../../common/common.gpr" is
+project Nucleo_F303RE extends "../../common/common.gpr" is
 
 	for Source_Dirs use (
 		".",
@@ -8,8 +8,8 @@ project STM32Nucleo_F303RE extends "../../common/common.gpr" is
 		"../drivers/");
 
 	for Main use ("main");
-	for Object_Dir use "stm32nucleo_F303RE";
-	for Exec_Dir use "stm32nucleo_F303RE";
-	for Runtime ("Ada") use RTS_Profile & "-stm32nucleo_F303RE";
+	for Object_Dir use "nucleo_F303RE";
+	for Exec_Dir use "nucleo_F303RE";
+	for Runtime ("Ada") use "nucleo_F303RE";
 
-end STM32Nucleo_F303RE;
+end Nucleo_F303RE;

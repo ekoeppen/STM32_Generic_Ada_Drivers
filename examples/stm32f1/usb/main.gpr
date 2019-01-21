@@ -12,6 +12,6 @@ project Main extends "../../common/common.gpr" is
 	for Main use ("main");
 	for Object_Dir use external ("board");
 	for Exec_Dir use external ("board");
-	for Runtime ("Ada") use RTS_Profile & "-stm32f103xx";
+	for Runtime ("Ada") use "stm32f103";
 
 end Main;

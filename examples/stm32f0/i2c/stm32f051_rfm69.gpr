@@ -12,7 +12,7 @@ project STM32F051_RFM69 extends "../../common/common.gpr" is
    for Main use ("main");
    for Object_Dir use "stm32f051_rfm69";
    for Exec_Dir use "stm32f051_rfm69";
-   for Runtime ("Ada") use RTS_Profile & "-stm32f0disco";
+   for Runtime ("Ada") use "stm32f051";
    package Linker extends Common.Linker is
       for Default_Switches ("ada") use ("-Wl,--defsym=__stack_size=256,--print-memory-usage");
    end Linker;

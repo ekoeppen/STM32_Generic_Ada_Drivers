@@ -1,4 +1,5 @@
 with System;
+with System.Machine_Code;
 with STM32_SVD;         use STM32_SVD;
 with STM32_SVD.RCC;     use STM32_SVD.RCC;
 with STM32_SVD.ADC;     use STM32_SVD.ADC;
@@ -11,6 +12,19 @@ with STM32_SVD.GPIO;    use STM32_SVD.GPIO;
 with STM32GD.Board;     use STM32GD.Board;
 
 package body Peripherals is
+
+   procedure Idle_Hook;
+      pragma Export (
+         Convention => C,
+         Entity => Idle_Hook,
+         External_Name => "vApplicationIdleHook");
+
+   procedure Idle_Hook is
+      use System.Machine_Code;
+   begin
+      Asm (Template => "wfi", Volatile => True);
+   end Idle_Hook;
+
 
    procedure Init is
    begin
@@ -70,7 +84,7 @@ package body Peripherals is
       RCC_Periph.AHBENR.IOPCEN := 1;
       RCC_Periph.AHBENR.IOPDEN := 1;
       RCC_Periph.AHBENR.IOPFEN := 1;
-      --  GPIOA_Periph.MODER.Val := 16#28FF_FFFF#;
+      GPIOA_Periph.MODER.Val := 16#28FF_FFFF#;
       GPIOB_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOC_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOD_Periph.MODER.Val := 16#FFFF_FFFF#;

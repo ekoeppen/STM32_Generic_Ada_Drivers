@@ -4,7 +4,7 @@ project Nucleo_F072RB extends "../../../common/common.gpr" is
       ".",
       "../common/",
       "../../../common/",
-      "../../../boards/stm32nucleo_f072rb",
+      "../../../boards/nucleo_f072rb",
       "../../../../stm32f0/",
       "../../../../stm32f0/stm32f072x/svd/",
       "../../../../common/",

@@ -12,6 +12,6 @@ project STM32F051_RFM69 extends "../../common/common.gpr" is
    for Main use ("main");
    for Object_Dir use "stm32f051_rfm69";
    for Exec_Dir use "stm32f051_rfm69";
-   for Runtime ("Ada") use RTS_Profile & "-stm32f0disco";
+   for Runtime ("Ada") use "stm32f051";
 
 end STM32F051_RFM69;

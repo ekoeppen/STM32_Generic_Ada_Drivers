@@ -1,6 +1,6 @@
 project Main extends "../../common/common.gpr" is
 
-	for Runtime ("Ada") use RTS_Profile & "-stm32nucleo-f303re";
+	for Runtime ("Ada") use "nucleo-f303re";
 	for Languages use ("Ada");
 	for Source_Dirs use (
 		".",
