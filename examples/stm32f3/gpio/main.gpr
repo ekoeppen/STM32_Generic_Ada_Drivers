@@ -1,19 +1,29 @@
 project Main extends "../../common/common.gpr" is
 
-	for Runtime ("Ada") use "nucleo-f303re";
-	for Languages use ("Ada");
-	for Source_Dirs use (
-		".",
-		"../../../common/",
-		"../../../stm32f3/",
-		"../../../stm32f3/stm32f303xe/svd/",
-		"../../../drivers/");
-	for Main use ("main");
-	for Target use "arm-eabi";
-	for Object_Dir use "obj";
-	for Exec_Dir use "exe";
-	package Builder is
-		for Executable_Suffix use ".elf";
-	end Builder;
+   for Runtime ("Ada") use "stm32f303";
+   for Languages use ("Ada");
+   for Source_Dirs use (
+      ".",
+      "../../common/",
+      "../../boards/nucleo_f303re/",
+      "../../../common/",
+      "../../../stm32f3/stm32f303xe/svd/",
+      "../../../stm32f3/",
+      "../../../drivers/");
+   for Main use ("main");
+   for Target use "arm-eabi";
+   for Object_Dir use "obj";
+   for Exec_Dir use "exe";
+   package Builder is
+      for Executable_Suffix use ".elf";
+   end Builder;
+   Linker_File := "stm32f303xe.ld";
+   package Linker is
+      for Default_Switches ("Ada") use (
+         "-T" & Linker_File,
+         "-Wl,--gc-sections",
+         "-Wl,--print-memory-usage");
+      for Map_File_Option use "-Wl,-Map,";
+   end Linker;
 
 end Main;

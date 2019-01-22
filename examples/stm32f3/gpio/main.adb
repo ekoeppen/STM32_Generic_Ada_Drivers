@@ -1,5 +1,3 @@
-with Last_Chance_Handler;  pragma Unreferenced (Last_Chance_Handler);
-
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 with STM32GD.GPIO;
