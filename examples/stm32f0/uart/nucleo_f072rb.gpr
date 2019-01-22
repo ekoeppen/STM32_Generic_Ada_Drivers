@@ -1,0 +1,15 @@
+project Nucleo_F072RB extends "../../common/common.gpr" is
+
+	for Source_Dirs use (
+		".",
+		"../../../common/",
+		"../../../stm32f0/",
+		"../../../stm32f0/stm32f072x/svd/",
+		"../../../drivers/");
+
+	for Main use ("main");
+	for Object_Dir use "nucleo_f072rb";
+	for Exec_Dir use "nucleo_f072rb";
+	for Runtime ("Ada") use "nucleo_f072rb";
+
+end Nucleo_F072RB;

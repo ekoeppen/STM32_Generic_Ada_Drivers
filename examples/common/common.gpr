@@ -3,9 +3,6 @@ project Common is
    type BUILD_TYPE is ("Debug", "Production");
    Build : BUILD_Type := external ("APP_BUILD", "Production");
 
-   type RTS_Profile_Type is ("ravenscar-sfp", "ravenscar-full");
-   RTS_Profile : RTS_Profile_Type := external ("RTS_Profile", "ravenscar-sfp");
-
    for Target use "arm-eabi";
    for Languages use ("Ada");
    for Create_Missing_Dirs use "True";

@@ -1,0 +1,23 @@
+project Nucleo_F303RE extends "../common/common.gpr" is
+
+   for Source_Dirs use (
+      ".",
+      "../common/",
+      "../boards/nucleo_f303re/",
+      "../../common/",
+      "../../stm32f3/",
+      "../../stm32f3/stm32f303xe/svd/",
+      "../../drivers/");
+
+   for Main use ("main");
+   for Object_Dir use "nucleo_f303re";
+   for Exec_Dir use "nucleo_f303re";
+   for Runtime ("Ada") use "stm32f303";
+   Linker_File := "stm32f303xe.ld";
+
+   package Linker extends Common.Linker is
+      for Default_Switches ("Ada") use Common.Linker'Default_Switches ("Ada")
+         & "-T" & Linker_File;
+   end Linker;
+
+end Nucleo_F303RE;
