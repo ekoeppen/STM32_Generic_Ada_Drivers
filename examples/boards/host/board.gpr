@@ -1,0 +1,21 @@
+project Board is
+
+   for Languages use ("Ada");
+   for Create_Missing_Dirs use "True";
+
+   PWD := external ("PWD") & "/";
+   Root := external ("ADA_STM32_GD", "../../../");
+   for Source_Dirs use (
+      PWD,
+      Root & "host/",
+      Root & "common/",
+      Root & "drivers/",
+      Root & "examples/boards/host/");
+
+   for Create_Missing_Dirs use "true";
+   for Main use ("main");
+   for Object_Dir use PWD & "host";
+   for Exec_Dir use PWD & "host";
+   for Runtime ("Ada") use "native";
+
+end Board;
