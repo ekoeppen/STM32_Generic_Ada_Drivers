@@ -9,7 +9,7 @@ project Common is
 
    package Linker is
       for Default_Switches ("Ada") use
-        ("-Wl,--gc-sections",
+        ("-Wl,--gc-sections", "-nostartfiles",
          "-Wl,--print-memory-usage");
       for Map_File_Option use "-Wl,-Map,";
    end Linker;
