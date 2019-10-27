@@ -40,7 +40,7 @@ package Button_Irq is
       pragma Interrupt_Priority;
    private
       procedure IRQ_Handler;
-      pragma Attach_Handler (IRQ_Handler, EXTI0);
+      pragma Attach_Handler (IRQ_Handler, EXTI0_1);
    end Handler;
 
 end Button_Irq;
