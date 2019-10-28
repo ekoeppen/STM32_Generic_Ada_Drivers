@@ -89,6 +89,10 @@ package body Peripherals is
       GPIOC_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOD_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOF_Periph.MODER.Val := 16#FFFF_FFFF#;
+      MOSI.Set_Mode (STM32GD.GPIO.Mode_In);
+      MOSI.Set_Pull_Resistor (STM32GD.GPIO.Pull_Down);
+      MISO.Set_Mode (STM32GD.GPIO.Mode_In);
+      MISO.Set_Pull_Resistor (STM32GD.GPIO.Pull_Down);
       SCLK.Set_Mode (STM32GD.GPIO.Mode_In);
       SCLK.Set_Pull_Resistor (STM32GD.GPIO.Pull_Up);
       CSN.Set_Mode (STM32GD.GPIO.Mode_In);

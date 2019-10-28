@@ -11,6 +11,6 @@ project Nucleo_F072RB extends "../../common/common.gpr" is
 	for Main use ("main");
 	for Object_Dir use "nucleo_f072rb";
 	for Exec_Dir use "nucleo_f072rb";
-	for Runtime ("Ada") use "nucleo_f072rb";
+	for Runtime ("Ada") use "stm32f072";
 
 end Nucleo_F072RB;

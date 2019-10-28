@@ -9,21 +9,6 @@ package body STM32GD.USART.Peripheral is
    function W is new Ada.Unchecked_Conversion (Address, UInt32);
    procedure DMA_Setup_Receive;
 
-   protected body IRQ_Handler is
-      entry Wait when Data_Available is
-      begin
-         Data_Available := False;
-      end Wait;
-
-      procedure Handler is
-      begin
-         USART.ICR.TCCF := 1;
-         USART.ICR.IDLECF := 1;
-         USART.ICR.EOBCF := 1;
-         Data_Available := True;
-      end Handler;
-   end IRQ_Handler;
-
    procedure Init is
       Clock        : constant UInt32 := 8_000_000;
       Int_Scale    : constant UInt32 := 4;
@@ -74,8 +59,8 @@ package body STM32GD.USART.Peripheral is
                null;
             end loop;
             DMA_Periph.CCR2.EN := 0;
-         elsif USART'Address = STM32_SVD.USART.USART1_Periph'Address then
-            DMA_Periph.CPAR4 := W (STM32_SVD.USART.USART1_Periph.TDR'Address);
+         elsif USART'Address = STM32_SVD.USART.USART2_Periph'Address then
+            DMA_Periph.CPAR4 := W (STM32_SVD.USART.USART2_Periph.TDR'Address);
             DMA_Periph.CMAR4 := W (Data'Address);
             DMA_Periph.CNDTR4.NDT := UInt16 (Count);
             STM32_SVD.USART.USART1_Periph.ICR.TCCF := 1;
@@ -147,7 +132,6 @@ package body STM32GD.USART.Peripheral is
             DMA_Pos := RX_DMA_Buffer'Length - Integer (DMA_Periph.CNDTR5.NDT) + RX_DMA_Buffer'First;
          end if;
          exit when DMA_Index /= DMA_Pos;
-         IRQ_Handler.Wait;
       end loop;
 
       Data := RX_DMA_Buffer (DMA_Index);

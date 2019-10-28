@@ -2,6 +2,7 @@ with Ada.Interrupts.Names;
 
 with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
+with STM32GD.GPIO.Polled;
 with STM32GD.SPI;
 with STM32GD.SPI.Peripheral;
 with STM32GD.Timer;

@@ -1,5 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
-
 with STM32_SVD; use STM32_SVD;
 with STM32_SVD.PWR; use STM32_SVD.PWR;
 with STM32_SVD.EXTI; use STM32_SVD.EXTI;
@@ -31,12 +29,13 @@ package body STM32GD.RTC is
 
    procedure Print (Date_Time : Date_Time_Type) is
    begin
-      Put (Integer'Image (Date_Time.Year));
-      Put (Integer'Image (Date_Time.Month));
-      Put (Integer'Image (Date_Time.Day));
-      Put (Integer'Image (Date_Time.Hour));
-      Put (Integer'Image (Date_Time.Minute));
-      Put_Line (Integer'Image (Date_Time.Second));
+      --  Put (Integer'Image (Date_Time.Year));
+      --  Put (Integer'Image (Date_Time.Month));
+      --  Put (Integer'Image (Date_Time.Day));
+      --  Put (Integer'Image (Date_Time.Hour));
+      --  Put (Integer'Image (Date_Time.Minute));
+      --  Put_Line (Integer'Image (Date_Time.Second));
+      null;
    end Print;
 
    procedure Add_Seconds (Date_Time : in out Date_Time_Type ;

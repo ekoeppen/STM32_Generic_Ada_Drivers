@@ -8,6 +8,7 @@ project Board extends "../../common/common.gpr" is
       Root & "stm32f0/stm32f051x/",
       Root & "stm32f0/",
       Root & "common/",
+      Root & "drivers/hal/",
       Root & "drivers/",
       Root & "examples/boards/stm32f0disco/");
 

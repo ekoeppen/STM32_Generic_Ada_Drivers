@@ -550,7 +550,7 @@ package body Drivers.RFM69 is
 
    procedure Print_Registers is
    begin
-      Output.Put_Line (
+      Put_Line (
          "Version: " & To_Hex_String (Read_Register (VERSION)) &
          " OpMode: " & To_Hex_String (Read_Register (OPMODE)) &
          " IrqFlags: " & To_Hex_String (Read_Register (IRQFLAGS1)) & " " &
@@ -558,7 +558,7 @@ package body Drivers.RFM69 is
          " PacketConfig: " & To_Hex_String (Read_Register (PACKETCONFIG1)) &
             " " & To_Hex_String (Read_Register (PACKETCONFIG2)) &
          " PayloadLength: " & To_Hex_String (Read_Register (PAYLOADLENGTH)));
-      Output.Put_Line (
+      Put_Line (
          "FifoThresh: " & To_Hex_String (Read_Register (FIFOTHRESH)) &
          " RSSIConfig: " & To_Hex_String (Read_Register (RSSICONFIG)) &
          " RSSIValue: " & To_Hex_String (Read_Register (RSSIVALUE)) &
@@ -589,7 +589,7 @@ package body Drivers.RFM69 is
       Write_Register (FDEVLSB, FDEVLSB_Init);
       Write_Register (RXBW, RXBW_Init.Val);
       Write_Register (AFCBW, AFCBW_Init.Val);
-      --  Set_Frequency (Frequency);
+      Set_Frequency (Frequency);
    end Init;
 
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type) is

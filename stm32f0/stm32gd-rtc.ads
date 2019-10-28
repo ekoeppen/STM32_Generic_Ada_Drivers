@@ -21,6 +21,8 @@ package STM32GD.RTC is
    procedure Unlock;
    procedure Lock;
    procedure Read (Date_Time : out Date_Time_Type);
+   generic
+      with procedure Put (S : String);
    procedure Print (Date_Time : Date_Time_Type);
 
    procedure Add_Seconds (Date_Time : in out Date_Time_Type;

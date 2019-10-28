@@ -3,6 +3,8 @@ with STM32_SVD.USART;
 
 package STM32GD.USART is
 
+   pragma Preelaborate;
+
    USART_1 : STM32_SVD.USART.USART_Peripheral renames STM32_SVD.USART.USART1_Periph;
    USART_2 : STM32_SVD.USART.USART_Peripheral renames STM32_SVD.USART.USART2_Periph;
    --  USART_3 : STM32_SVD.USART.USART_Peripheral renames STM32_SVD.USART.USART3_Periph;

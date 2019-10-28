@@ -18,6 +18,20 @@ procedure Main is
    Date_Time    : RTC.Date_Time_Type;
    Temperature  : Peripherals.Si7006.Temperature_Type;
    Humidity     : Peripherals.Si7006.Humidity_Type;
+   Node_Name    : String (1 .. 7 + 8);
+
+   procedure Generate_Node_Name is
+      Device_ID_0 : UInt32
+         with Import, Address => System'To_Address (16#1FFF_F7AC#);
+      Device_ID_1 : UInt32
+         with Import, Address => System'To_Address (16#1FFF_F7B0#);
+      Device_ID_2 : UInt32
+         with Import, Address => System'To_Address (16#1FFF_F7B4#);
+      HW_ID : UInt32;
+   begin
+      HW_ID := Device_ID_0 xor Device_ID_1 xor Device_ID_2;
+      Node_Name := "Sensor/" & Utils.To_Hex_String (UInt32 (HW_ID));
+   end Generate_Node_Name;
 
    RF_Message         : Peripherals.Radio.Packet_Type;
    RF_Message_Index   : Peripherals.Radio.Packet_Size_Type;
@@ -67,7 +81,7 @@ procedure Main is
       Start_RF_Message;
       RF_CBOR.Encode_Tag (Sensor_Reading_Tag);
       RF_CBOR.Encode_Array (4);
-      RF_CBOR.Encode_Byte_String ("Sensor");
+      RF_CBOR.Encode_Byte_String (Node_Name);
       RF_CBOR.Encode_Tag (Voltage_Tag);
       RF_CBOR.Encode_Decimal_Fraction (Peripherals.Supply_Voltage, -3);
       RF_CBOR.Encode_Tag (Temperature_Tag);
@@ -87,7 +101,8 @@ begin
    RTC.Init;
    Peripherals.Init;
    RTC.Read (Date_Time);
-   Text_IO.Put_Line ("Sensor starting");
+   Generate_Node_Name;
+   Text_IO.Put_Line ("Sensor " & Node_Name & " starting");
    loop
       LED_GREEN.Set;
       Text_IO.Put_Line ("Reading sensor data");
@@ -95,14 +110,14 @@ begin
       Send_Sensor_Data;
       Peripherals.Radio.Power_Down;
       RTC.Read (Date_Time);
-      RTC.Add_Seconds (Date_Time, 15);
+      RTC.Add_Seconds (Date_Time, 60 * 15);
       RTC.Set_Alarm (Date_Time);
       LED_GREEN.Clear;
       Text_IO.Put_Line ("Entering sleep");
       Peripherals.Power_Down;
       Peripherals.Enable_Stop_Mode (True);
       Suspend_Until_True (RTC_IRQ.Alarm_Occurred);
-      Peripherals.Enable_Stop_Mode (False);
+      --  Peripherals.Enable_Stop_Mode (False);
       Peripherals.Power_Up;
       Text_IO.Put_Line ("Exited sleep");
    end loop;

@@ -1,8 +1,9 @@
 with System;
-with Ada.Text_IO;
 with Ada.Real_Time; use Ada.Real_Time;
 
 package body Drivers.NRF24 is
+
+   package IRQHandler is new HAL.Pin_IRQ (Pin => IRQ);
 
    type Register_Type is (
       CONFIG,
@@ -355,7 +356,7 @@ package body Drivers.NRF24 is
 
    procedure Print_Registers is
    begin
-      Ada.Text_IO.Put_Line (
+      Put_Line (
          "Status:" & Integer'Image (Integer (Read_Register (STATUS))) &
          " Config:" & Integer'Image (Integer (Read_Register (CONFIG))) &
          " RF CH:" & Integer'Image (Integer (Read_Register (RF_CH))) &
@@ -379,6 +380,7 @@ package body Drivers.NRF24 is
       Write_Register (EN_RXADDR, EN_RXADDR_Init.Val);
       Write_Register (DYNPD, DYNPD_Init.Val);
       Write_Register (FEATURE, FEATURE_Init.Val);
+      IRQHandler.Configure_Trigger (Falling => True);
       Chip_Select.Clear;
       SPI.Send (FLUSH_TX'Enum_Rep);
       Chip_Select.Set;
@@ -433,7 +435,7 @@ package body Drivers.NRF24 is
    procedure TX (Packet: Packet_Type) is
       CE_Delay : constant Time_Span := Microseconds (20);
    begin
-      IRQ.Clear_Trigger;
+      IRQHandler.Clear_Trigger;
       Chip_Select.Clear;
       SPI.Send (FLUSH_TX'Enum_Rep);
       Chip_Select.Set;
@@ -446,16 +448,16 @@ package body Drivers.NRF24 is
       Chip_Enable.Set;
       delay until Clock + CE_Delay;
       Chip_Enable.Clear;
-      IRQ.Wait_For_Trigger;
+      IRQHandler.Wait_For_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
    end TX;
 
    function Wait_For_RX return Boolean is
    begin
-      IRQ.Clear_Trigger;
-      IRQ.Wait_For_Trigger;
+      IRQHandler.Clear_Trigger;
+      IRQHandler.Wait_For_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
-      return IRQ.Triggered;
+      return IRQHandler.Triggered;
    end Wait_For_RX;
 
    procedure RX (Packet : out Packet_Type) is
@@ -473,7 +475,7 @@ package body Drivers.NRF24 is
 
    procedure Cancel is
    begin
-      IRQ.Cancel_Wait;
+      IRQHandler.Cancel_Wait;
    end Cancel;
 
 end Drivers.NRF24;

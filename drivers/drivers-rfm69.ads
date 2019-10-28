@@ -43,7 +43,7 @@ package Drivers.RFM69 is
    procedure Cancel;
    procedure Read_Registers (Registers : out Raw_Register_Array);
    generic
-      with package Output is new Drivers.Text_IO (<>);
+      with procedure Put_Line (Line: in string);
    procedure Print_Registers;
 
 end Drivers.RFM69;

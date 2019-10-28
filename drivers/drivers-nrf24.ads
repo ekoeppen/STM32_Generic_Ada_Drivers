@@ -1,4 +1,3 @@
-with Ada.Real_Time; use Ada.Real_Time;
 with STM32_SVD; use STM32_SVD;
 with HAL;
 
@@ -28,6 +27,8 @@ package Drivers.NRF24 is
    procedure Power_Down;
    procedure Cancel;
    procedure Read_Registers (Registers : out Raw_Register_Array);
+   generic
+      with procedure Put_Line (Line: in string);
    procedure Print_Registers;
 
 end Drivers.NRF24;

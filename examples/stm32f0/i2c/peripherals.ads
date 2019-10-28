@@ -2,9 +2,6 @@ with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 with STM32GD.I2C;
 with STM32GD.I2C.Peripheral;
-with STM32GD.USART;
-with STM32GD.USART.Peripheral;
-with Ada.Interrupts.Names;
 with Drivers.Si7006;
 
 package Peripherals is
@@ -19,9 +16,6 @@ package Peripherals is
       Mode => GPIO.Mode_AF, Alternate_Function => 1);
    package I2C is new STM32GD.I2C.Peripheral (
       I2C => STM32GD.I2C.I2C_1);
-   package USART is new STM32GD.USART.Peripheral (
-      USART => STM32GD.USART.USART_1, Speed => 115200,
-      IRQ => Ada.Interrupts.Names.USART1);
    package Si7006 is new Drivers.Si7006 (I2C => I2C);
 
    procedure Init;

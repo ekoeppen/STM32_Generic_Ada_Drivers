@@ -1,10 +1,7 @@
-with System.Machine_Code;
 with Ada.Real_Time; use Ada.Real_Time;
-with Ada.Text_IO;   use Ada.Text_IO;
-with STM32_SVD;     use STM32_SVD;
 with STM32GD.Board; use STM32GD.Board;
-with STM32GD.I2C;   use STM32GD.I2C;
 with STM32GD.SysTick; use STM32GD.SysTick;
+with Drivers.Text_IO;
 with Peripherals;
 
 procedure Main is
@@ -14,11 +11,14 @@ procedure Main is
    Next_Release : Time := Clock;
    Period       : constant Time_Span := Milliseconds (500);
 
+   package Text_IO is new Drivers.Text_IO (USART => STM32GD.Board.USART);
+   use Text_IO;
+
 begin
    Init;
    Peripherals.Init;
-   --  SysTick_Periph.RVR.RELOAD := 16#10000#;
-   --  SysTick_Periph.CSR.ENABLE := 1;
+   SysTick_Periph.RVR.RELOAD := 16#10000#;
+   SysTick_Periph.CSR.ENABLE := 1;
    Put_Line ("Starting");
    Put ("Reload: "); Put (Integer'Image (Integer (SysTick_Periph.RVR.RELOAD))); New_Line;
    loop

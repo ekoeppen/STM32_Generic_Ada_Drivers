@@ -1,5 +1,4 @@
 with System;
-with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 
 with STM32_SVD; use STM32_SVD;
@@ -9,12 +8,17 @@ with STM32_SVD.GPIO; use STM32_SVD.GPIO;
 
 with STM32GD.RTC;
 with STM32GD.Board; use STM32GD.Board;
+with Drivers.Text_IO;
 
 with RTC_IRQ;
 
 procedure Main is
 
    package RTC renames STM32GD.RTC;
+   package Text_IO is new Drivers.Text_IO (USART => STM32GD.Board.USART);
+   use Text_IO;
+
+   procedure Print_Date is new STM32GD.RTC.Print (Put => Text_IO.Put);
 
    procedure Enable_Stop_Mode (Low_Power : Boolean) is
       SCB_SCR : aliased STM32_SVD.UInt32
@@ -64,6 +68,7 @@ begin
    LED_GREEN.Set;
    --  Enable_Stop_Mode (True);
    loop
+      Print_Date (Date_Time);
       RTC.Read (Date_Time);
       RTC.Add_Seconds (Date_Time, 1);
       RTC.Set_Alarm (Date_Time);

@@ -21,7 +21,7 @@ package Peripherals is
    package IRQ    is new GPIO.Pin (Pin => GPIO.Pin_3, Port => GPIO.Port_A, Mode => GPIO.Mode_In);
    package SPI    is new STM32GD.SPI.Peripheral (SPI => STM32GD.SPI.SPI_1);
 
-   package Radio  is new Drivers.RFM69 (SPI => SPI, Chip_Select => CSN, IRQ => IRQ);
+   package Radio  is new Drivers.RFM69 (Frequency => 868_000_000, SPI => SPI, Chip_Select => CSN, IRQ => IRQ);
 
 
    procedure Init;

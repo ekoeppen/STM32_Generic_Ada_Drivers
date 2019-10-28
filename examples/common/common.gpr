@@ -3,6 +3,9 @@ project Common is
    type BUILD_TYPE is ("Debug", "Production");
    Build : BUILD_Type := external ("APP_BUILD", "Production");
 
+   PWD := external ("PWD") & "/";
+   Root := external ("ADA_STM32_GD", "../../../");
+
    for Target use "arm-eabi";
    for Languages use ("Ada");
    for Create_Missing_Dirs use "True";
@@ -29,14 +32,5 @@ project Common is
    package Builder is
       for Executable_Suffix use ".elf";
    end Builder;
-
-   package Ide is
-      for Gnat use "arm-eabi-gnat";
-      for Gnatlist use "arm-eabi-gnatls";
-      for Debugger_Command use "arm-eabi-gdb";
-      for Program_Host use ":2331";
-      for Communication_Protocol use "ext";
-      for Connection_Tool use "j-link";
-   end Ide;
 
 end Common;

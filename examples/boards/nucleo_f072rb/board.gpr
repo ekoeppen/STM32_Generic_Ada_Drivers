@@ -1,13 +1,26 @@
 project Board extends "../../common/common.gpr" is
 
-   PWD := external ("PWD") & "/";
-   Root := external ("ADA_STM32_GD", "../../../");
+   RTS := external ("Runtime", "stm32f072");
+   HAL_Dir := "";
+   Linker_File := "";
+   case RTS is
+      when "zfp-cortex-m0" =>
+         HAL_Dir := "common/hal-zfp";
+         Linker_File := "common-ROM.ld";
+         for Runtime ("Ada") use RTS;
+      when others =>
+         HAL_Dir := "common/hal";
+         Linker_File := "stm32f072xb.ld";
+         for Runtime ("Ada") use "stm32f072";
+   end case;
+
    for Source_Dirs use (
       PWD,
       Root & "stm32f0/stm32f072x/svd/",
       Root & "stm32f0/stm32f072x/",
       Root & "stm32f0/",
       Root & "common/",
+      Root & HAL_Dir,
       Root & "drivers/",
       Root & "examples/boards/nucleo_f072rb/");
 
@@ -15,14 +28,14 @@ project Board extends "../../common/common.gpr" is
    for Main use ("main");
    for Object_Dir use PWD & "nucleo_f072rb";
    for Exec_Dir use PWD & "nucleo_f072rb";
-   for Runtime ("Ada") use "stm32f072";
-   Linker_File := "stm32f072xb.ld";
 
    package Linker extends Common.Linker is
       for Default_Switches ("Ada") use
          Common.Linker'Default_Switches ("ada") & (
+            "-Tmemory-map.ld",
             "-T" & Linker_File,
-            "-L" & Root & "examples/boards/stm32f0disco");
+            "-L" & Root & "examples/common",
+            "-L" & Root & "examples/boards/nucleo_f072rb");
    end Linker;
 
 end Board;

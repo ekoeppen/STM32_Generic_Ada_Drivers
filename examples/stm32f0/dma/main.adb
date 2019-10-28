@@ -1,7 +1,3 @@
-with Ada.Interrupts.Names;
-with Ada.Real_Time; use Ada.Real_Time;
-
-with STM32_SVD.RCC;
 with STM32GD.Board;
 with STM32GD.USART;
 
