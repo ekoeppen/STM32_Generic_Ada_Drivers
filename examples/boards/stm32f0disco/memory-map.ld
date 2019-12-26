@@ -38,7 +38,7 @@ MEMORY
 {
   reset           (rx) :  ORIGIN = 0x08000000,                     LENGTH = 8
   vectors         (rx) :  ORIGIN = 0x08000008,                     LENGTH = 192 - 8
-  flash           (rx) :  ORIGIN = 0x08000000 + 192,               LENGTH = 65536 - 192 - 2048 - 32
+  user            (rx) :  ORIGIN = 0x08000000 + 192,               LENGTH = 65536 - 192 - 2048 - 32
   bootloader_data (rx) :  ORIGIN = 0x08000000 + 65536 - 2048 - 32, LENGTH = 32
   bootloader      (rx) :  ORIGIN = 0x08000000 + 65536 - 2048,      LENGTH = 2048
   ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 8192
@@ -49,4 +49,8 @@ REGION_ALIAS("sram_ro", ram)
 REGION_ALIAS("sram_bs", ram)
 REGION_ALIAS("sram_da", ram)
 
+REGION_ALIAS("flash", user)
+
+__bootloader_data = ORIGIN(bootloader_data);
+__bootloader = ORIGIN(flash);
 __page_size = 1024;

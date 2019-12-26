@@ -4,6 +4,7 @@ project Board extends "../../common/common.gpr" is
    Family := "stm32f3";
    MCU := "stm32f303xe";
    Core := "m4";
+   Main := "main";
 
    RTS := external ("Runtime", "zfp-cortex-" & Core);
    Bootloader := external ("Bootloader", "");
@@ -20,7 +21,7 @@ project Board extends "../../common/common.gpr" is
          HAL_Dir := "common/hal";
    end case;
    case Bootloader is
-      when "yes" => Linker_Bootloader_File := "-bootloader";
+      when "yes" => Linker_Bootloader_File := "-bootloader"; Main := "bootloader";
       when others => null;
    end case;
 
@@ -35,7 +36,7 @@ project Board extends "../../common/common.gpr" is
       Root & "examples/boards/" & Board_Name);
 
    for Create_Missing_Dirs use "true";
-   for Main use ("main");
+   for Main use (Main);
    for Object_Dir use PWD & "obj/" & Board_Name;
    for Exec_Dir use PWD & "exe/" & Board_Name;
 

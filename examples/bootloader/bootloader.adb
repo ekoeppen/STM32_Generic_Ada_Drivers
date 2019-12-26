@@ -6,16 +6,16 @@ with Flash;
 with STM32GD.Board;
 with STM32_SVD.RCC;
 
-package body Bootloader is
+procedure Bootloader is
 
    Line : array (Unsigned_32 range 0 .. 47) of Unsigned_8;
    Count : Unsigned_8;
 
    Reset_Vector_Address : constant Unsigned_32 := 16#0800_0004#;
-   Bootloader_Address : constant Unsigned_32 := 16#0800_3800#;
-   --   with Import, Convention => Asm, External_Name => "__bootloader";
-   User_Vector_Address : constant Unsigned_32 := 16#0800_37FC#;
-   --   with Import, Convention => Asm, External_Name => "__bootloader_data";
+   Bootloader_Address : constant Unsigned_32
+      with Import, Convention => Asm, External_Name => "__bootloader";
+   User_Vector_Address : constant Unsigned_32
+      with Import, Convention => Asm, External_Name => "__bootloader_data";
    Flash_Segment_Size : constant Unsigned_32 := 1024;
    --   with Import, Convention => Asm, External_Name => "__page_size";
 
@@ -100,30 +100,27 @@ package body Bootloader is
       end loop;
    end Read_Lines;
 
-   procedure Start is
-   begin
-      Board.TX.Enable;
-      Board.RX.Enable;
-      USART.Enable;
-      Board.TX.Init;
-      Board.RX.Init;
-      USART.Init;
-      USART.Transmit (Character'Pos ('?'));
-         for I in 0 .. 16#0010_0000# loop
-            if USART.Data_Available then
-               USART.Transmit (Character'Pos ('F'));
-               while USART.Data_Available loop USART.Transmit (USART.Receive); end loop;
-               Flash.Init;
-               Erase;
-               Read_Lines;
-            end if;
-      end loop;
-      USART.Transmit (Character'Pos ('R'));
-      if Flash.Read (User_Vector_Address) /= 16#FFFF# then
-         Asm ("movs r1, #0; ldr r1, [r1]; mov sp, r1", Volatile => True);
-         Asm ("ldr r0, %0", Volatile => True, Inputs => Unsigned_32'Asm_Input ("m", User_Vector_Address));
-         Asm ("ldr r0, [r0]; add r1, #1; bx r0", Volatile => True);
-       end if;
-   end Start;
-
+begin
+   Board.TX.Enable;
+   Board.RX.Enable;
+   USART.Enable;
+   Board.TX.Init;
+   Board.RX.Init;
+   USART.Init;
+   USART.Transmit (Character'Pos ('?'));
+      for I in 0 .. 16#0010_0000# loop
+         if USART.Data_Available then
+            USART.Transmit (Character'Pos ('F'));
+            while USART.Data_Available loop USART.Transmit (USART.Receive); end loop;
+            Flash.Init;
+            Erase;
+            Read_Lines;
+         end if;
+   end loop;
+   USART.Transmit (Character'Pos ('R'));
+   if Flash.Read (User_Vector_Address) /= 16#FFFF# then
+      Asm ("movs r1, #0; ldr r1, [r1]; mov sp, r1", Volatile => True);
+      Asm ("ldr r0, %0", Volatile => True, Inputs => Unsigned_32'Asm_Input ("m", User_Vector_Address));
+      Asm ("ldr r0, [r0]; add r1, #1; bx r0", Volatile => True);
+   end if;
 end Bootloader;

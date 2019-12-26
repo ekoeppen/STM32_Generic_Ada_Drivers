@@ -36,10 +36,11 @@
 
 MEMORY
 {
-  vectors         (rx) :  ORIGIN = 0x08000000, LENGTH = 192
-  user            (rx) :  ORIGIN = 0x08000000, LENGTH = 14112
-  bootloader_data (rx) :  ORIGIN = 0x080037FC, LENGTH = 32
-  flash           (rx) :  ORIGIN = 0x08003800, LENGTH = 2048
+  reset           (rx) :  ORIGIN = 0x08000000, LENGTH = 8
+  vectors         (rx) :  ORIGIN = 0x08000008, LENGTH = 192 - 8
+  user            (rx) :  ORIGIN = 0x080000C0, LENGTH = 14656
+  bootloader_data (rx) :  ORIGIN = 0x08003A00, LENGTH = 32
+  flash           (rx) :  ORIGIN = 0x08003A20, LENGTH = 1504
   ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 4096
 }
 
