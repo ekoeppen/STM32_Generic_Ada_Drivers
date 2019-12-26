@@ -3,7 +3,7 @@ with STM32_SVD.RCC;
 with STM32_SVD.NVIC;
 with STM32_SVD.GPIO;
 with STM32_SVD.USB; use STM32_SVD.USB;
-with Ada.Text_IO;
+with Startup;
 
 package body STM32GD.Board is
 
@@ -20,24 +20,21 @@ package body STM32GD.Board is
       LED_GREEN.Init;
    end Init;
 
-	procedure USB_Re_Enumerate is
-	begin
-		Ada.Text_IO.Put_Line ("Re-enumerate");
-		STM32_SVD.GPIO.GPIOA_Periph.CRH.CNF12 := 0;
-		STM32_SVD.GPIO.GPIOA_Periph.CRH.MODE12 := 1;
-		STM32_SVD.GPIO.GPIOA_Periph.BSRR.BR.Arr (12) := 1;
-		declare
-			I : UInt32 with volatile;
-		begin
-			I := 100000;
-			while I > 0 loop
-				I := I - 1;
-			end loop;
-		end;
-		STM32_SVD.GPIO.GPIOA_Periph.CRH.CNF12 := 1;
-		STM32_SVD.GPIO.GPIOA_Periph.CRH.MODE12 := 0;
-	end USB_Re_Enumerate;
+   procedure USB_Re_Enumerate is
+   begin
+      STM32_SVD.GPIO.GPIOA_Periph.CRH.CNF12 := 0;
+      STM32_SVD.GPIO.GPIOA_Periph.CRH.MODE12 := 1;
+      STM32_SVD.GPIO.GPIOA_Periph.BSRR.BR.Arr (12) := 1;
+      declare
+         I : UInt32 with volatile;
+      begin
+         I := 100000;
+         while I > 0 loop
+            I := I - 1;
+         end loop;
+      end;
+      STM32_SVD.GPIO.GPIOA_Periph.CRH.CNF12 := 1;
+      STM32_SVD.GPIO.GPIOA_Periph.CRH.MODE12 := 0;
+   end USB_Re_Enumerate;
 
 end STM32GD.Board;
-
-

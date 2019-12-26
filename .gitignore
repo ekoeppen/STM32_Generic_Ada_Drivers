@@ -1,6 +1,10 @@
-# Object file
-*.o
+obj
+exe
 
-# Ada Library Information
+.DS_Store
+*.o
+*.elf
+*.map
+*.lst
 *.ali
 tags

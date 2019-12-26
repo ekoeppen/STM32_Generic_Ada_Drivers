@@ -5,6 +5,8 @@ generic
 
 package STM32GD.USART.Peripheral is
 
+   pragma Preelaborate;
+
    procedure Transmit (Data : in Byte);
 
 end STM32GD.USART.Peripheral;

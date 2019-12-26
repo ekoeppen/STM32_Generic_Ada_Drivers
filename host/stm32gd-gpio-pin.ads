@@ -10,6 +10,8 @@ generic
 
 package STM32GD.GPIO.Pin is
 
+   pragma Preelaborate;
+
    procedure Init;
    procedure Set_Mode (Mode : Pin_IO_Modes);
    procedure Set_Type (Pin_Type : Pin_Output_Types);

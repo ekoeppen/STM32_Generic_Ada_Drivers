@@ -6,6 +6,8 @@ generic
 
 package STM32GD.I2C.Peripheral is
 
+   pragma Preelaborate;
+
    procedure Init;
    function Master_Transmit (Address : I2C_Address; Data : Byte;
       Restart : Boolean := False) return Boolean;

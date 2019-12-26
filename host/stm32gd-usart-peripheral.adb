@@ -1,7 +1,9 @@
 with System; use System;
-with Ada.Text_IO;
+--  with Ada.Text_IO;
 
 package body STM32GD.USART.Peripheral is
+
+   procedure putchar (Data : in Character) with Import => true, Convention => C;
 
    procedure Init is
    begin
@@ -10,7 +12,7 @@ package body STM32GD.USART.Peripheral is
 
    procedure Transmit (Data : in Byte) is
    begin
-      Ada.Text_IO.Put (Character'Val (Data));
+      putchar (Character'Val (Data));
    end Transmit;
 
    function Receive return Byte is

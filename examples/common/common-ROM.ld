@@ -45,10 +45,17 @@ ENTRY(_start_rom);
 
 SECTIONS
 {
+  .reset : {
+    LONG(__stack_end)
+    KEEP (*(.reset))
+  } > reset
+
+  .vectors : {
+    KEEP (*(.vectors))
+  } > vectors
+
   .text :
   {
-    LONG(__stack_end)
-    KEEP (*(.vectors))
     *(.text .text.* .gnu.linkonce.t*)
     *(.gnu.warning)
   } > flash
@@ -108,6 +115,9 @@ SECTIONS
   } > sram_bs
 
   __bss_words = (__bss_end - __bss_start) >> 2;
+  __flash_start = ORIGIN(flash);
+  __flash_end = ORIGIN(flash) + LENGTH(flash);
+  __flash_size = LENGTH(flash);
 
   /* DWARF debug sections.
      Symbols in the DWARF debugging sections are relative to the beginning

@@ -1,8 +1,9 @@
 with System;
-with Ada.Real_Time;  use Ada.Real_Time;
 with Utils;          use Utils;
 
 package body Drivers.RFM69 is
+
+   package IRQHandler is new HAL.Pin_IRQ (Pin => IRQ);
 
    F_Osc : constant Natural := 32_000_000;
 
@@ -590,6 +591,7 @@ package body Drivers.RFM69 is
       Write_Register (RXBW, RXBW_Init.Val);
       Write_Register (AFCBW, AFCBW_Init.Val);
       Set_Frequency (Frequency);
+      IRQHandler.Configure_Trigger (Falling => True);
    end Init;
 
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type) is
@@ -597,10 +599,11 @@ package body Drivers.RFM69 is
       null;
    end Set_Sync_Word;
 
-   procedure Set_Frequency (Frequency : Natural) is
-      F : Natural;
+   procedure Set_Frequency (Frequency : Positive) is
+      F : Unsigned_32;
    begin
-      F := (Frequency / 1_000_000) * (2 ** 19) / (F_Osc / 1_000_000);
+      F := (Unsigned_32 (Frequency) / 1_000_000) * (2 ** 19) / (Unsigned_32 (F_Osc) / 1_000_000);
+      --  F := 868 * (2 ** 19) / Unsigned_32 (F_Osc / 1_000_000);
       Chip_Select.Clear;
       SPI.Send (FRFMSB'Enum_Rep + W_REGISTER'Enum_Rep);
       SPI.Send (Byte ((F / (2 ** 16)) mod 2 ** 8));
@@ -609,7 +612,7 @@ package body Drivers.RFM69 is
       Chip_Select.Set;
    end Set_Frequency;
 
-   procedure Set_Bitrate (Bitrate : Natural) is
+   procedure Set_Bitrate (Bitrate : Positive) is
       B : Natural;
    begin
       B := F_Osc / Bitrate;
@@ -727,7 +730,7 @@ package body Drivers.RFM69 is
 
    procedure Cancel is
    begin
-      IRQ.Cancel_Wait;
+      IRQHandler.Cancel_Wait;
    end Cancel;
 
 end Drivers.RFM69;

@@ -9,6 +9,7 @@ project Board is
       PWD,
       Root & "host/",
       Root & "common/",
+      Root & "common/hal-zfp/",
       Root & "drivers/",
       Root & "examples/boards/host/");
 

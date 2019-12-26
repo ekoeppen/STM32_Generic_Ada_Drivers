@@ -2,6 +2,8 @@ with STM32_SVD; use STM32_SVD;
 
 package STM32GD.SPI is
 
+   pragma Preelaborate;
+
    SPI_1 : Natural := 1;
 
    type SPI_Data_Size is

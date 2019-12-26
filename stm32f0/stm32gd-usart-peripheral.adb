@@ -1,53 +1,87 @@
 with System; use System;
 with Ada.Unchecked_Conversion;
 with STM32_SVD.DMA; use STM32_SVD.DMA;
+with STM32_SVD.USART; use STM32_SVD.USART;
+with STM32_SVD.RCC; use STM32_SVD.RCC;
+with STM32GD.Clock;
 
 package body STM32GD.USART.Peripheral is
 
    DMA_Index : Integer := 1;
 
+   type USART_Periph_Access is access all USART_Peripheral;
+
+   function USART_Periph return USART_Periph_Access is
+   begin
+      return (if USART = USART_1 then STM32_SVD.USART.USART1_Periph'Access
+         else STM32_SVD.USART.USART2_Periph'Access);
+   end USART_Periph;
+
+   procedure Enable is
+   begin
+      case USART is
+         when USART_1 => RCC_Periph.APB2ENR.USART1EN := 1;
+         when USART_2 => RCC_Periph.APB1ENR.USART2EN := 1;
+         when others => null;
+      end case;
+   end Enable;
+
+   procedure Disable is
+   begin
+      case USART is
+         when USART_1 => RCC_Periph.APB2ENR.USART1EN := 0;
+         when USART_2 => RCC_Periph.APB1ENR.USART2EN := 0;
+         when others => null;
+      end case;
+   end Disable;
+
    function W is new Ada.Unchecked_Conversion (Address, UInt32);
    procedure DMA_Setup_Receive;
 
    procedure Init is
-      Clock        : constant UInt32 := 8_000_000;
+      Clock_Speed  : constant UInt32 := UInt32 (Clock_Tree.Frequency (Clock));
       Int_Scale    : constant UInt32 := 4;
-      Int_Divider  : constant UInt32 := (25 * Clock) / (Int_Scale * Speed);
+      Int_Divider  : constant UInt32 := (25 * Clock_Speed) / (Int_Scale * Speed);
       Frac_Divider : constant UInt32 := Int_Divider rem 100;
    begin
-      USART.BRR.DIV_Fraction :=
+      USART_Periph.BRR.DIV_Fraction :=
         STM32_SVD.USART.BRR_DIV_Fraction_Field (((Frac_Divider * 16) + 50) / 100 mod 16);
-      USART.BRR.DIV_Mantissa :=
+      USART_Periph.BRR.DIV_Mantissa :=
         STM32_SVD.USART.BRR_DIV_Mantissa_Field (Int_Divider / 100);
-      USART.CR1.UE := 1;
-      USART.CR1.TE := 1;
-      USART.CR1.RE := 1;
+      USART_Periph.CR1.UE := 1;
+      USART_Periph.CR1.TE := 1;
+      USART_Periph.CR1.RE := 1;
       if RX_DMA_Buffer_Size > 0 then
          DMA_Setup_Receive;
       end if;
    end Init;
 
+   function Data_Available return Boolean is
+   begin
+      return USART_Periph.ISR.RXNE = 1;
+   end Data_Available;
+
    procedure Transmit (Data : in Byte) is
    begin
-      while USART.ISR.TXE = 0 loop
+      while USART_Periph.ISR.TXE = 0 loop
          null;
       end loop;
-      USART.TDR.TDR := UInt9 (Data);
+      USART_Periph.TDR.TDR := UInt9 (Data);
    end Transmit;
 
    function Receive return Byte is
    begin
-      while USART.ISR.RXNE = 0 loop
+      while USART_Periph.ISR.RXNE = 0 loop
          null;
       end loop;
-      return Byte (USART.RDR.RDR);
+      return Byte (USART_Periph.RDR.RDR);
    end Receive;
 
    procedure DMA_Transmit (Data : in USART_Data; Count : in Natural) is
    begin
       if Count > 0 then
-         USART.CR3.DMAT := 1;
-         if USART'Address = STM32_SVD.USART.USART1_Periph'Address then
+         USART_Periph.CR3.DMAT := 1;
+         if USART = USART_1 then
             DMA_Periph.CPAR2 := W (STM32_SVD.USART.USART1_Periph.TDR'Address);
             DMA_Periph.CMAR2 := W (Data'Address);
             DMA_Periph.CNDTR2.NDT := UInt16 (Count);
@@ -59,7 +93,7 @@ package body STM32GD.USART.Peripheral is
                null;
             end loop;
             DMA_Periph.CCR2.EN := 0;
-         elsif USART'Address = STM32_SVD.USART.USART2_Periph'Address then
+         elsif USART = USART_2 then
             DMA_Periph.CPAR4 := W (STM32_SVD.USART.USART2_Periph.TDR'Address);
             DMA_Periph.CMAR4 := W (Data'Address);
             DMA_Periph.CNDTR4.NDT := UInt16 (Count);
@@ -82,8 +116,8 @@ package body STM32GD.USART.Peripheral is
 
    procedure DMA_Setup_Receive is
    begin
-      USART.CR3.DMAR := 1;
-      if USART'Address = STM32_SVD.USART.USART1_Periph'Address then
+      USART_Periph.CR3.DMAR := 1;
+      if USART = USART_1 then
          DMA_Periph.CPAR3 := W (STM32_SVD.USART.USART1_Periph.RDR'Address);
          DMA_Periph.CMAR3 := W (RX_DMA_Buffer'Address);
          DMA_Periph.CNDTR3.NDT := RX_DMA_Buffer'Length;
@@ -91,7 +125,7 @@ package body STM32GD.USART.Peripheral is
          DMA_Periph.CCR3.CIRC := 1;
          DMA_Periph.CCR3.DIR := 0;
          DMA_Periph.CCR3.EN := 1;
-      elsif USART'Address = STM32_SVD.USART.USART2_Periph'Address then
+      elsif USART = USART_2 then
          DMA_Periph.CPAR5 := W (STM32_SVD.USART.USART2_Periph.RDR'Address);
          DMA_Periph.CMAR5 := W (RX_DMA_Buffer'Address);
          DMA_Periph.CNDTR5.NDT := RX_DMA_Buffer'Length;

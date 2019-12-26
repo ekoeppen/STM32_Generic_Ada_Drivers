@@ -1,4 +1,3 @@
-with Ada.Real_Time; use Ada.Real_Time;
 with STM32_SVD; use STM32_SVD;
 with Drivers.Text_IO;
 with HAL;
@@ -27,8 +26,8 @@ package Drivers.RFM69 is
 
    procedure Init;
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type);
-   procedure Set_Frequency (Frequency : Natural);
-   procedure Set_Bitrate (Bitrate : Natural);
+   procedure Set_Frequency (Frequency : Positive);
+   procedure Set_Bitrate (Bitrate : Positive);
    procedure Set_Broadcast_Address (Address : Address_Type);
    procedure Set_RX_Address (Address : Address_Type);
    procedure Set_TX_Address (Address : Address_Type);

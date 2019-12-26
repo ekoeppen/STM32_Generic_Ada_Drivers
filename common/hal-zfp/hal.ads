@@ -6,6 +6,8 @@ with STM32GD.USART.Peripheral;
 
 package HAL is
 
+   pragma Preelaborate;
+
    generic package Pin     renames STM32GD.GPIO.Pin;
    generic package Pin_IRQ renames STM32GD.GPIO.Polled;
    generic package SPI     renames STM32GD.SPI.Peripheral;

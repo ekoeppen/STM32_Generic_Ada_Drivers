@@ -8,6 +8,8 @@ generic
 
 package STM32GD.GPIO.IRQ is
 
+   pragma Preelaborate;
+
    procedure Connect_External_Interrupt;
    function Interrupt_Line_Number return STM32GD.EXTI.External_Line_Number;
    procedure Configure_Trigger (Trigger : STM32GD.EXTI.External_Triggers);

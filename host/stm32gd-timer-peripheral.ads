@@ -8,6 +8,8 @@ generic
 
 package STM32GD.Timer.Peripheral is
 
+   pragma Preelaborate;
+
    procedure Init;
    procedure Stop;
    procedure After (Time : Time_Span; Callback : Timer_Callback_Type);

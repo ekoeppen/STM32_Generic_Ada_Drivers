@@ -3,9 +3,11 @@ with STM32_SVD.SPI;
 generic
 
    SPI : in out STM32_SVD.SPI.SPI_Peripheral;
-   Data_Size : STM32GD.SPI.SPI_Data_Size;
+   Data_Size : STM32GD.SPI.SPI_Data_Size := Data_Size_8b;
 
 package STM32GD.SPI.Peripheral is
+
+   pragma Preelaborate;
 
    procedure Init;
 

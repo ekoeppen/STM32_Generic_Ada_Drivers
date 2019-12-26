@@ -6,6 +6,7 @@ project STM32F051_RFM69 extends "../../../common/common.gpr" is
       "../../../../stm32f0/stm32f051x/",
       "../../../../stm32f0/",
       "../../../../common/",
+      "../../../../common/hal/",
       "../../../../drivers/",
       "../../../boards/stm32f051_rfm69/",
       "../common/");

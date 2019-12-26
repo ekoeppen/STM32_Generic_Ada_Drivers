@@ -1,41 +1,52 @@
 project Board extends "../../common/common.gpr" is
 
-   RTS := external ("Runtime", "stm32f072");
+   Board_Name := "nucleo_f072rb";
+   Family := "stm32f0";
+   MCU := "stm32f072x";
+   Core := "m0";
+
+   RTS := external ("Runtime", "zfp-cortex-" & Core);
+   Bootloader := external ("Bootloader", "");
+
    HAL_Dir := "";
-   Linker_File := "";
+   Linker_Bootloader_File := "";
+   Linker_File := "common-ROM.ld";
+
+   for Runtime ("Ada") use RTS;
    case RTS is
       when "zfp-cortex-m0" =>
          HAL_Dir := "common/hal-zfp";
-         Linker_File := "common-ROM.ld";
-         for Runtime ("Ada") use RTS;
       when others =>
          HAL_Dir := "common/hal";
-         Linker_File := "stm32f072xb.ld";
-         for Runtime ("Ada") use "stm32f072";
+   end case;
+   case Bootloader is
+      when "yes" => Linker_Bootloader_File := "-bootloader";
+      when others => null;
    end case;
 
    for Source_Dirs use (
       PWD,
-      Root & "stm32f0/stm32f072x/svd/",
-      Root & "stm32f0/stm32f072x/",
-      Root & "stm32f0/",
+      Root & Family & "/" & MCU & "/svd/",
+      Root & Family & "/" & MCU,
+      Root & Family,
       Root & "common/",
       Root & HAL_Dir,
       Root & "drivers/",
-      Root & "examples/boards/nucleo_f072rb/");
+      Root & "examples/boards/" & Board_Name);
 
    for Create_Missing_Dirs use "true";
    for Main use ("main");
-   for Object_Dir use PWD & "nucleo_f072rb";
-   for Exec_Dir use PWD & "nucleo_f072rb";
+   for Object_Dir use PWD & "obj/" & Board_Name;
+   for Exec_Dir use PWD & "exe/" & Board_Name;
 
    package Linker extends Common.Linker is
       for Default_Switches ("Ada") use
          Common.Linker'Default_Switches ("ada") & (
-            "-Tmemory-map.ld",
+            "-Tmemory-map" & Linker_Bootloader_File & ".ld",
             "-T" & Linker_File,
             "-L" & Root & "examples/common",
-            "-L" & Root & "examples/boards/nucleo_f072rb");
+            "-L" & Root & "examples/boards/" & Board_Name);
    end Linker;
 
 end Board;
+

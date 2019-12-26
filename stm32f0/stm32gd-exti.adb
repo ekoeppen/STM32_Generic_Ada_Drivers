@@ -132,36 +132,4 @@ package body STM32GD.EXTI is
       EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) := 1;
    end Clear_External_Interrupt;
 
-   protected body IRQ_Handler is
-
-      entry Wait when Triggered is
-      begin
-         Triggered := False;
-      end Wait;
-
-      procedure Cancel is
-      begin
-         Triggered := True;
-      end Cancel;
-
-      function Status (Line : External_Line_Number) return Boolean is
-      begin
-         return EXTI_Status.Arr (Line'Enum_Rep) = 1;
-      end Status;
-
-      procedure Reset_Status (Line : External_Line_Number) is
-      begin
-         EXTI_Status.Arr (Line'Enum_Rep) := 0;
-      end Reset_Status;
-
-      procedure Handler is
-      begin
-         EXTI_Status.Val := EXTI_Periph.PR.PR.Val;
-         EXTI_Periph.PR.PR.Val := 2#11_1111_1111_1111_1111#;
-         Triggered := True;
-      end Handler;
-
-   end IRQ_Handler;
-
-
 end STM32GD.EXTI;

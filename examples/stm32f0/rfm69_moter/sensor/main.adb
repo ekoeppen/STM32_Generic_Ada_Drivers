@@ -1,5 +1,5 @@
+with System;
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
-with System.Machine_Code;
 
 with STM32_SVD;                    use STM32_SVD;
 with STM32GD.Board;                use STM32GD.Board;
@@ -12,8 +12,6 @@ with Peripherals;
 with Utils;
 
 procedure Main is
-
-   package Text_IO renames Peripherals.Text_IO;
 
    Date_Time    : RTC.Date_Time_Type;
    Temperature  : Peripherals.Si7006.Temperature_Type;
@@ -29,12 +27,12 @@ procedure Main is
          with Import, Address => System'To_Address (16#1FFF_F7B4#);
       HW_ID : UInt32;
    begin
-      HW_ID := Device_ID_0 xor Device_ID_1 xor Device_ID_2;
+      HW_ID := (Device_ID_0 xor Device_ID_1 xor Device_ID_2) + 1;
       Node_Name := "Sensor/" & Utils.To_Hex_String (UInt32 (HW_ID));
    end Generate_Node_Name;
 
-   RF_Message         : Peripherals.Radio.Packet_Type;
-   RF_Message_Index   : Peripherals.Radio.Packet_Size_Type;
+   RF_Message         : Radio.Packet_Type;
+   RF_Message_Index   : Radio.Packet_Size_Type;
 
    procedure Write_To_RF_Message (Data : Byte);
    function Read_From_RF_Message return Byte;
@@ -67,7 +65,7 @@ procedure Main is
       Start_RF_Message;
       RF_CBOR.Encode_Tag (Ping_Tag);
       RF_CBOR.Encode_Byte_String ("Sensor");
-      Peripherals.Radio.TX (RF_Message);
+      Radio.TX (RF_Message);
    end Send_Ping;
 
    procedure Read_Sensor_Data is
@@ -93,7 +91,7 @@ procedure Main is
          Text_IO.Put (Utils.To_Hex_String (RF_Message (I)));
       end loop;
       Text_IO.New_Line;
-      Peripherals.Radio.TX (RF_Message);
+      Radio.TX (RF_Message);
    end Send_Sensor_Data;
 
 begin
@@ -108,16 +106,15 @@ begin
       Text_IO.Put_Line ("Reading sensor data");
       Read_Sensor_Data;
       Send_Sensor_Data;
-      Peripherals.Radio.Power_Down;
+      Radio.Power_Down;
       RTC.Read (Date_Time);
-      RTC.Add_Seconds (Date_Time, 60 * 15);
+      RTC.Add_Seconds (Date_Time, 1 * 15);
       RTC.Set_Alarm (Date_Time);
       LED_GREEN.Clear;
       Text_IO.Put_Line ("Entering sleep");
       Peripherals.Power_Down;
       Peripherals.Enable_Stop_Mode (True);
       Suspend_Until_True (RTC_IRQ.Alarm_Occurred);
-      --  Peripherals.Enable_Stop_Mode (False);
       Peripherals.Power_Up;
       Text_IO.Put_Line ("Exited sleep");
    end loop;

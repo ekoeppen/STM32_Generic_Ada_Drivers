@@ -1,16 +1,15 @@
-with Ada.Interrupts.Names;
-
 with STM32GD.GPIO; use STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 with STM32GD.Clocks;
 with STM32GD.Clocks.Tree;
 with STM32GD.USART;
 with STM32GD.USART.Peripheral;
+with Drivers.Text_IO;
 
 package STM32GD.Board is
 
    package GPIO renames STM32GD.GPIO;
-   package Clocks_Tree is new STM32GD.Clocks.Tree;
+   package Clocks     is new STM32GD.Clocks.Tree;
 
    package SCLK       is new GPIO.Pin (Pin => GPIO.Pin_5,  Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
    package MISO       is new GPIO.Pin (Pin => GPIO.Pin_6,  Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
@@ -25,8 +24,8 @@ package STM32GD.Board is
    package USART      is new STM32GD.USART.Peripheral (
       USART => STM32GD.USART.USART_2, Speed => 115200,
       RX_DMA_Buffer_Size => 64,
-      IRQ => Ada.Interrupts.Names.USART2_EXTI26,
-      Clock => Clocks_Tree.PCLK1);
+      Clock => Clocks.PCLK1);
+   package Text_IO    is new Drivers.Text_IO (USART => STM32GD.Board.USART);
 
    procedure Init;
 

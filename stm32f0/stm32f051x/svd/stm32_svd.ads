@@ -155,5 +155,7 @@ package STM32_SVD is
      System'To_Address (16#40022000#);
    DBGMCU_Base : constant System.Address :=
      System'To_Address (16#40015800#);
+   SCB_Base : constant System.Address :=
+     System'To_Address (16#E000ED00#);
 
 end STM32_SVD;

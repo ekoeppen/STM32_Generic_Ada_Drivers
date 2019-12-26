@@ -3,6 +3,8 @@ with STM32_SVD.SPI;
 
 package STM32GD.SPI is
 
+   pragma Preelaborate;
+
    SPI_1 : STM32_SVD.SPI.SPI_Peripheral renames STM32_SVD.SPI.SPI1_Periph;
 
    type SPI_Data_Size is

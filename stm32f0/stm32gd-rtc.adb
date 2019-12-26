@@ -1,10 +1,15 @@
 with STM32_SVD; use STM32_SVD;
+with STM32_SVD.NVIC; use STM32_SVD.NVIC;
+with STM32_SVD.SCB; use STM32_SVD.SCB;
 with STM32_SVD.PWR; use STM32_SVD.PWR;
 with STM32_SVD.EXTI; use STM32_SVD.EXTI;
 with STM32_SVD.RCC; use STM32_SVD.RCC;
 with STM32_SVD.RTC; use STM32_SVD.RTC;
 
 package body STM32GD.RTC is
+
+   Days_Per_Month : constant array (0 .. 11) of Natural := (
+      31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 
    procedure Unlock is
    begin
@@ -70,6 +75,7 @@ package body STM32GD.RTC is
    procedure Set_Alarm (Date_Time : Date_Time_Type) is
    begin
       Unlock;
+      RTC_Periph.CR.ALRAIE := 0;
       RTC_Periph.ISR.ALRAF := 0;
       RTC_Periph.CR.ALRAE := 0;
       while RTC_Periph.ISR.ALRAWF = 0 loop
@@ -90,20 +96,58 @@ package body STM32GD.RTC is
       RTC_Periph.CR.ALRAE := 1;
       RTC_Periph.CR.ALRAIE := 1;
       Lock;
-      EXTI_Periph.IMR.MR.Arr (17) := 1;
+      EXTI_Periph.EMR.MR.Arr (17) := 1;
       EXTI_Periph.RTSR.TR.Arr (17) := 1;
    end Set_Alarm;
 
+   procedure Clear_Alarm is
+      ICPR : UInt32;
+   begin
+      ICPR := NVIC_Periph.ICPR;
+      ICPR := ICPR or 2 ** 3;
+      NVIC_Periph.ICPR := ICPR;
+      EXTI_Periph.PR.PR.Arr (17) := 1;
+      Unlock;
+      RTC_Periph.ISR.ALRAF := 0;
+      RTC_Periph.CR.ALRAE := 0;
+      RTC_Periph.CR.ALRAIE := 0;
+      Lock;
+   end Clear_Alarm;
+
    procedure Init is
+      use STM32GD.Clock;
    begin
       RCC_Periph.APB1ENR.PWREN := 1;
-      RCC_Periph.CSR.LSION := 1;
-      while RCC_Periph.CSR.LSIRDY = 0 loop
-         null;
-      end loop;
       PWR_Periph.CR.DBP := 1;
+      case Clock is
+         when LSE => RCC_Periph.BDCR.RTCSEL := 2#01#;
+            pragma Compile_Time_Error (Clock = LSE and not Clock_Tree.LSE_Enabled, "LSE not enabled for RTC");
+         when LSI => RCC_Periph.BDCR.RTCSEL := 2#10#;
+            pragma Compile_Time_Error (Clock = LSI and not Clock_Tree.LSI_Enabled, "LSE not enabled for RTC");
+         when others =>
+            pragma Compile_Time_Error (Clock /= LSI and Clock /= LSE, "RTC clock needs to be LSI or LSE");
+      end case;
       RCC_Periph.BDCR.RTCEN := 1;
-      RCC_Periph.BDCR.RTCSEL := 2#10#;
    end Init;
+
+   function To_Seconds (Date_Time : Date_Time_Type) return Natural is
+   begin
+      return Date_Time.Second +
+         Date_Time.Minute * 60 +
+         Date_Time.Hour * 60 * 60 +
+         Date_Time.Day * 24 * 60 * 60 +
+         Days_Per_Month (Date_Time.Month) * 24 * 60 * 60 +
+         Date_Time.Year * 365 * 24 * 60 * 60;
+   end To_Seconds;
+
+   procedure Wait_For_Alarm is
+   begin
+      SCB.SCB_Periph.SCR.SEVEONPEND := 1;
+      loop
+         STM32GD.WFE;
+         exit when RTC_Periph.ISR.ALRAF = 1;
+      end loop;
+      Clear_Alarm;
+   end Wait_For_Alarm;
 
 end STM32GD.RTC;
