@@ -1,5 +1,7 @@
+with Ada.Unchecked_Conversion;
 with System.Machine_Code; use System.Machine_Code;
 with System; use System;
+with System.Storage_Elements; use System.Storage_Elements;
 with Interfaces; use Interfaces;
 with STM32_SVD; use STM32_SVD;
 with Flash;
@@ -11,13 +13,17 @@ procedure Bootloader is
    Line : array (Unsigned_32 range 0 .. 47) of Unsigned_8;
    Count : Unsigned_8;
 
+   function W is new Ada.Unchecked_Conversion (Address, Unsigned_32);
+
    Reset_Vector_Address : constant Unsigned_32 := 16#0800_0004#;
-   Bootloader_Address : constant Unsigned_32
+   Bootloader: constant Storage_Element
       with Import, Convention => Asm, External_Name => "__bootloader";
-   User_Vector_Address : constant Unsigned_32
+   User_Vector: constant Storage_Element
       with Import, Convention => Asm, External_Name => "__bootloader_data";
    Flash_Segment_Size : constant Unsigned_32 := 1024;
    --   with Import, Convention => Asm, External_Name => "__page_size";
+   Bootloader_Address : constant Unsigned_32 := W (Bootloader'Address);
+   User_Vector_Address : constant Unsigned_32 := W (User_Vector'Address);
 
    package Board renames STM32GD.Board;
    package USART renames Board.USART;
@@ -107,7 +113,8 @@ begin
    Board.TX.Init;
    Board.RX.Init;
    USART.Init;
-   USART.Transmit (Character'Pos ('?'));
+   loop
+      USART.Transmit (Character'Pos ('?'));
       for I in 0 .. 16#0010_0000# loop
          if USART.Data_Available then
             USART.Transmit (Character'Pos ('F'));
@@ -116,11 +123,12 @@ begin
             Erase;
             Read_Lines;
          end if;
+      end loop;
+      if Flash.Read (User_Vector_Address) /= 16#FFFF# then
+         USART.Transmit (Character'Pos ('R'));
+         Asm ("movs r1, #0; ldr r1, [r1]; mov sp, r1", Volatile => True);
+         Asm ("ldr r0, =__bootloader_data", Volatile => True);
+         Asm ("ldr r0, [r0]; bx r0", Volatile => True);
+      end if;
    end loop;
-   USART.Transmit (Character'Pos ('R'));
-   if Flash.Read (User_Vector_Address) /= 16#FFFF# then
-      Asm ("movs r1, #0; ldr r1, [r1]; mov sp, r1", Volatile => True);
-      Asm ("ldr r0, %0", Volatile => True, Inputs => Unsigned_32'Asm_Input ("m", User_Vector_Address));
-      Asm ("ldr r0, [r0]; add r1, #1; bx r0", Volatile => True);
-   end if;
 end Bootloader;
