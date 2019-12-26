@@ -135,8 +135,8 @@ package body STM32GD.RTC is
       return Date_Time.Second +
          Date_Time.Minute * 60 +
          Date_Time.Hour * 60 * 60 +
-         Date_Time.Day * 24 * 60 * 60 +
-         Days_Per_Month (Date_Time.Month) * 24 * 60 * 60 +
+         (Date_Time.Day - 1) * 24 * 60 * 60 +
+         Days_Per_Month (Date_Time.Month - 1) * 24 * 60 * 60 +
          Date_Time.Year * 365 * 24 * 60 * 60;
    end To_Seconds;
 

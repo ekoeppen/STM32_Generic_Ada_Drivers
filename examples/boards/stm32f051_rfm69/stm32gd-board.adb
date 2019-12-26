@@ -1,5 +1,3 @@
-with Ada.Interrupts.Names; use Ada.Interrupts.Names;
-
 with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC;
 with STM32_SVD.NVIC;
@@ -12,6 +10,7 @@ package body STM32GD.Board is
 
    procedure Init is
    begin
+      Clocks.Init;
       STM32_SVD.RCC.RCC_Periph.AHBENR.IOPAEN := 1;
       STM32_SVD.RCC.RCC_Periph.AHBENR.IOPBEN := 1;
       STM32_SVD.RCC.RCC_Periph.APB2ENR.USART1EN := 1;
