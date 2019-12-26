@@ -16,12 +16,12 @@ procedure Main is
 
 begin
    Init;
-   LED_GREEN.Set;
+   LED.Set;
    Text_IO.Put_Line ("Starting");
    loop
       Text_IO.Put_Line ("Waiting");
       Next_Release := Next_Release + Period;
       delay until Next_Release;
-      LED_GREEN.Toggle;
+      LED.Toggle;
    end loop;
 end Main;

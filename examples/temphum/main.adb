@@ -24,12 +24,12 @@ begin
    Board.Init;
    Text_IO.Put_Line ("Temperature/Humidity sensor starting");
    loop
-      Board.LED_GREEN.Set;
+      Board.LED.Set;
       Text_IO.Put_Line ("Reading sensor data");
       Read_Sensor_Data;
       Text_IO.Put_Line ("Temperature: " & Integer'Image (Temperature));
       Text_IO.Put_Line ("Humidity:    " & Integer'Image (Humidity));
-      Board.LED_GREEN.Clear;
+      Board.LED.Clear;
       delay until Clock + Wait_Time;
    end loop;
 end Main;

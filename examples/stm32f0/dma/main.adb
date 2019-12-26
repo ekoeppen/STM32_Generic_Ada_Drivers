@@ -10,11 +10,11 @@ procedure Main is
 
 begin
    STM32GD.Board.Init;
-   STM32GD.Board.LED_GREEN.Set;
+   STM32GD.Board.LED.Set;
    Peripherals.Init;
    while True loop
       Peripherals.USART.DMA_Receive (10, RX_Buffer, RX_Count);
-      STM32GD.Board.LED_GREEN.Toggle;
+      STM32GD.Board.LED.Toggle;
       if RX_Count > 0 then
          Peripherals.USART.DMA_Transmit (RX_Buffer, RX_Count);
       end if;

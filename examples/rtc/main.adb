@@ -12,7 +12,7 @@ begin
    Text_IO.Put_Line ("RTC Test Starting");
    loop
       RTC.Read (Now);
-      LED_RED.Set;
+      LED.Set;
       Text_IO.Put ("Seconds: ");
       Text_IO.Put_Integer (RTC.To_Seconds (Now));
       Text_IO.New_Line;
@@ -21,7 +21,7 @@ begin
       Text_IO.Put ("Waking up in: ");
       Text_IO.Put_Integer (RTC.To_Seconds (Now));
       Text_IO.New_Line;
-      LED_RED.Clear;
+      LED.Clear;
       RTC.Wait_For_Alarm;
    end loop;
 end Main;

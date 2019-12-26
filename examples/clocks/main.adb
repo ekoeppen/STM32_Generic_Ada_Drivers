@@ -16,7 +16,7 @@ begin
    Board.Init;
    RTC.Init;
    loop
-      Board.LED_RED.Toggle;
+      Board.LED.Toggle;
       Delay_Timer.Delay_s (1);
    end loop;
 end Main;

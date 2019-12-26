@@ -4,12 +4,12 @@ procedure Main is
 
 begin
    Init;
-   LED_GREEN.Clear;
-   LED_RED.Set;
+   LED2.Clear;
+   LED.Set;
    loop
       if BUTTON.Is_Set then
-         LED_GREEN.Toggle;
-         LED_RED.Toggle;
+         LED2.Toggle;
+         LED.Toggle;
       end if;
    end loop;
 end Main;

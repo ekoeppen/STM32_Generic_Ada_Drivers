@@ -20,9 +20,9 @@ package body STM32GD.Board is
       STM32_SVD.RCC.RCC_Periph.APB1ENR.I2C1EN := 1;
 
       BUTTON.Init;
-      LED_RED.Init;
-      LED_GREEN.Init;
-      LED_YELLOW.Init;
+      LED.Init;
+      LED2.Init;
+      LED3.Init;
       TX.Init;
       RX.Init;
       RFM69_RESET.Init;

@@ -65,7 +65,7 @@ procedure Main is
 begin
    Init;
    RTC.Init;
-   LED_GREEN.Set;
+   LED2.Set;
    --  Enable_Stop_Mode (True);
    loop
       Print_Date (Date_Time);
@@ -74,6 +74,6 @@ begin
       RTC.Set_Alarm (Date_Time);
       Set_False (RTC_IRQ.Alarm_Occurred);
       Suspend_Until_True (RTC_IRQ.Alarm_Occurred);
-      LED_GREEN.Toggle;
+      LED2.Toggle;
    end loop;
 end Main;

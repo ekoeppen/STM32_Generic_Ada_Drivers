@@ -11,7 +11,7 @@ package body STM32GD.Board is
       STM32_SVD.RCC.RCC_Periph.AHBENR.IOPAEN := 1;
       STM32_SVD.RCC.RCC_Periph.AHBENR.IOPFEN := 1;
       BUTTON.Init;
-      LED_GREEN.Init;
+      LED.Init;
    end Init;
 
 end STM32GD.Board;

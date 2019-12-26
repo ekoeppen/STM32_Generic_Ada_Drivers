@@ -8,8 +8,8 @@ package STM32GD.Board is
 
    package BUTTON    is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_C);
    package SWO       is new GPIO.Pin (Pin => GPIO.Pin_3, Port => GPIO.Port_B, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package LED_RED   is new GPIO.Pin (Pin => GPIO.Pin_1, Port => GPIO.Port_A, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
-   package LED_GREEN is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
+   package LED       is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
+   package LED2      is new GPIO.Pin (Pin => GPIO.Pin_1, Port => GPIO.Port_A, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
    package USB_DISC  is new GPIO.Pin (Pin => GPIO.Pin_12, Port => GPIO.Port_C, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
 
    procedure Init;

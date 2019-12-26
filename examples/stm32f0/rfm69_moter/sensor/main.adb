@@ -102,7 +102,7 @@ begin
    Generate_Node_Name;
    Text_IO.Put_Line ("Sensor " & Node_Name & " starting");
    loop
-      LED_GREEN.Set;
+      LED2.Set;
       Text_IO.Put_Line ("Reading sensor data");
       Read_Sensor_Data;
       Send_Sensor_Data;
@@ -110,7 +110,7 @@ begin
       RTC.Read (Date_Time);
       RTC.Add_Seconds (Date_Time, 1 * 15);
       RTC.Set_Alarm (Date_Time);
-      LED_GREEN.Clear;
+      LED2.Clear;
       Text_IO.Put_Line ("Entering sleep");
       Peripherals.Power_Down;
       Peripherals.Enable_Stop_Mode (True);

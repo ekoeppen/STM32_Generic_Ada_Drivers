@@ -9,11 +9,11 @@ procedure Main is
 
 begin
    STM32GD.Board.Init;
-   STM32GD.Board.LED_GREEN.Set;
+   STM32GD.Board.LED.Set;
    loop
       Text_IO.Put_Line ("Hello, World!");
       Text_IO.Put_Line ("Press <enter>");
       Text_IO.Get_Line (Line, Len);
-      STM32GD.Board.LED_GREEN.Toggle;
+      STM32GD.Board.LED.Toggle;
    end loop;
 end Main;

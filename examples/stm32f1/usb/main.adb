@@ -25,10 +25,10 @@ begin
    Put_Line ("Init");
    USB_Re_Enumerate;
    USB.Init;
-   LED_GREEN.Set;
+   LED2.Set;
    Put_Line ("Starting");
    loop
-      LED_GREEN.Toggle;
+      LED2.Toggle;
       Next_Release := Next_Release + Period;
       delay until Next_Release;
    end loop;

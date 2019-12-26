@@ -16,8 +16,8 @@ package body STM32GD.Board is
       CLOCKS.Init;
 
       BUTTON.Init;
-      LED_RED.Init;
-      LED_GREEN.Init;
+      LED.Init;
+      LED2.Init;
       CSN.Init;
       CSN.Set;
       SCLK.Init;

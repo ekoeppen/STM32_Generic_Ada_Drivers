@@ -7,14 +7,14 @@ procedure Main is
    T : Time;
 begin
    Init;
-   LED_GREEN.Set;
+   LED.Set;
    loop
       Timeout.Start (T, Milliseconds (200));
       while not Timeout.Timed_Out (T)
       loop
          null;
       end loop;
-      LED_GREEN.Toggle;
+      LED.Toggle;
    end loop;
 end Main;
 

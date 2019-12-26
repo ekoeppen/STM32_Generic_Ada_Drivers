@@ -13,8 +13,8 @@ package body STM32GD.Board is
       RCC_Periph.APB2ENR.SYSCFGEN := 1;
       RCC_Periph.APB1ENR.USART2EN := 1;
       BUTTON.Init;
-      LED_RED.Init;
-      LED_GREEN.Init;
+      LED.Init;
+      LED2.Init;
       TX.Init;
       RX.Init;
       USART.Init;

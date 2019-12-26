@@ -41,7 +41,7 @@ package body Last_Chance_Handler is
       Put_String (Msg);
       Put_String (Line_Str);
       Put_Char (Byte (10));
-      STM32GD.Board.LED_GREEN.Set;
+      STM32GD.Board.LED2.Set;
       loop
          null;
       end loop;

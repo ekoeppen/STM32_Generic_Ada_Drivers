@@ -20,10 +20,10 @@ procedure Main is
 begin
    Init;
    --  STM32_SVD.AFIO.AFIO_Periph.MAPR.SWJ_CFG := 2#010#;
-   LED_GREEN.Set;
+   LED2.Set;
    Put_Line ("Starting");
    loop
-      LED_GREEN.Toggle;
+      LED2.Toggle;
       Next_Release := Next_Release + Period;
       delay until Next_Release;
       Put_Line ("Ping");

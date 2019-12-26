@@ -6,6 +6,6 @@ begin
    Init;
    loop
       USART.Transmit (USART.Receive);
-      LED_GREEN.Toggle;
+      LED.Toggle;
    end loop;
 end Main;

@@ -16,8 +16,8 @@ package body STM32GD.Board is
       STM32_SVD.NVIC.NVIC_Periph.ISER0 := 2#00000000_10000000_00000000_00000000#;
       BUTTON.Init;
       --  SWO.Init;
-      LED_RED.Init;
-      LED_GREEN.Init;
+      LED.Init;
+      LED2.Init;
    end Init;
 
    procedure USB_Re_Enumerate is

@@ -16,11 +16,11 @@ procedure Main is
 begin
    Init;
    BUTTON.Configure_Trigger (STM32GD.EXTI.Interrupt_Falling_Edge);
-   LED_GREEN.Set;
-   LED_RED.Set;
+   LED2.Set;
+   LED.Set;
    loop
       Suspend_Until_True (Button_Irq.Button_Pressed);
-      LED_RED.Toggle;
+      LED.Toggle;
    end loop;
 end Main;
 

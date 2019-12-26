@@ -14,7 +14,7 @@ procedure Main is
       Radio.Set_RX_Address (RX_Address);
       Radio.RX_Mode;
       loop
-         STM32GD.Board.LED_RED.Toggle;
+         STM32GD.Board.LED.Toggle;
          if Radio.Wait_For_RX then
             Text_IO.Put_Line ("Packet received");
          end if;
@@ -31,7 +31,7 @@ procedure Main is
       Radio.Set_TX_Address (Broadcast_Address);
       Radio.TX_Mode;
       loop
-         STM32GD.Board.LED_RED.Toggle;
+         STM32GD.Board.LED.Toggle;
          Radio.TX (TX_Data);
       end loop;
    end TX_Test;

@@ -24,7 +24,7 @@ procedure Main is
    begin
       loop
          if EXTI.IRQ_Handler.Status (EXTI.EXTI_Line_0) = True then
-            LED_GREEN.Toggle;
+            LED.Toggle;
             EXTI.IRQ_Handler.Reset_Status (EXTI.EXTI_Line_0);
          end if;
          Next_Release := Next_Release + Period;
@@ -36,7 +36,7 @@ procedure Main is
    begin
       loop
          Button.Wait_For_Trigger;
-         LED_GREEN.Toggle;
+         LED.Toggle;
       end loop;
    end Waiting_Test;
 
@@ -47,9 +47,9 @@ procedure Main is
          Peripherals.Timer.After (Milliseconds (5000), Button.Cancel_Wait'Access);
          Button.Wait_For_Trigger;
          if Button.Triggered then
-            LED_GREEN.Toggle;
+            LED.Toggle;
          else
-            LED_RED.Toggle;
+            LED.Toggle;
          end if;
          Button.Clear_Trigger;
       end loop;
@@ -60,7 +60,7 @@ begin
    TX.Init;
    USART.Init;
    Button.Configure_Trigger (EXTI.Interrupt_Falling_Edge);
-   LED_GREEN.Set;
+   LED.Set;
    --  Polling_Test;
    --  Waiting_Test;
    Cancel_Test;

@@ -45,9 +45,9 @@ package body Blink is
          Toggled := False;
          if Mode (LED) /= Off then
             case LED is
-               when Green => STM32GD.Board.LED_GREEN.Toggle;
+               when Green => STM32GD.Board.LED2.Toggle;
                when Yellow => STM32GD.Board.LED_Yellow.Toggle;
-               when Red => STM32GD.Board.LED_RED.Toggle;
+               when Red => STM32GD.Board.LED.Toggle;
             end case;
             Remaining_Toggles (LED) := Remaining_Toggles (LED) - 1;
             if Remaining_Toggles (LED) = 0 then
