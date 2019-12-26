@@ -1,3 +1,0 @@
-stm32gd-i2c-peripheral.adb:14:52: warning: formal parameter "Data" is not referenced
-stm32gd-i2c-peripheral.adb:20:52: warning: formal parameter "Data" is not referenced
-stm32gd-i2c-peripheral.adb:34:07: warning: formal parameter "Data" is not referenced
