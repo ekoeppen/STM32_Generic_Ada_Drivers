@@ -1,5 +1,3 @@
-with STM32_SVD; use STM32_SVD;
-with System;
 with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
