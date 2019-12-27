@@ -3,8 +3,6 @@ with Utils;          use Utils;
 
 package body Drivers.RFM69 is
 
-   package IRQHandler is new HAL.Pin_IRQ (Pin => IRQ);
-
    F_Osc : constant Natural := 32_000_000;
 
    type Register_Type is (
@@ -591,7 +589,7 @@ package body Drivers.RFM69 is
       Write_Register (RXBW, RXBW_Init.Val);
       Write_Register (AFCBW, AFCBW_Init.Val);
       Set_Frequency (Frequency);
-      IRQHandler.Configure_Trigger (Falling => True);
+      IRQ.Configure_Trigger (Falling => True);
    end Init;
 
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type) is
@@ -730,7 +728,7 @@ package body Drivers.RFM69 is
 
    procedure Cancel is
    begin
-      IRQHandler.Cancel_Wait;
+      null;
    end Cancel;
 
 end Drivers.RFM69;
