@@ -1,7 +1,5 @@
-with STM32GD.Board;
-with STM32GD.USART;
-
-with Peripherals;
+with STM32GD.USART; use STM32GD.USART;
+with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
 
@@ -9,14 +7,13 @@ procedure Main is
    RX_Count : Natural;
 
 begin
-   STM32GD.Board.Init;
-   STM32GD.Board.LED.Set;
-   Peripherals.Init;
+   Init;
+   LED.Set;
    while True loop
-      Peripherals.USART.DMA_Receive (10, RX_Buffer, RX_Count);
-      STM32GD.Board.LED.Toggle;
+      USART.DMA_Receive (10, RX_Buffer, RX_Count);
+      LED.Toggle;
       if RX_Count > 0 then
-         Peripherals.USART.DMA_Transmit (RX_Buffer, RX_Count);
+         USART.DMA_Transmit (RX_Buffer, RX_Count);
       end if;
    end loop;
 end Main;
