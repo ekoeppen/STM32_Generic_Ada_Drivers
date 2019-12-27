@@ -1,8 +1,17 @@
 with STM32GD.Systick; use STM32GD.Systick;
+with STM32GD.Vectors;
+with STM32_SVD; use STM32_SVD;
 
 package body Monotonic_Counter is
 
-   procedure SysTick_Handler with Export => True, External_Name => "SysTick_Handler";
+   procedure SysTick_Handler;
+   pragma Machine_Attribute (SysTick_Handler, "naked");
+
+   Vectors: STM32GD.Vectors.IRQ_Vectors := (
+      SysTick_Handler => Monotonic_Counter.SysTick_Handler'Address,
+      others => STM32GD.Vectors.Default_Handler'Address
+   ) with Export;
+   pragma Linker_Section (Vectors, ".vectors");
 
    procedure SysTick_Handler is
    begin

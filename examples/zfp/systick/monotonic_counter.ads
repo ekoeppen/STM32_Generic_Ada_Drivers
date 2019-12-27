@@ -1,8 +1,8 @@
-with STM32_SVD; use STM32_SVD;
+with Interfaces; use Interfaces;
 
 package Monotonic_Counter is
 
-   Counter : UInt32;
+   Counter : Unsigned_32;
    Overflow : Boolean;
 
    procedure Reset;
