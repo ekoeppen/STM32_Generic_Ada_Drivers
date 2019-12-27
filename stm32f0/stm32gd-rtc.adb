@@ -8,8 +8,8 @@ with STM32_SVD.RTC; use STM32_SVD.RTC;
 
 package body STM32GD.RTC is
 
-   Days_Per_Month : constant array (0 .. 11) of Natural := (
-      31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+   Days_Per_Month : constant array (0 .. 12) of Natural := (
+      0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 
    procedure Unlock is
    begin
