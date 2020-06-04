@@ -1,4 +1,3 @@
-with Drivers.Text_IO;
 with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
@@ -6,6 +5,7 @@ begin
    Init;
    LED.Set;
    Text_IO.Put_Line ("Hello, World!");
+   STM32GD.Clear_Event;
    BUTTON.Configure_Trigger (Rising => True);
    loop
       Text_IO.Put_Line ("Waiting for button...");

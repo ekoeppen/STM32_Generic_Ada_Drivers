@@ -85,7 +85,10 @@ package body Drivers.RFM69 is
       AESKEY15,
       AESKEY16,
       TEMP1,
-      TEMP2);
+      TEMP2,
+      TESTPA1,
+      TESTPA2,
+      TESTPIIBW);
 
    for Register_Type use (
       FIFO          => 16#00#,
@@ -167,7 +170,10 @@ package body Drivers.RFM69 is
       AESKEY15      => 16#4C#,
       AESKEY16      => 16#4D#,
       TEMP1         => 16#4E#,
-      TEMP2         => 16#4F#);
+      TEMP2         => 16#4F#,
+      TESTPA1       => 16#5A#,
+      TESTPA2       => 16#5C#,
+      TESTPIIBW     => 16#5F#);
 
    type OPMODE_Mode_Type is (SLEEP, STDBY, FS, TX, RX)
    with Size => 3;
@@ -401,6 +407,28 @@ package body Drivers.RFM69 is
          RX_BW_Exp   at 0 range 0 .. 2;
       end record;
 
+   type PALEVEL_Register_Type (As_Value : Boolean := False) is
+      record
+         case As_Value is
+            when True =>
+               Val : Byte;
+            when False =>
+               PA0_On : Boolean;
+               PA1_On : Boolean;
+               PA2_On : Boolean;
+               Output_Power : UInt5;
+         end case;
+      end record
+      with Unchecked_Union, Size => 8, Bit_Order => System.Low_Order_First;
+
+   for PALEVEL_Register_Type use
+      record
+         PA0_On       at 0 range 7 .. 7;
+         PA1_On       at 0 range 6 .. 6;
+         PA2_On       at 0 range 5 .. 5;
+         Output_Power at 0 range 0 .. 4;
+      end record;
+
    type AFCBW_Register_Type (As_Value : Boolean := False) is
       record
          case As_Value is
@@ -477,7 +505,7 @@ package body Drivers.RFM69 is
       Sync_Tol                => 0);
    PACKETCONFIG1_Init   : constant PACKETCONFIG1_Register_Type := (
       As_Value                => False,
-      Packet_Format           => Fixed_Length,
+      Packet_Format           => Variable_Length,
       DC_Free                 => None,
       CRC_On                  => True,
       CRC_Auto_Clear_Off      => False,
@@ -490,7 +518,7 @@ package body Drivers.RFM69 is
    FIFOTHRESH_Init      : constant FIFOTHRESH_Register_Type := (
       As_Value                => False,
       Start_Condition         => FIFO_Not_Empty,
-      FIFO_Threshold          => UInt7 (Packet_Size / 2));
+      FIFO_Threshold          => UInt7 (16));
    RXBW_Init            : constant RXBW_Register_Type := (
       As_Value                => False,
       DCC_Freq                => 2,
@@ -501,6 +529,18 @@ package body Drivers.RFM69 is
       DCC_Freq_AFC            => 2,
       RX_BW_Mant_AFC          => 0,
       RX_BW_Exp_AFC           => 2);
+   PALEVEL_13dB_Init    : constant PALEVEL_Register_Type := (
+      As_Value                => False,
+      PA0_On                  => True,
+      PA1_On                  => False,
+      PA2_On                  => False,
+      Output_Power            => 31);
+   PALEVEL_H_13dB_Init  : constant PALEVEL_Register_Type := (
+      As_Value                => False,
+      PA0_On                  => False,
+      PA1_On                  => True,
+      PA2_On                  => False,
+      Output_Power            => 31);
    RSSITHRESH_Init      : constant Byte := 100 * 2;
    SYNCVALUE1_Init      : constant Byte := 16#F0#;
    SYNCVALUE2_Init      : constant Byte := 16#12#;
@@ -550,31 +590,33 @@ package body Drivers.RFM69 is
    procedure Print_Registers is
    begin
       Put_Line (
-         "Version: " & To_Hex_String (Read_Register (VERSION)) &
-         " OpMode: " & To_Hex_String (Read_Register (OPMODE)) &
-         " IrqFlags: " & To_Hex_String (Read_Register (IRQFLAGS1)) & " " &
-            To_Hex_String (Read_Register (IRQFLAGS2)) &
-         " PacketConfig: " & To_Hex_String (Read_Register (PACKETCONFIG1)) &
-            " " & To_Hex_String (Read_Register (PACKETCONFIG2)) &
-         " PayloadLength: " & To_Hex_String (Read_Register (PAYLOADLENGTH)));
+         "Version: " & To_Hex_String (Unsigned_8 (Read_Register (VERSION))) &
+         " OpMode: " & To_Hex_String (Unsigned_8 (Read_Register (OPMODE))) &
+         " IrqFlags: " & To_Hex_String (Unsigned_8 (Read_Register (IRQFLAGS1))) & " " &
+            To_Hex_String (Unsigned_8 (Read_Register (IRQFLAGS2))) &
+         " PacketConfig: " & To_Hex_String (Unsigned_8 (Read_Register (PACKETCONFIG1))) &
+            " " & To_Hex_String (Unsigned_8 (Read_Register (PACKETCONFIG2))) &
+         " PayloadLength: " & To_Hex_String (Unsigned_8 (Read_Register (PAYLOADLENGTH))) &
+         " PaLevel: " & To_Hex_String (Unsigned_8 (Read_Register (PALEVEL))) &
+         " TestPa: " & To_Hex_String (Unsigned_8 (Read_Register (TESTPA1))) &
+            To_Hex_String (Unsigned_8 (Read_Register (TESTPA2))));
       Put_Line (
-         "FifoThresh: " & To_Hex_String (Read_Register (FIFOTHRESH)) &
-         " RSSIConfig: " & To_Hex_String (Read_Register (RSSICONFIG)) &
-         " RSSIValue: " & To_Hex_String (Read_Register (RSSIVALUE)) &
-         " SyncConfig: " & To_Hex_String (Read_Register (SYNCCONFIG)) &
-         " DataModul: " & To_Hex_String (Read_Register (DATAMODUL)) &
-         " Frequency: " & To_Hex_String (Read_Register (FRFMSB)) &
-            To_Hex_String (Read_Register (FRFMID)) &
-            To_Hex_String (Read_Register (FRFLSB)) &
-         " Bitrate: " & To_Hex_String (Read_Register (BITRATEMSB)) & " " &
-            To_Hex_String (Read_Register (BITRATELSB))
+         "FifoThresh: " & To_Hex_String (Unsigned_8 (Read_Register (FIFOTHRESH))) &
+         " RSSIConfig: " & To_Hex_String (Unsigned_8 (Read_Register (RSSICONFIG))) &
+         " RSSIValue: " & To_Hex_String (Unsigned_8 (Read_Register (RSSIVALUE))) &
+         " SyncConfig: " & To_Hex_String (Unsigned_8 (Read_Register (SYNCCONFIG))) &
+         " DataModul: " & To_Hex_String (Unsigned_8 (Read_Register (DATAMODUL))) &
+         " Frequency: " & To_Hex_String (Unsigned_8 (Read_Register (FRFMSB))) &
+            To_Hex_String (Unsigned_8 (Read_Register (FRFMID))) &
+            To_Hex_String (Unsigned_8 (Read_Register (FRFLSB))) &
+         " Bitrate: " & To_Hex_String (Unsigned_8 (Read_Register (BITRATEMSB))) & " " &
+            To_Hex_String (Unsigned_8 (Read_Register (BITRATELSB)))
          );
    end Print_Registers;
 
    procedure Init is
    begin
       Write_Register (OPMODE, OPMODE_Init.Val);
-      Write_Register (PAYLOADLENGTH, Byte (Packet_Size));
       Write_Register (FIFOTHRESH, FIFOTHRESH_Init.Val);
       Write_Register (PACKETCONFIG1, PACKETCONFIG1_Init.Val);
       Write_Register (RSSITHRESH, RSSITHRESH_Init);
@@ -588,6 +630,11 @@ package body Drivers.RFM69 is
       Write_Register (FDEVLSB, FDEVLSB_Init);
       Write_Register (RXBW, RXBW_Init.Val);
       Write_Register (AFCBW, AFCBW_Init.Val);
+      if TX_PA_Boost then
+         Write_Register (PALEVEL, PALEVEL_H_13db_Init.Val);
+      else
+         Write_Register (PALEVEL, PALEVEL_13db_Init.Val);
+      end if;
       Set_Frequency (Frequency);
       IRQ.Configure_Trigger (Falling => True);
    end Init;
@@ -596,6 +643,16 @@ package body Drivers.RFM69 is
    begin
       null;
    end Set_Sync_Word;
+
+   procedure Get_Sync_Word (Sync_Word : out Sync_Word_Type) is
+   begin
+      Chip_Select.Clear;
+      SPI.Send (SYNCVALUE1'Enum_Rep + R_REGISTER'Enum_Rep);
+      for I in Sync_Word'Range loop
+         SPI.Receive (Sync_Word (I));
+      end loop;
+      Chip_Select.Set;
+   end Get_Sync_Word;
 
    procedure Set_Frequency (Frequency : Positive) is
       F : Unsigned_32;
@@ -664,13 +721,19 @@ package body Drivers.RFM69 is
    end RX_Mode;
 
    procedure TX (Packet: Packet_Type) is
+   begin
+      TX (Packet, Packet'Length);
+   end TX;
+
+   procedure TX (Packet: Packet_Type; Length: Byte) is
       Wait : Natural;
    begin
       Set_Mode (TX);
       Chip_Select.Clear;
       SPI.Send (FIFO'Enum_Rep + W_REGISTER'Enum_Rep);
-      for B of Packet loop
-         SPI.Send (B);
+      SPI.Send (Length);
+      for I in 0 .. Length - 1 loop
+         SPI.Send (Packet (I + Packet'First));
       end loop;
       Chip_Select.Set;
       Wait := 100000;
@@ -703,22 +766,32 @@ package body Drivers.RFM69 is
       return IRQ.Is_Set;
    end RX_Available;
 
+   procedure Clear_IRQ is
+   begin
+      IRQ.Clear_Trigger;
+   end Clear_IRQ;
+
    function Wait_For_RX return Boolean is
    begin
       loop
          exit when RX_Available;
       end loop;
+      Clear_IRQ;
       return True;
    end Wait_For_RX;
 
-   procedure RX (Packet : out Packet_Type) is
+   procedure RX (Packet : out Packet_Type; Length : out Byte) is
+      L : Byte;
    begin
       Chip_Select.Clear;
       SPI.Send (FIFO'Enum_Rep + R_REGISTER'Enum_Rep);
-      for I in Packet'Range loop
-         SPI.Receive (Packet (I));
+      SPI.Receive (L);
+      for I in 0 .. L - 1 loop
+         exit when I = Packet'Length;
+         SPI.Receive (Packet (I + Packet'First));
       end loop;
       Chip_Select.Set;
+      Length := L;
    end RX;
 
    procedure Power_Down is

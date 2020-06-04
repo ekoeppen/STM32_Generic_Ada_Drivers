@@ -1,5 +1,6 @@
 with Drivers.Text_IO;
 with STM32GD.Board;
+with STM32GD.Power;
 
 procedure Main is
 

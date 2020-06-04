@@ -8,7 +8,11 @@ package STM32GD.I2C.Peripheral is
 
    pragma Preelaborate;
 
+   subtype I2C_Address is UInt10;
+   type I2C_Data is array (Natural range <>) of Byte;
+
    procedure Init;
+   function Test (Address : I2C_Address) return Boolean;
    function Master_Transmit (Address : I2C_Address; Data : Byte;
       Restart : Boolean := False) return Boolean;
    function Master_Receive (Address : I2C_Address; Data : out Byte)

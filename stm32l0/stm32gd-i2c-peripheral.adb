@@ -1,3 +1,5 @@
+with Utils;
+
 package body STM32GD.I2C.Peripheral is
 
    Default_Timeout : constant Natural := 10000;
@@ -21,10 +23,10 @@ package body STM32GD.I2C.Peripheral is
    procedure Init is
    begin
       I2C.CR1.PE := 0;
-      I2C.TIMINGR.SCLH := 15;
-      I2C.TIMINGR.SCLL := 19;
-      I2C.TIMINGR.SDADEL := 2;
-      I2C.TIMINGR.SCLDEL := 4;
+      I2C.TIMINGR.SCLH := 3;
+      I2C.TIMINGR.SCLL := 4;
+      I2C.TIMINGR.SDADEL := 0;
+      I2C.TIMINGR.SCLDEL := 0;
       I2C.TIMINGR.PRESC := 1;
       I2C.CR1.PE := 1;
    end Init;
@@ -75,31 +77,56 @@ package body STM32GD.I2C.Peripheral is
       return not Timed_Out;
    end Wait_For_Idle;
 
+   function Wait_For_Stop return Boolean is
+   begin
+      Start;
+      while I2C.ISR.STOPF = 1 and not Timed_Out loop
+         Pause;
+      end loop;
+      return not Timed_Out;
+   end Wait_For_Stop;
+
+   function Test (Address : I2C_Address) return Boolean is
+      Present : Boolean;
+   begin
+      I2C.ICR.NACKCF := 1;
+      if not Wait_For_Idle then return False; end if;
+      I2C.CR2.NBYTES := 0;
+      I2C.CR2.SADD := Address * 2;
+      I2C.CR2.RD_WRN := 0;
+      I2C.CR2.AUTOEND := 0;
+      I2C.CR2.START := 1;
+      Present := I2C.ISR.NACKF = 0;
+      I2C.CR2.STOP := 1;
+      I2C.ICR.NACKCF := 1;
+      return Present;
+   end Test;
+
    function Master_Transmit (Address : I2C_Address; Data : Byte;
       Restart : Boolean := False) return Boolean is
    begin
       if not Wait_For_Idle then return False; end if;
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := Address;
+      I2C.CR2.SADD := Address * 2;
       I2C.CR2.RD_WRN := 0;
-      I2C.CR2.START := 1;
       I2C.CR2.AUTOEND := (if not Restart then 1 else 0);
+      I2C.CR2.START := 1;
       if not Wait_For_TXDR_Empty then return False; end if;
       I2C.TXDR.TXDATA := Data;
-      return Wait_For_TX_Complete;
+      return True;
    end Master_Transmit;
 
    function Master_Receive (Address : I2C_Address; Data : out Byte)
       return Boolean is
    begin
+      if not Wait_For_Idle then return False; end if;
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := Address;
-      I2C.CR2.START := 1;
+      I2C.CR2.SADD := Address * 2;
+      I2C.CR2.AUTOEND := 1;
       I2C.CR2.RD_WRN := 1;
-      if not Wait_For_TXDR_Empty then return False; end if;
+      I2C.CR2.START := 1;
       if not Wait_For_RX_Not_Empty then return False; end if;
       Data := I2C.RXDR.RXDATA;
-      I2C.CR2.STOP := 1;
       return True;
    end Master_Receive;
 
@@ -108,10 +135,10 @@ package body STM32GD.I2C.Peripheral is
    is
    begin
       I2C.CR2.NBYTES := Data'Length;
-      I2C.CR2.SADD := Address;
+      I2C.CR2.SADD := Address * 2;
       I2C.CR2.RD_WRN := 1;
-      I2C.CR2.START := 1;
       I2C.CR2.AUTOEND := 1;
+      I2C.CR2.START := 1;
       for D of Data loop
          if Wait_For_RX_Not_Empty then
             D := I2C.RXDR.RXDATA;
@@ -123,33 +150,38 @@ package body STM32GD.I2C.Peripheral is
    function Write_Register (Address : I2C_Address; Register : Byte;
       Data : Byte) return Boolean is
    begin
-      I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := Address;
+      if not Wait_For_Idle then return False; end if;
+      I2C.CR2.NBYTES := 2;
+      I2C.CR2.SADD := Address * 2;
+      I2C.CR2.AUTOEND := 1;
+      I2C.CR2.RD_WRN := 0;
       I2C.CR2.START := 1;
       if not Wait_For_TXDR_Empty then return False; end if;
       I2C.TXDR.TXDATA := Register;
       if not Wait_For_TXDR_Empty then return False; end if;
       I2C.TXDR.TXDATA := Data;
-      if not Wait_For_TX_Complete then return False; end if;
-      I2C.CR2.STOP := 1;
       return True;
    end Write_Register;
 
    function Read_Register (Address : I2C_Address; Register : Byte;
       Data : out Byte) return Boolean is
    begin
+      if not Wait_For_Idle then return False; end if;
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := Address;
+      I2C.CR2.SADD := Address * 2;
+      I2C.CR2.AUTOEND := 1;
+      I2C.CR2.RD_WRN := 0;
       I2C.CR2.START := 1;
       if not Wait_For_TXDR_Empty then return False; end if;
       I2C.TXDR.TXDATA := Register;
-      if not Wait_For_TX_Complete then return False; end if;
-      I2C.CR2.AUTOEND := 1;
+      --  if not Wait_For_TX_Complete then return False; end if;
+
+      I2C.CR2.NBYTES := 1;
       I2C.CR2.RD_WRN := 1;
+      I2C.CR2.SADD := Address * 2;
       I2C.CR2.START := 1;
       if not Wait_For_RX_Not_Empty then return False; end if;
       Data := I2C.RXDR.RXDATA;
-      I2C.CR2.STOP := 1;
       return True;
    end Read_Register;
 

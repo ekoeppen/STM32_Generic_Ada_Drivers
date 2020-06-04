@@ -1,5 +1,8 @@
-with STM32_SVD.RCC; use STM32_SVD.RCC;
 with STM32_SVD.GPIO; use STM32_SVD.GPIO;
+with STM32_SVD.SCB; use STM32_SVD.SCB;
+with STM32_SVD.RCC; use STM32_SVD.RCC;
+with STM32_SVD.EXTI; use STM32_SVD.EXTI;
+with STM32_SVD.NVIC; use STM32_SVD.NVIC;
 with STM32_SVD.SYSCFG; use STM32_SVD.SYSCFG;
 with STM32GD.GPIO.Port;
 
@@ -14,21 +17,8 @@ package body STM32GD.GPIO.Pin is
       elsif Port = Port_B then STM32_SVD.GPIO.GPIOB_Periph'Access
       elsif Port = Port_C then STM32_SVD.GPIO.GPIOC_Periph'Access
       elsif Port = Port_D then STM32_SVD.GPIO.GPIOD_Periph'Access
-      elsif Port = Port_E then STM32_SVD.GPIO.GPIOE_Periph'Access
+      elsif Port = Port_E then STM32_SVD.GPIO.GPIOD_Periph'Access
       else STM32_SVD.GPIO.GPIOH_Periph'Access); end Port_Periph;
-
-   procedure Init is
-   begin
-      if Mode /= Mode_In then
-         Set_Mode (Mode);
-      end if;
-      if Pull_Resistor /= Floating then
-         Set_Pull_Resistor (Pull_Resistor);
-      end if;
-      if Alternate_Function /= 0 then
-         Configure_Alternate_Function (Alternate_Function);
-      end if;
-   end Init;
 
    procedure Enable is
    begin
@@ -53,6 +43,22 @@ package body STM32GD.GPIO.Pin is
          when Port_H => RCC_Periph.IOPENR.IOPHEN := 0;
       end case;
    end Disable;
+
+   procedure Init is
+   begin
+      if Mode /= Mode_In then
+         Set_Mode (Mode);
+      end if;
+      if Pull_Resistor /= Floating then
+         Set_Pull_Resistor (Pull_Resistor);
+      end if;
+      if Output_Type /= Push_Pull then
+         Set_Type (Output_Type);
+      end if;
+      if Alternate_Function /= 0 then
+         Configure_Alternate_Function (Alternate_Function);
+      end if;
+   end Init;
 
    procedure Set_Mode (Mode : Pin_IO_Modes) is
    begin
@@ -108,5 +114,55 @@ package body STM32GD.GPIO.Pin is
          Port_Periph.AFRH.Arr (Index) := UInt4 (AF);
       end if;
    end Configure_Alternate_Function;
+
+   procedure Connect_External_Interrupt
+   is
+      Port_Id : constant UInt4 := GPIO_Port'Enum_Rep (Port);
+   begin
+      case Index is
+         when 0 .. 3 =>
+            SYSCFG_COMP_Periph.EXTICR1.EXTI.Arr (Index) := Port_Id;
+         when 4 .. 7 =>
+            SYSCFG_COMP_Periph.EXTICR2.EXTI.Arr (Index) := Port_Id;
+         when 8 .. 11 =>
+            SYSCFG_COMP_Periph.EXTICR3.EXTI.Arr (Index) := Port_Id;
+         when 12 .. 15 =>
+            SYSCFG_COMP_Periph.EXTICR4.EXTI.Arr (Index) := Port_Id;
+         when others =>
+            raise Program_Error;
+      end case;
+   end Connect_External_Interrupt;
+
+   procedure Wait_For_Trigger is
+   begin
+      loop
+         STM32GD.Wait_For_Event;
+         exit when Triggered;
+      end loop;
+      Clear_Trigger;
+   end Wait_For_Trigger;
+
+   procedure Clear_Trigger is
+   begin
+      EXTI_Periph.PR.PIF.Arr (Index) := 1;
+      NVIC_Periph.ICPR := 2 ** 5;
+   end Clear_Trigger;
+
+   function Triggered return Boolean is
+   begin
+      return EXTI_Periph.PR.PIF.Arr (Index) = 1;
+   end Triggered;
+
+   procedure Configure_Trigger (Rising : Boolean := False; Falling : Boolean := False) is
+   begin
+      Connect_External_Interrupt;
+      if Rising then
+         EXTI_Periph.RTSR.RT.Arr (Index) := 1;
+      end if;
+      if Falling then
+         EXTI_Periph.FTSR.FT.Arr (Index) := 1;
+      end if;
+      EXTI_Periph.EMR.EM.Arr (Index) := 1;
+   end Configure_Trigger;
 
 end STM32GD.GPIO.Pin;

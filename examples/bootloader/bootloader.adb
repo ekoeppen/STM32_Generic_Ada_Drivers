@@ -12,6 +12,7 @@ procedure Bootloader is
 
    Line : array (Unsigned_32 range 0 .. 47) of Unsigned_8;
    Count : Unsigned_8;
+   C : Byte;
 
    function W is new Ada.Unchecked_Conversion (Address, Unsigned_32);
 
@@ -117,8 +118,13 @@ begin
       USART.Transmit (Character'Pos ('?'));
       for I in 0 .. 16#0010_0000# loop
          if USART.Data_Available then
+            loop
+               C := USART.Receive;
+               USART.Transmit (C);
+               exit when not USART.Data_Available and then (C = 10 or else C = 13);
+            end loop;
             USART.Transmit (Character'Pos ('F'));
-            while USART.Data_Available loop USART.Transmit (USART.Receive); end loop;
+            USART.Transmit (10);
             Flash.Init;
             Erase;
             Read_Lines;
@@ -126,6 +132,7 @@ begin
       end loop;
       if Flash.Read (User_Vector_Address) /= 16#FFFF# then
          USART.Transmit (Character'Pos ('R'));
+         USART.Transmit (10);
          Asm ("movs r1, #0; ldr r1, [r1]; mov sp, r1", Volatile => True);
          Asm ("ldr r0, =__bootloader_data", Volatile => True);
          Asm ("ldr r0, [r0]; bx r0", Volatile => True);

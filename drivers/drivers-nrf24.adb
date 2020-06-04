@@ -1,9 +1,7 @@
 with System;
-with Ada.Real_Time; use Ada.Real_Time;
+with Utils; use Utils;
 
 package body Drivers.NRF24 is
-
-   package IRQHandler is new HAL.Pin_IRQ (Pin => IRQ);
 
    type Register_Type is (
       CONFIG,
@@ -357,16 +355,18 @@ package body Drivers.NRF24 is
    procedure Print_Registers is
    begin
       Put_Line (
-         "Status:" & Integer'Image (Integer (Read_Register (STATUS))) &
-         " Config:" & Integer'Image (Integer (Read_Register (CONFIG))) &
-         " RF CH:" & Integer'Image (Integer (Read_Register (RF_CH))) &
-         " RF Setup:" & Integer'Image (Integer (Read_Register (RF_SETUP))) &
-         " AW Setup:" & Integer'Image (Integer (Read_Register (SETUP_AW))) &
-         " RX P0:" & Integer'Image (Integer (Read_Register (RX_PW_P0))) &
-         " RX P1:" & Integer'Image (Integer (Read_Register (RX_PW_P1))) &
-         " FIFO Status:" & Integer'Image (Integer (Read_Register (FIFO_STATUS))) &
-         " DYNPD:" & Integer'Image (Integer (Read_Register (DYNPD))) &
-         " Feature:" & Integer'Image (Integer (Read_Register (FEATURE)))
+         "Status:" & To_Hex_String (Unsigned_8 (Read_Register (STATUS))) &
+         " Config:" & To_Hex_String (Unsigned_8 (Read_Register (CONFIG))) &
+         " EN RX:" & To_Hex_String (Unsigned_8 (Read_Register (EN_RXADDR))) &
+         " RF CH:" & To_Hex_String (Unsigned_8 (Read_Register (RF_CH))) &
+         " RF Setup:" & To_Hex_String (Unsigned_8 (Read_Register (RF_SETUP))) &
+         " AW Setup:" & To_Hex_String (Unsigned_8 (Read_Register (SETUP_AW))) &
+         " TX P0:" & To_Hex_String (Unsigned_8 (Read_Register (TX_ADDR))) &
+         " RX P0:" & To_Hex_String (Unsigned_8 (Read_Register (RX_PW_P0))) &
+         " RX P1:" & To_Hex_String (Unsigned_8 (Read_Register (RX_PW_P1))) &
+         " FIFO Status:" & To_Hex_String (Unsigned_8 (Read_Register (FIFO_STATUS))) &
+         " DYNPD:" & To_Hex_String (Unsigned_8 (Read_Register (DYNPD))) &
+         " Feature:" & To_Hex_String (Unsigned_8 (Read_Register (FEATURE)))
          );
    end Print_Registers;
 
@@ -380,19 +380,25 @@ package body Drivers.NRF24 is
       Write_Register (EN_RXADDR, EN_RXADDR_Init.Val);
       Write_Register (DYNPD, DYNPD_Init.Val);
       Write_Register (FEATURE, FEATURE_Init.Val);
-      IRQHandler.Configure_Trigger (Falling => True);
+      IRQ.Configure_Trigger (Falling => True);
       Chip_Select.Clear;
       SPI.Send (FLUSH_TX'Enum_Rep);
       Chip_Select.Set;
       Chip_Select.Clear;
       SPI.Send (FLUSH_RX'Enum_Rep);
       Chip_Select.Set;
+      Set_Channel (Channel);
    end Init;
 
-   procedure Set_Channel (Channel : Channel_Type) is
+   procedure Set_Channel (Ch : Byte) is
    begin
-      Write_Register (RF_CH, Channel);
+      Write_Register (RF_CH, Ch);
    end Set_Channel;
+
+   function Get_Channel return Byte is
+   begin
+      return Read_Register (RF_CH);
+   end Get_Channel;
 
    procedure Send_Address (Address : Address_Type) is
    begin
@@ -428,14 +434,15 @@ package body Drivers.NRF24 is
 
    procedure RX_Mode is
    begin
+      IRQ.Clear_Trigger;
       Write_Register (CONFIG, RX_Mode_Setting.Val);
       Chip_Enable.Set;
    end RX_Mode;
 
    procedure TX (Packet: Packet_Type) is
-      CE_Delay : constant Time_Span := Microseconds (20);
+      I : Integer with volatile;
    begin
-      IRQHandler.Clear_Trigger;
+      IRQ.Clear_Trigger;
       Chip_Select.Clear;
       SPI.Send (FLUSH_TX'Enum_Rep);
       Chip_Select.Set;
@@ -446,25 +453,50 @@ package body Drivers.NRF24 is
       end loop;
       Chip_Select.Set;
       Chip_Enable.Set;
-      delay until Clock + CE_Delay;
+      I := 10000;
+      while I > 0 loop
+         I := I - 1;
+      end loop;
       Chip_Enable.Clear;
-      IRQHandler.Wait_For_Trigger;
+      --  IRQ.Wait_For_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
    end TX;
 
    function Wait_For_RX return Boolean is
    begin
-      IRQHandler.Clear_Trigger;
-      IRQHandler.Wait_For_Trigger;
+      IRQ.Clear_Trigger;
+      IRQ.Wait_For_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
-      return IRQHandler.Triggered;
+      return IRQ.Triggered;
    end Wait_For_RX;
 
-   procedure RX (Packet : out Packet_Type) is
+   function RX_Available return Boolean is
+      S : STATUS_Register_Type;
+   begin
+      S.Val := Read_Register (STATUS);
+      return S.RX_DR = true;
+   end RX_Available;
+
+   procedure Clear_IRQ is
+   begin
+      IRQ.Clear_Trigger;
+      Write_Register (STATUS, STATUS_Init.Val);
+   end Clear_IRQ;
+
+   procedure RX (Packet : out Packet_Type; Length : out Positive) is
+      N : Byte;
    begin
       Chip_Select.Clear;
-      SPI.Send (FLUSH_RX'Enum_Rep);
+      SPI.Send (R_RX_PL_WID'Enum_Rep);
+      SPI.Receive (N);
       Chip_Select.Set;
+      Chip_Select.Clear;
+      SPI.Send (R_RX_PAYLOAD'Enum_Rep);
+      for I in 1 .. N loop
+         SPI.Receive (Packet (I));
+      end loop;
+      Chip_Select.Set;
+      Length := Positive (N);
    end RX;
 
    procedure Power_Down is
@@ -475,7 +507,7 @@ package body Drivers.NRF24 is
 
    procedure Cancel is
    begin
-      IRQHandler.Cancel_Wait;
+      null; --  IRQHandler.Cancel_Wait;
    end Cancel;
 
 end Drivers.NRF24;

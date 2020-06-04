@@ -39,6 +39,8 @@ package STM32GD.RTC is
       Minute_Delta : Minute_Delta_Type);
    procedure Set_Alarm (Date_Time : Date_Time_Type);
    procedure Wait_For_Alarm;
+   function Alarm_Triggered return Boolean;
+   procedure Clear_Alarm;
    function To_Seconds (Date_Time : Date_Time_Type) return Natural;
 
 end STM32GD.RTC;

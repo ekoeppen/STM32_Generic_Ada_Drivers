@@ -111,7 +111,7 @@ package body STM32GD.GPIO.Pin is
 
    procedure Connect_External_Interrupt
    is
-      Port_Id  : constant UInt4 := GPIO_Port'Enum_Rep (Port);
+      Port_Id : constant UInt4 := GPIO_Port'Enum_Rep (Port);
    begin
       case Index is
          when 0 .. 3 =>
@@ -129,9 +129,8 @@ package body STM32GD.GPIO.Pin is
 
    procedure Wait_For_Trigger is
    begin
-      SCB.SCB_Periph.SCR.SEVEONPEND := 1;
       loop
-         STM32GD.WFE;
+         STM32GD.Wait_For_Event;
          exit when Triggered;
       end loop;
       Clear_Trigger;
@@ -157,7 +156,7 @@ package body STM32GD.GPIO.Pin is
       if Falling then
          EXTI_Periph.FTSR.TR.Arr (Index) := 1;
       end if;
-      EXTI_Periph.IMR.MR.Arr (Index) := 1;
+      EXTI_Periph.EMR.MR.Arr (Index) := 1;
    end Configure_Trigger;
 
 end STM32GD.GPIO.Pin;

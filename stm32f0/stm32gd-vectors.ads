@@ -23,7 +23,7 @@ package STM32GD.Vectors is
          SysTick_Handler : System.Address;
          WWDG_Handler : System.Address;
          PVD_Handler : System.Address;
-         FLASG_Handler : System.Address;
+         FLASH_Handler : System.Address;
          RTC_Handler : System.Address;
       end record;
 

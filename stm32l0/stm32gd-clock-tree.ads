@@ -2,7 +2,7 @@ generic
 
    HSE_Value : HSE_Range := 8_000_000;
    PLL_Source : PLL_Source_Type := HSI;
-   SYSCLK_Source : SYSCLK_Source_Type := HSI;
+   SYSCLK_Source : SYSCLK_Source_Type := MSI;
    RTC_Source : RTC_Source_Type := LSI;
 
    PLL_Prediv : PLL_Prediv_Range := 1;

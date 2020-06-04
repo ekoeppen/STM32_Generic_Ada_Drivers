@@ -142,12 +142,16 @@ package body STM32GD.RTC is
 
    procedure Wait_For_Alarm is
    begin
-      SCB.SCB_Periph.SCR.SEVEONPEND := 1;
       loop
-         STM32GD.WFE;
-         exit when RTC_Periph.ISR.ALRAF = 1;
+         STM32GD.Wait_For_Event;
+         exit when Alarm_Triggered;
       end loop;
       Clear_Alarm;
    end Wait_For_Alarm;
+
+   function Alarm_Triggered return Boolean is
+   begin
+      return RTC_Periph.ISR.ALRAF = 1;
+   end Alarm_Triggered;
 
 end STM32GD.RTC;

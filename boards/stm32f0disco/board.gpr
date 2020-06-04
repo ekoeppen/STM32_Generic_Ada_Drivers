@@ -1,0 +1,53 @@
+project Board extends "../../common/common.gpr" is
+
+   Board_Name := "stm32f0disco";
+   Family := "stm32f0";
+   MCU := "stm32f051x";
+   Core := "m0";
+
+   RTS := external ("Runtime", "zfp-cortex-" & Core);
+   Bootloader := external ("Bootloader", "");
+   Main := "main";
+
+   HAL_Dir := "";
+   Linker_Bootloader_File := "";
+   Linker_File := "common-ROM.ld";
+
+   for Runtime ("Ada") use RTS;
+   case RTS is
+      when "zfp-cortex-m0" =>
+         HAL_Dir := "common/hal-zfp";
+      when others =>
+         HAL_Dir := "common/hal";
+   end case;
+   case Bootloader is
+      when "yes" => Linker_Bootloader_File := "-bootloader"; Main := "bootloader";
+      when others => null;
+   end case;
+
+   for Source_Dirs use (
+      PWD,
+      Root & Family & "/" & MCU & "/svd/",
+      Root & Family & "/" & MCU,
+      Root & Family,
+      Root & "common/",
+      Root & HAL_Dir,
+      Root & "drivers/",
+      Root & "boards/" & Board_Name);
+
+   for Create_Missing_Dirs use "true";
+   for Main use (Main);
+   for Object_Dir use PWD & "obj/" & Board_Name;
+   for Exec_Dir use PWD & "exe/" & Board_Name;
+
+   package Linker extends Common.Linker is
+      for Default_Switches ("Ada") use
+         Common.Linker'Default_Switches ("ada") & (
+            "-Tmemory-map" & Linker_Bootloader_File & ".ld",
+            "-T" & Linker_File,
+            "-L" & Root & "common",
+            "-L" & Root & "boards/" & Board_Name);
+   end Linker;
+
+end Board;
+
