@@ -74,7 +74,7 @@ package body STM32GD.RTC is
    procedure Wait_For_Alarm is
    begin
       SCB.SCB_Periph.SCR.SEVEONPEND := 1;
-      STM32GD.WFE;
+      STM32GD.Wait_For_Event;
       Clear_Alarm;
    end Wait_For_Alarm;
 
