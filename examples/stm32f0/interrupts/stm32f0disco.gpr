@@ -1,13 +1,14 @@
-project STM32F0Disco extends "../../common/common.gpr" is
+project STM32F0Disco extends "../../../common/common.gpr" is
 
 	for Source_Dirs use (
 		".",
 		"../../../stm32f0/stm32f051x/svd/",
 		"../../../stm32f0/stm32f051x/",
 		"../../../stm32f0/",
+		"../../../common/hal",
 		"../../../common/",
 		"../../../drivers/",
-		"../../boards/stm32f0disco/");
+		"../../../boards/stm32f0disco/");
 
 	for Main use ("main");
 	for Object_Dir use "stm32f0disco";

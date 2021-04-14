@@ -33,7 +33,7 @@ project Board extends "../../common/common.gpr" is
       Root & "common/",
       Root & HAL_Dir,
       Root & "drivers/",
-      Root & "examples/boards/" & Board_Name);
+      Root & "boards/" & Board_Name);
 
    for Create_Missing_Dirs use "true";
    for Main use (Main);
@@ -45,8 +45,8 @@ project Board extends "../../common/common.gpr" is
          Common.Linker'Default_Switches ("ada") & (
             "-Tmemory-map" & Linker_Bootloader_File & ".ld",
             "-T" & Linker_File,
-            "-L" & Root & "examples/common",
-            "-L" & Root & "examples/boards/" & Board_Name);
+            "-L" & Root & "common",
+            "-L" & Root & "boards/" & Board_Name);
    end Linker;
 
 end Board;

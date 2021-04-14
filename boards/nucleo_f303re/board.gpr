@@ -33,7 +33,7 @@ project Board extends "../../common/common.gpr" is
       Root & "common/",
       Root & HAL_Dir,
       Root & "drivers/",
-      Root & "examples/boards/" & Board_Name);
+      Root & "boards/" & Board_Name);
 
    for Create_Missing_Dirs use "true";
    for Main use (Main);
