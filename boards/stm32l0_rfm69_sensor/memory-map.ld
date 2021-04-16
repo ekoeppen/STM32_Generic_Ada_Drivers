@@ -36,8 +36,7 @@
 
 MEMORY
 {
-  reset           (rx) :  ORIGIN = 0x08000000,                     LENGTH = 8
-  vectors         (rx) :  ORIGIN = 0x08000008,                     LENGTH = 192 - 8
+  vectors         (rx) :  ORIGIN = 0x08000000,                     LENGTH = 192
   flash           (rx) :  ORIGIN = 0x08000000 + 192,               LENGTH = 32768 - 192 - 2048 - 32
   bootloader_data (rx) :  ORIGIN = 0x08000000 + 32768 - 2048 - 32, LENGTH = 32
   bootloader      (rx) :  ORIGIN = 0x08000000 + 32768 - 2048,      LENGTH = 2048

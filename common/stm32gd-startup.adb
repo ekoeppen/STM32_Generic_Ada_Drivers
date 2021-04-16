@@ -49,6 +49,6 @@ package body STM32GD.Startup is
    end Reset_Handler;
 
    Reset_Vector : System.Address := Reset_Handler'Address with Export;
-      pragma Linker_Section (Reset_Vector, ".reset");
+      pragma Linker_Section (Reset_Vector, ".vectors");
 
 end STM32GD.Startup;

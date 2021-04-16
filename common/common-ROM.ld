@@ -45,12 +45,8 @@ ENTRY(_start_rom);
 
 SECTIONS
 {
-  .reset : {
-    LONG(__stack_end)
-    KEEP (*(.reset))
-  } > reset
-
   .vectors : {
+    LONG(__stack_end)
     KEEP (*(.vectors))
   } > vectors
 
