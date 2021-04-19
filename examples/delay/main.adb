@@ -1,9 +1,5 @@
 with Ada.Real_Time; use Ada.Real_Time;
 
-with STM32GD.GPIO;
-with STM32GD.GPIO.Pin;
-
-with STM32_SVD.RCC;
 with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
