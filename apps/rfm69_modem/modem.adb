@@ -10,7 +10,7 @@ package body Modem is
 
    package Radio renames STM32GD.Board.Radio;
 
-   Packet: Radio.Packet_Type;
+   Packet: Radio.Packet_Type (1 .. 64);
    Host_Packet : Host_Message.Packet_Type (1 .. Unsigned_8 (Packet'Last));
    Now : RTC.Date_Time_Type;
    Wait_Time : RTC.Second_Delta_Type := 30;
