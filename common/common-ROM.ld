@@ -46,8 +46,7 @@ ENTRY(_start_rom);
 SECTIONS
 {
   .vectors : {
-    LONG(__stack_end)
-    KEEP (*(.vectors))
+    KEEP(*(.vectors))
   } > vectors
 
   .text :

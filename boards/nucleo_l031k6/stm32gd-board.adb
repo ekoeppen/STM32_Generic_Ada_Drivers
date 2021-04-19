@@ -21,8 +21,8 @@ package body STM32GD.Board is
       SDA.Init;
       SCL.Set_Type (STM32GD.GPIO.Open_Drain);
       SDA.Set_Type (STM32GD.GPIO.Open_Drain);
-      SCL.Set_Speed (STM32GD.GPIO.Speed_100MHz);
-      SDA.Set_Speed (STM32GD.GPIO.Speed_100MHz);
+      --  SCL.Set_Speed (STM32GD.GPIO.Speed_100MHz);
+      --  SDA.Set_Speed (STM32GD.GPIO.Speed_100MHz);
       TX.Init;
       RX.Init;
       USART.Init;

@@ -24,6 +24,7 @@ package STM32GD.Board is
    package USART     is new STM32GD.USART.Peripheral (
       USART => STM32GD.USART.USART_2, Speed => 115200,
       RX_DMA_Buffer_Size => 64,
+      IRQ => 28,
       Clock => Clocks.PCLK1);
    package Text_IO   is new Drivers.Text_IO (USART => STM32GD.Board.USART);
 

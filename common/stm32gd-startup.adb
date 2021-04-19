@@ -4,12 +4,49 @@ with System.Machine_Code; use System.Machine_Code;
 
 package body STM32GD.Startup is
 
-   procedure Ada_Main with Import => True, Convention => C, External_Name => "main";
+   procedure Stack_End with Import => True,
+      Convention => Asm,
+      External_Name => "__stack_end";
+
+   procedure Ada_Main with Import => True,
+      Convention => C,
+      External_Name => "main";
+
+   procedure SVCall_Handler with Export => True,
+      External_Name => "__gnat_sv_call_trap";
+      pragma Weak_External (SVCall_Handler);
+
+   procedure PendSV_Handler with Export => True,
+      External_Name => "__gnat_pend_sv_trap";
+      pragma Weak_External (PendSV_Handler);
+
+   procedure SysTick_Handler with Export => True,
+      External_Name => "__gnat_sys_tick_trap";
+      pragma Weak_External (SysTick_Handler);
+
+   procedure Default_Handler with Export => True,
+      External_Name => "__gnat_irq_trap";
+      pragma Weak_External (Default_Handler);
 
    procedure Default_Handler is
    begin
       null;
    end Default_Handler;
+
+   procedure SVCall_Handler is
+   begin
+      null;
+   end SVCall_Handler;
+
+   procedure PendSV_Handler is
+   begin
+      null;
+   end PendSV_Handler;
+
+   procedure SysTick_Handler is
+   begin
+      null;
+   end SysTick_Handler;
 
    procedure Reset_Handler is
       Sdata : Storage_Element
@@ -48,7 +85,24 @@ package body STM32GD.Startup is
       Ada_Main;
    end Reset_Handler;
 
-   Reset_Vector : System.Address := Reset_Handler'Address with Export;
-      pragma Linker_Section (Reset_Vector, ".vectors");
+   Vectors : array (1 .. 48) of System.Address := (
+      Stack_End'Address,
+      Reset_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      SVCall_Handler'Address,
+      Default_Handler'Address,
+      Default_Handler'Address,
+      PendSV_Handler'Address,
+      SysTick_Handler'Address,
+      others => Default_Handler'Address) with Export;
+      pragma Linker_Section (Vectors, ".vectors");
 
 end STM32GD.Startup;

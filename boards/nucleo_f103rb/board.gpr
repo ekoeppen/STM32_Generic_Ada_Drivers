@@ -1,11 +1,11 @@
 project Board extends "../../common/common.gpr" is
 
-   Board_Name := "nucleo_f303re";
-   Family := "stm32f3";
-   MCU := "stm32f303xe";
-   Core := "m4";
+   Board_Name := "nucleo_f103rb";
+   Family := "stm32f1";
+   MCU := "stm32f103xx";
+   Core := "m3";
 
-   for Runtime ("Ada") use "ravenscar-sfp-cortex-m4";
+   for Runtime ("Ada") use "ravenscar-sfp-cortex-m3";
    for Source_Dirs use (
       PWD,
       Root & Family & "/" & MCU & "/svd/",
@@ -30,5 +30,4 @@ project Board extends "../../common/common.gpr" is
    end Linker;
 
 end Board;
-
 

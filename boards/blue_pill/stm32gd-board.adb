@@ -7,15 +7,8 @@ with STM32_SVD.GPIO;
 with STM32_SVD.USB; use STM32_SVD.USB;
 
 with STM32GD.Startup;
-with STM32GD.Vectors;
 
 package body STM32GD.Board is
-
-   Vectors: constant STM32GD.Vectors.IRQ_Vectors := (
-      --  RTC_Handler => RTC.IRQ_Handler'Address,
-      others => STM32GD.Vectors.Default_Handler'Address)
-      with Export;
-   pragma Linker_Section (Vectors, ".vectors");
 
    procedure Init is
    begin

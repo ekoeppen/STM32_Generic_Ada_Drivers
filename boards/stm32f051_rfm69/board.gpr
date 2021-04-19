@@ -6,7 +6,8 @@ project Board extends "../../common/common.gpr" is
    Core := "m0";
    Main := "main";
 
-   RTS := external ("Runtime", "zfp-cortex-" & Core);
+   --  RTS := external ("Runtime", "zfp-cortex-" & Core);
+   RTS := external ("Runtime", "null");
    Bootloader := external ("Bootloader", "");
 
    HAL_Dir := "";
@@ -15,6 +16,8 @@ project Board extends "../../common/common.gpr" is
 
    for Runtime ("Ada") use RTS;
    case RTS is
+      when "null" =>
+         HAL_Dir := "common/hal-zfp";
       when "zfp-cortex-m0" =>
          HAL_Dir := "common/hal-zfp";
       when others =>

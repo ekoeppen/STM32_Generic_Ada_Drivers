@@ -1,8 +1,8 @@
 project Board extends "../../common/common.gpr" is
 
-   Board_Name := "nucleo_f303re";
-   Family := "stm32f3";
-   MCU := "stm32f303xe";
+   Board_Name := "stm32f411e-disco";
+   Family := "stm32f4";
+   MCU := "stm32f411xx";
    Core := "m4";
 
    for Runtime ("Ada") use "ravenscar-sfp-cortex-m4";
