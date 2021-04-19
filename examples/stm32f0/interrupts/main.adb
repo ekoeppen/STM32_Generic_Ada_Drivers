@@ -1,8 +1,6 @@
 with Ada.Synchronous_Task_Control; use Ada.Synchronous_Task_Control;
 with Ada.Real_Time; use Ada.Real_Time;
 
-with Last_Chance_Handler;  pragma Unreferenced (Last_Chance_Handler);
-
 with STM32GD.GPIO;
 with STM32GD.GPIO.Pin;
 with STM32GD.EXTI;
