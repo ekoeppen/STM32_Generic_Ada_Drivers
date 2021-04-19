@@ -7,6 +7,8 @@ generic
 
 package STM32GD.SPI.Peripheral is
 
+   pragma Preelaborate;
+
    procedure Init;
 
    procedure Transfer (Data : in out SPI_Data_8b)

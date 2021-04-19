@@ -4,8 +4,8 @@ with STM32GD.GPIO.Port;
 
 package body STM32GD.GPIO.Pin is
 
-   Index : constant Natural := GPIO_Pin'Pos (Pin);
-   Pin_Mask : constant UInt16 := GPIO_Pin'Enum_Rep (Pin);
+   function Index return Natural is begin return GPIO_Pin'Pos (Pin); end Index;
+   function Pin_Mask return UInt16 is begin return GPIO_Pin'Enum_Rep (Pin); end Pin_Mask;
 
    procedure Init is
    begin

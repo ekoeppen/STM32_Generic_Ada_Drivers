@@ -3,6 +3,8 @@ with STM32_SVD.GPIO;
 
 package STM32GD.GPIO is
 
+   pragma Preelaborate;
+
    Port_A : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOA_Periph;
    Port_B : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOB_Periph;
    Port_C : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOC_Periph;
