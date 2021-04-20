@@ -13,8 +13,10 @@ package body STM32GD.GPIO.Port is
          return 2;
       elsif Port'Address = GPIOD_Base then
          return 3;
-      elsif Port'Address = GPIOF_Base then
-         return 5;
+      elsif Port'Address = GPIOE_Base then
+         return 4;
+      elsif Port'Address = GPIOH_Base then
+         return 7;
       else
          raise Program_Error;
       end if;

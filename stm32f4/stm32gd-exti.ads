@@ -44,6 +44,8 @@
 
 package STM32GD.EXTI is
 
+   pragma Preelaborate;
+
    type External_Line_Number is
      (EXTI_Line_0,
       EXTI_Line_1,

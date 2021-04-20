@@ -1,7 +1,7 @@
 #!/bin/bash
 
 examples="empty delay blink"
-boards="nucleo_f072rb nucleo_f103rb nucleo_f303re"
+boards="nucleo_f072rb nucleo_f103rb nucleo_f303re stm32f411e-disco"
 
 for e in ${examples}; do
 	cd "${ADA_STM32_GD}/examples/${e}"

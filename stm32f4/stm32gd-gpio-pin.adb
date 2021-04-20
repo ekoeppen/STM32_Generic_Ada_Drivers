@@ -4,8 +4,8 @@ with STM32GD.GPIO.Port;
 
 package body STM32GD.GPIO.Pin is
 
-   Index : constant Natural := GPIO_Pin'Pos (Pin);
-   Pin_Mask : constant UInt16 := GPIO_Pin'Enum_Rep (Pin);
+   function Index return Natural is begin return GPIO_Pin'Pos (Pin); end Index;
+   function Pin_Mask return UInt16 is begin return GPIO_Pin'Enum_Rep (Pin); end Pin_Mask;
 
    procedure Init is
    begin
@@ -14,6 +14,9 @@ package body STM32GD.GPIO.Pin is
       end if;
       if Pull_Resistor /= Floating then
          Set_Pull_Resistor (Pull_Resistor);
+      end if;
+      if Alternate_Function /= 0 then
+         Configure_Alternate_Function (Alternate_Function);
       end if;
    end Init;
 
