@@ -42,6 +42,7 @@
 --  This file provides register definitions for the STM32F4 (ARM Cortex M4F)
 --  microcontrollers from ST Microelectronics.
 
+with STM32_SVD; use STM32_SVD;
 with STM32_SVD.EXTI; use STM32_SVD.EXTI;
 
 package body STM32GD.EXTI is
@@ -56,11 +57,11 @@ package body STM32GD.EXTI is
    is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.IMR.MR.Arr (Index) := True;
+      EXTI_Periph.IMR.MR.Arr (Index) := 1;
       EXTI_Periph.RTSR.TR.Arr (Index) :=
-        Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge;
+        (if Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge then 1 else 0);
       EXTI_Periph.FTSR.TR.Arr (Index) :=
-        Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge;
+        (if Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge then 1 else 0);
    end Enable_External_Interrupt;
 
    --------------------------------
@@ -70,9 +71,9 @@ package body STM32GD.EXTI is
    procedure Disable_External_Interrupt (Line : External_Line_Number) is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.IMR.MR.Arr (Index)  := False;
-      EXTI_Periph.RTSR.TR.Arr (Index) := False;
-      EXTI_Periph.FTSR.TR.Arr (Index) := False;
+      EXTI_Periph.IMR.MR.Arr (Index)  := 0;
+      EXTI_Periph.RTSR.TR.Arr (Index) := 0;
+      EXTI_Periph.FTSR.TR.Arr (Index) := 0;
    end Disable_External_Interrupt;
 
    ---------------------------
@@ -85,11 +86,11 @@ package body STM32GD.EXTI is
    is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.EMR.MR.Arr (Index)  := True;
+      EXTI_Periph.EMR.MR.Arr (Index)  := 1;
       EXTI_Periph.RTSR.TR.Arr (Index) :=
-        Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge;
+        (if Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge then 1 else 0);
       EXTI_Periph.FTSR.TR.Arr (Index) :=
-        Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge;
+        (if Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge then 1 else 0);
    end Enable_External_Event;
 
    ----------------------------
@@ -99,9 +100,9 @@ package body STM32GD.EXTI is
    procedure Disable_External_Event (Line : External_Line_Number) is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.EMR.MR.Arr (Index)  := False;
-      EXTI_Periph.RTSR.TR.Arr (Index) := False;
-      EXTI_Periph.FTSR.TR.Arr (Index) := False;
+      EXTI_Periph.EMR.MR.Arr (Index)  := 0;
+      EXTI_Periph.RTSR.TR.Arr (Index) := 0;
+      EXTI_Periph.FTSR.TR.Arr (Index) := 0;
    end Disable_External_Event;
 
    ------------------
@@ -110,7 +111,7 @@ package body STM32GD.EXTI is
 
    procedure Generate_SWI (Line : External_Line_Number) is
    begin
-      EXTI_Periph.SWIER.SWIER.Arr (External_Line_Number'Pos (Line)) := True;
+      EXTI_Periph.SWIER.SWIER.Arr (External_Line_Number'Pos (Line)) := 1;
    end Generate_SWI;
 
    --------------------------------
@@ -119,7 +120,7 @@ package body STM32GD.EXTI is
 
    function External_Interrupt_Pending (Line : External_Line_Number)
      return Boolean
-   is (EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)));
+   is (EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) = 1);
 
    ------------------------------
    -- Clear_External_Interrupt --
@@ -128,7 +129,7 @@ package body STM32GD.EXTI is
    procedure Clear_External_Interrupt (Line : External_Line_Number) is
    begin
       --  yes, one to clear
-      EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) := True;
+      EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) := 1;
    end Clear_External_Interrupt;
 
 

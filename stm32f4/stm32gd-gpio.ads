@@ -1,12 +1,16 @@
+with STM32_SVD; use STM32_SVD;
 with STM32_SVD.GPIO;
 
 package STM32GD.GPIO is
+
+   pragma Preelaborate;
 
    Port_A : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOA_Periph;
    Port_B : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOB_Periph;
    Port_C : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOC_Periph;
    Port_D : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOD_Periph;
-   Port_F : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOF_Periph;
+   Port_E : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOE_Periph;
+   Port_H : STM32_SVD.GPIO.GPIO_Peripheral renames STM32_SVD.GPIO.GPIOH_Periph;
 
    type GPIO_Pin is
      (Pin_0, Pin_1, Pin_2,  Pin_3,  Pin_4,  Pin_5,  Pin_6,  Pin_7,
@@ -81,4 +85,3 @@ package STM32GD.GPIO is
    type GPIO_Alternate_Function is new UInt4;
 
 end STM32GD.GPIO;
-
