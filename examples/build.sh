@@ -7,6 +7,9 @@ for e in ${examples}; do
 	cd "${ADA_STM32_GD}/examples/${e}"
 	for b in ${boards}; do
 		echo "#### Building ${e} for board ${b}"
-		gprbuild -p  -P "${ADA_STM32_GD}/boards/${b}/board.gpr"
+		if ! gprbuild -p  -P "${ADA_STM32_GD}/boards/${b}/board.gpr"; then
+			echo "**** Compilation of ${e} for ${b} failed."
+			exit 1
+		fi
 	done
 done
