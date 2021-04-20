@@ -20,3 +20,7 @@ jobs:
       - name: Compile examples
         run: |
           ${ADA_STM32_GD}/examples/build.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: binaries
+          path: examples/**/*.elf

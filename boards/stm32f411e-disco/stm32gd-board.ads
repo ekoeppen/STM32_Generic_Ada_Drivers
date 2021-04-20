@@ -4,6 +4,7 @@ with STM32GD.CLOCKS;
 with STM32GD.CLOCKS.Tree;
 with STM32GD.USART;
 with STM32GD.USART.Peripheral;
+with Drivers.Text_IO;
 
 package STM32GD.Board is
 
@@ -39,6 +40,8 @@ package STM32GD.Board is
                                    USART => STM32GD.USART.USART_2,
                                    Speed => 115200,
                                    Clock => Clocks.PCLK1);
+
+   package Text_IO is new Drivers.Text_IO (USART => STM32GD.Board.USART);
 
    procedure Init;
 
