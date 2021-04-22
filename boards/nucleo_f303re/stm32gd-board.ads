@@ -4,6 +4,7 @@ with STM32GD.Clocks;
 with STM32GD.Clocks.Tree;
 with STM32GD.USART;
 with STM32GD.USART.Peripheral;
+with STM32_SVD.Interrupts;
 with Drivers.Text_IO;
 
 package STM32GD.Board is
@@ -24,7 +25,7 @@ package STM32GD.Board is
    package USART     is new STM32GD.USART.Peripheral (
       USART => STM32GD.USART.USART_2, Speed => 115200,
       RX_DMA_Buffer_Size => 64,
-      IRQ => 28,
+      IRQ => STM32_SVD.Interrupts.USART2_EXTI26,
       Clock => Clocks.PCLK1);
    package Text_IO   is new Drivers.Text_IO (USART => STM32GD.Board.USART);
 
