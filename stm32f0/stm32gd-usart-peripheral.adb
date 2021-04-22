@@ -52,6 +52,7 @@ package body STM32GD.USART.Peripheral is
       USART_Periph.CR1.TE := 1;
       USART_Periph.CR1.RE := 1;
       if RX_DMA_Buffer_Size > 0 then
+         RCC_Periph.AHBENR.DMAEN := 1;
          DMA_Setup_Receive;
       end if;
    end Init;
