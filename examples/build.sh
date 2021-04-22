@@ -1,7 +1,7 @@
 #!/bin/bash
 
 examples="empty delay blink"
-stm32f0_examples="stm32f0/timer"
+stm32f0_examples="stm32f0/timer stm32f0/dma"
 boards="nucleo_f072rb nucleo_f103rb nucleo_f303re stm32f411e-disco"
 
 for e in ${examples}; do
