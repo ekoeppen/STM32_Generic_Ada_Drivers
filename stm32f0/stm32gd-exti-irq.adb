@@ -79,4 +79,4 @@ package body STM32GD.EXTI.IRQ is
    end IRQ_Handler;
 
 
-end STM32GD.EXTI;
+end STM32GD.EXTI.IRQ;

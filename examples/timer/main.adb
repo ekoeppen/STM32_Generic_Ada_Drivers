@@ -7,18 +7,21 @@ with Peripherals;
 
 procedure Main is
    Next_Release : Time := Clock;
-   Period       : constant Time_Span := Milliseconds (200);
+   Period       : constant Time_Span := Milliseconds (1000);
+   Counter      : Natural := 0;
 
 begin
    Init;
    Peripherals.Timer.Init;
    Text_IO.Put_Line ("--------------------------------------------------------------------------");
    Text_IO.Put_Line ("Main task starting");
-   Peripherals.Timer.Every (Milliseconds (1000), STM32GD.Board.LED2.Toggle'Access);
+   Peripherals.Timer.Every (Milliseconds (200), STM32GD.Board.LED.Toggle'Access);
    --  Peripherals.Timer.After (Milliseconds (5000), STM32GD.Board.LED2.Toggle'Access);
    while True loop
-      LED.Toggle;
       Next_Release := Next_Release + Period;
       delay until Next_Release;
+      Text_IO.Put_Integer (Counter);
+      Text_IO.New_Line;
+      Counter := Counter + 1;
    end loop;
 end Main;

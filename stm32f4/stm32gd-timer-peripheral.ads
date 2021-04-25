@@ -1,6 +1,6 @@
 with Ada.Interrupts; use Ada.Interrupts;
-with STM32_SVD.Interrupts; use STM32_SVD.Interrupts;
 with Ada.Real_Time; use Ada.Real_Time;
+with STM32_SVD.Interrupts; use STM32_SVD.Interrupts;
 
 generic
 

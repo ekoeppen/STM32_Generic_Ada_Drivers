@@ -39,84 +39,44 @@
 --   COPYRIGHT(c) 2014 STMicroelectronics                                   --
 ------------------------------------------------------------------------------
 
---  This file provides register definitions for the STM32 (ARM Cortex M4/7F)
+--  This file provides register definitions for the STM32F4 (ARM Cortex M4F)
 --  microcontrollers from ST Microelectronics.
 
-package STM32GD.EXTI is
+with STM32_SVD; use STM32_SVD;
+with STM32_SVD.EXTI; use STM32_SVD.EXTI;
 
-   pragma Preelaborate;
+package body STM32GD.EXTI.IRQ is
 
-   type External_Line_Number is
-     (EXTI_Line_0,
-      EXTI_Line_1,
-      EXTI_Line_2,
-      EXTI_Line_3,
-      EXTI_Line_4,
-      EXTI_Line_5,
-      EXTI_Line_6,
-      EXTI_Line_7,
-      EXTI_Line_8,
-      EXTI_Line_9,
-      EXTI_Line_10,
-      EXTI_Line_11,
-      EXTI_Line_12,
-      EXTI_Line_13,
-      EXTI_Line_14,
-      EXTI_Line_15,
-      EXTI_Line_16,
-      EXTI_Line_17,
-      EXTI_Line_18,
-      EXTI_Line_19,
-      EXTI_Line_20,
-      EXTI_Line_21,
-      EXTI_Line_22,
-      EXTI_Line_29,
-      EXTI_Line_30,
-      EXTI_Line_31,
-      EXTI_Line_32,
-      EXTI_Line_33,
-      EXTI_Line_34,
-      EXTI_Line_35);
+   protected body IRQ_Handler is
 
-   type External_Triggers is
-     (Interrupt_Rising_Edge,
-      Interrupt_Falling_Edge,
-      Interrupt_Rising_Falling_Edge,
-      Event_Rising_Edge,
-      Event_Falling_Edge,
-      Event_Rising_Falling_Edge);
+      entry Wait when Triggered is
+      begin
+         Triggered := False;
+      end Wait;
 
-   subtype Interrupt_Triggers is External_Triggers
-      range Interrupt_Rising_Edge .. Interrupt_Rising_Falling_Edge;
+      procedure Cancel is
+      begin
+         Triggered := True;
+      end Cancel;
 
-   subtype Event_Triggers is External_Triggers
-      range Event_Rising_Edge .. Event_Rising_Falling_Edge;
+      function Status (Line : External_Line_Number) return Boolean is
+      begin
+         return EXTI_Status.PR.Arr (Line'Enum_Rep) = 1;
+      end Status;
 
-   procedure Enable_External_Interrupt
-     (Line    : External_Line_Number;
-      Trigger : Interrupt_Triggers)
-     with Inline;
+      procedure Reset_Status (Line : External_Line_Number) is
+      begin
+         EXTI_Status.PR.Arr (Line'Enum_Rep) := 0;
+      end Reset_Status;
 
-   procedure Disable_External_Interrupt (Line : External_Line_Number)
-     with Inline;
+      procedure Handler is
+      begin
+         EXTI_Status := EXTI_Periph.PR;
+         EXTI_Periph.PR.PR.Val := 2#111_1111_1111_1111_1111#;
+         Triggered := True;
+      end Handler;
 
-   procedure Enable_External_Event
-     (Line    : External_Line_Number;
-      Trigger : Event_Triggers)
-     with Inline;
-
-   procedure Disable_External_Event (Line : External_Line_Number)
-     with Inline;
+   end IRQ_Handler;
 
 
-   procedure Generate_SWI (Line : External_Line_Number)
-     with Inline;
-
-   function External_Interrupt_Pending (Line : External_Line_Number)
-     return Boolean
-     with Inline;
-
-   procedure Clear_External_Interrupt (Line : External_Line_Number)
-     with Inline;
-
-end STM32GD.EXTI;
+end STM32GD.EXTI.IRQ;

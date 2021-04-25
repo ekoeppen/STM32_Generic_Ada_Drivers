@@ -9,12 +9,17 @@ package STM32GD.EXTI.IRQ is
       function Status (Line : External_Line_Number) return Boolean;
       procedure Reset_Status (Line : External_Line_Number);
       procedure Handler;
-      pragma Attach_Handler (Handler, EXTI0_1);
-      pragma Attach_Handler (Handler, EXTI2_3);
-      pragma Attach_Handler (Handler, EXTI4_15);
+      pragma Attach_Handler (Handler, EXTI0);
+      pragma Attach_Handler (Handler, EXTI1);
+      pragma Attach_Handler (Handler, EXTI2_TSC);
+      pragma Attach_Handler (Handler, EXTI3);
+      pragma Attach_Handler (Handler, EXTI4);
+      pragma Attach_Handler (Handler, EXTI9_5);
+      pragma Attach_Handler (Handler, EXTI15_10);
 
    private
-      EXTI_Status : STM32_SVD.EXTI.PR_Field;
+      EXTI_Status_1 : STM32_SVD.EXTI.PR1_Register;
+      EXTI_Status_2 : STM32_SVD.EXTI.PR2_Register;
       Cancelled : Boolean;
       Triggered : Boolean;
    end IRQ_Handler;
