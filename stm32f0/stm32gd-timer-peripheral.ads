@@ -1,10 +1,11 @@
 with Ada.Interrupts; use Ada.Interrupts;
+with STM32_SVD.Interrupts; use STM32_SVD.Interrupts;
 with Ada.Real_Time; use Ada.Real_Time;
 
 generic
 
-   Timer : STM32GD.Timer.Timer_Type;
-   IRQ   : Interrupt_ID;
+   Timer : STM32GD.Timer.Timer_Type := Timer_14;
+   IRQ   : Interrupt_ID := TIM14;
 
 package STM32GD.Timer.Peripheral is
 

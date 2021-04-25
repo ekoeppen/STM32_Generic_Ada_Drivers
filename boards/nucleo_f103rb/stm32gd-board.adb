@@ -7,11 +7,11 @@ package body STM32GD.Board is
    procedure Init is
    begin
       CLOCKS.Init;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.AFIOEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.IOPAEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.IOPBEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.IOPCEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB1ENR.USART2EN := 1;
+      RCC_Periph.APB2ENR.AFIOEN := 1;
+      RCC_Periph.APB2ENR.IOPAEN := 1;
+      RCC_Periph.APB2ENR.IOPBEN := 1;
+      RCC_Periph.APB2ENR.IOPCEN := 1;
+      RCC_Periph.APB1ENR.USART2EN := 1;
       BUTTON.Init;
       LED.Init;
       LED2.Init;

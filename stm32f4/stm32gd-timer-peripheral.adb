@@ -48,8 +48,8 @@ package body STM32GD.Timer.Peripheral is
       Timer_Callback := Callback;
       First := True;
       if Timer = Timer_3 then
-         TIM3_Periph.CNT.CNT := 0;
-         TIM3_Periph.ARR.ARR := MS;
+         TIM3_Periph.CNT.CNT_L := 0;
+         TIM3_Periph.ARR.ARR_L := MS;
          TIM3_Periph.CR1.CEN := 1;
          TIM3_Periph.DIER.UIE := 1;
       end if;

@@ -1,6 +1,7 @@
 with System;
 with System.Storage_Elements; use System.Storage_Elements;
 with System.Machine_Code; use System.Machine_Code;
+with System.BB.MCU_Parameters; use System.BB.MCU_Parameters;
 
 package body STM32GD.Startup is
 
@@ -32,6 +33,11 @@ package body STM32GD.Startup is
    begin
       null;
    end Default_Handler;
+
+   procedure Fault_Handler is
+   begin
+      loop null; end loop;
+   end Fault_Handler;
 
    procedure SVCall_Handler is
    begin
@@ -85,21 +91,21 @@ package body STM32GD.Startup is
       Ada_Main;
    end Reset_Handler;
 
-   Vectors : array (1 .. 48) of System.Address := (
+   Vectors : array (1 .. Number_Of_Interrupts) of System.Address := (
       Stack_End'Address,
       Reset_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
       SVCall_Handler'Address,
-      Default_Handler'Address,
-      Default_Handler'Address,
+      Fault_Handler'Address,
+      Fault_Handler'Address,
       PendSV_Handler'Address,
       SysTick_Handler'Address,
       others => Default_Handler'Address) with Export;

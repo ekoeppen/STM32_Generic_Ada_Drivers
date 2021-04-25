@@ -1,5 +1,5 @@
-with STM32_SVD; use STM32_SVD;
 with STM32_SVD.SPI;
+with STM32_SVD; use STM32_SVD;
 
 package STM32GD.SPI is
 
@@ -13,6 +13,6 @@ package STM32GD.SPI is
 
    type SPI_Data_8b is array (Natural range <>) of Byte;
 
-   type SPI_Data_16b is array (Natural range <>) of Byte;
+   type SPI_Data_16b is array (Natural range <>) of UInt16;
 
 end STM32GD.SPI;

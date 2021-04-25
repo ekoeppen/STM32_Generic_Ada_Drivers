@@ -66,10 +66,7 @@ package STM32GD.EXTI is
       EXTI_Line_16,
       EXTI_Line_17,
       EXTI_Line_18,
-      EXTI_Line_19,
-      EXTI_Line_20,
-      EXTI_Line_21,
-      EXTI_Line_22);
+      EXTI_Line_19);
 
    type External_Triggers is
      (Interrupt_Rising_Edge,

@@ -2,6 +2,7 @@ with STM32_SVD.EXTI;
 with STM32_SVD.GPIO; use STM32_SVD.GPIO;
 with STM32_SVD.AFIO; use STM32_SVD.AFIO;
 with STM32GD.EXTI;
+with STM32GD.EXTI.IRQ;
 with STM32GD.GPIO.Port;
 
 package body STM32GD.GPIO.IRQ is
@@ -57,12 +58,12 @@ package body STM32GD.GPIO.IRQ is
 
    procedure Wait_For_Trigger is
    begin
-      null;
+      STM32GD.EXTI.IRQ.IRQ_Handler.Wait;
    end Wait_For_Trigger;
 
    procedure Clear_Trigger is
    begin
-      null;
+      STM32GD.EXTI.IRQ.IRQ_Handler.Reset_Status (Interrupt_Line_Number);
    end Clear_Trigger;
 
    function Triggered return Boolean is
@@ -72,7 +73,7 @@ package body STM32GD.GPIO.IRQ is
 
    procedure Cancel_Wait is
    begin
-      null;
+      STM32GD.EXTI.IRQ.IRQ_Handler.Cancel;
    end Cancel_Wait;
 
 end STM32GD.GPIO.Irq;

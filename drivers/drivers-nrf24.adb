@@ -1,7 +1,10 @@
 with System;
 with Utils; use Utils;
+with HAL;
 
 package body Drivers.NRF24 is
+
+   package IRQ_Handler is new HAL.Pin_IRQ (IRQ);
 
    type Register_Type is (
       CONFIG,
@@ -380,7 +383,7 @@ package body Drivers.NRF24 is
       Write_Register (EN_RXADDR, EN_RXADDR_Init.Val);
       Write_Register (DYNPD, DYNPD_Init.Val);
       Write_Register (FEATURE, FEATURE_Init.Val);
-      IRQ.Configure_Trigger (Falling => True);
+      IRQ_Handler.Configure_Trigger (Falling => True);
       Chip_Select.Clear;
       SPI.Send (FLUSH_TX'Enum_Rep);
       Chip_Select.Set;
@@ -434,7 +437,7 @@ package body Drivers.NRF24 is
 
    procedure RX_Mode is
    begin
-      IRQ.Clear_Trigger;
+      IRQ_Handler.Clear_Trigger;
       Write_Register (CONFIG, RX_Mode_Setting.Val);
       Chip_Enable.Set;
    end RX_Mode;
@@ -442,7 +445,7 @@ package body Drivers.NRF24 is
    procedure TX (Packet: Packet_Type) is
       I : Integer with volatile;
    begin
-      IRQ.Clear_Trigger;
+      IRQ_Handler.Clear_Trigger;
       Chip_Select.Clear;
       SPI.Send (FLUSH_TX'Enum_Rep);
       Chip_Select.Set;
@@ -458,16 +461,16 @@ package body Drivers.NRF24 is
          I := I - 1;
       end loop;
       Chip_Enable.Clear;
-      --  IRQ.Wait_For_Trigger;
+      IRQ_Handler.Wait_For_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
    end TX;
 
    function Wait_For_RX return Boolean is
    begin
-      IRQ.Clear_Trigger;
-      IRQ.Wait_For_Trigger;
+      IRQ_Handler.Clear_Trigger;
+      IRQ_Handler.Wait_For_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
-      return IRQ.Triggered;
+      return IRQ_Handler.Triggered;
    end Wait_For_RX;
 
    function RX_Available return Boolean is
@@ -479,7 +482,7 @@ package body Drivers.NRF24 is
 
    procedure Clear_IRQ is
    begin
-      IRQ.Clear_Trigger;
+      IRQ_Handler.Clear_Trigger;
       Write_Register (STATUS, STATUS_Init.Val);
    end Clear_IRQ;
 
@@ -507,7 +510,7 @@ package body Drivers.NRF24 is
 
    procedure Cancel is
    begin
-      null; --  IRQHandler.Cancel_Wait;
+      IRQ_Handler.Cancel_Wait;
    end Cancel;
 
 end Drivers.NRF24;
