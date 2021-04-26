@@ -26,8 +26,8 @@ package STM32GD.Board is
                                  Port => Port_A,
                                  Mode => Mode_AF,
                                  Alternate_Function => 5);
-   package CSN       is new Pin (Pin => Pin_4,
-                                 Port => Port_A,
+   package CSN       is new Pin (Pin => Pin_6,
+                                 Port => Port_B,
                                  Mode => Mode_Out);
    package BUTTON    is new Pin (Pin => Pin_13,
                                  Port => Port_C);
