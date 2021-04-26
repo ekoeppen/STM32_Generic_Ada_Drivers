@@ -13,7 +13,7 @@ package body STM32GD.SPI.Peripheral is
       while SPI.SR.TXE = 0 loop
          null;
       end loop;
-      SPI.DR.DR := Byte (Data);
+      SPI.DR.DR := Data;
       while SPI.SR.RXNE = 0 loop
          null;
       end loop;
@@ -31,7 +31,7 @@ package body STM32GD.SPI.Peripheral is
       while SPI.SR.TXE = 0 loop
          null;
       end loop;
-      SPI.DR.DR := Byte (0);
+      SPI.DR.DR := 0;
       while SPI.SR.RXNE = 0 loop
          null;
       end loop;
@@ -48,7 +48,7 @@ package body STM32GD.SPI.Peripheral is
          while SPI.SR.RXNE = 0 loop
             null;
          end loop;
-         Data (I) := Byte (SPI.DR.DR);
+         Data (I) := SPI.DR.DR;
       end loop;
    end Receive;
 
@@ -58,11 +58,11 @@ package body STM32GD.SPI.Peripheral is
          while SPI.SR.TXE = 0 loop
             null;
          end loop;
-         SPI.DR.DR := Byte (Data (I));
+         SPI.DR.DR := Data (I);
          while SPI.SR.RXNE = 0 loop
             null;
          end loop;
-         Data (I) := Byte (SPI.DR.DR);
+         Data (I) := SPI.DR.DR;
       end loop;
    end Transfer;
 
