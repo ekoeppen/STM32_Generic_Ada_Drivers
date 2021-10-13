@@ -2,7 +2,6 @@ with Interfaces; use Interfaces;
 with STM32GD.Board; use STM32GD.Board;
 with STM32_SVD; use STM32_SVD;
 with STM32GD.GPIO;
-with STM32GD.GPIO.Pin;
 with Drivers.RFM69;
 with Host_Message;
 

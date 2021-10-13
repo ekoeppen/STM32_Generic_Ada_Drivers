@@ -1,7 +1,6 @@
 with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC; use STM32_SVD.RCC;
 with STM32GD.Startup;
-with STM32GD.Vectors;
 
 package body STM32GD.Board is
 

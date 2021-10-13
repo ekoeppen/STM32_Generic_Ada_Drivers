@@ -15,7 +15,6 @@ package body Peripherals is
       MOSI.Init;
       IRQ.Init;
       SPI.Init;
-      Timer.Init;
       Radio.Init;
    end Init;
 

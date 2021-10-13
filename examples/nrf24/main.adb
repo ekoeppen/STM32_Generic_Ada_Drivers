@@ -1,18 +1,10 @@
 with Ada.Real_Time; use Ada.Real_Time;
 
-with STM32GD.Board;
-with STM32GD.GPIO;
-with STM32GD.GPIO.Pin;
-
-with Peripherals; use Peripherals;
+with STM32GD.Board; use STM32GD.Board;
 
 procedure Main is
 
-   package GPIO renames STM32GD.GPIO;
-   package Board renames STM32GD.Board;
-   package Text_IO renames Board.Text_IO;
-
-   procedure Print_Registers is new Peripherals.Radio.Print_Registers (
+   procedure Print_Registers is new Radio.Print_Registers (
       Put_Line => Text_IO.Put_Line);
 
    procedure RX_Test is
@@ -24,8 +16,8 @@ procedure Main is
       Radio.RX_Mode;
       Print_Registers;
       loop
-         STM32GD.Board.LED.Toggle;
-         Peripherals.Timer.After (Seconds (10), Radio.Cancel'Access);
+         LED.Toggle;
+         Timer.After (Seconds (10), Radio.Cancel'Access);
          if Radio.Wait_For_RX then
             Text_IO.New_Line;
             Text_IO.Put_Line ("Packet received");
@@ -48,7 +40,7 @@ procedure Main is
       Radio.Set_TX_Address (Broadcast_Address);
       Radio.TX_Mode;
       loop
-         STM32GD.Board.LED.Toggle;
+         LED.Toggle;
          Radio.TX (TX_Data);
          Print_Registers;
          delay until Clock + Period;
@@ -56,8 +48,7 @@ procedure Main is
    end TX_Test;
 
 begin
-   STM32GD.Board.Init;
-   Peripherals.Init;
+   Init;
    Radio.Set_Channel (70);
    loop
       RX_Test;

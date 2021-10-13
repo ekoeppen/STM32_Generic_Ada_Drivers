@@ -1,7 +1,7 @@
-with STM32GD.GPIO; use STM32GD.GPIO;
-with STM32GD.GPIO.Pin;
+with STM32_SVD.GPIO; use STM32_SVD.GPIO;
+with STM32_SVD.USART; use STM32_SVD.USART;
+with STM32GD.GPIO;
 with STM32GD.USART;
-with STM32GD.USART.Peripheral;
 with STM32GD.RTC;
 with STM32GD.Clock;
 with STM32GD.Clock.Tree;
@@ -9,23 +9,24 @@ with Drivers.Text_IO;
 
 package STM32GD.Board is
 
-   package CLOCKS    is new STM32GD.Clock.Tree;
+   package CLOCKS  is new STM32GD.Clock.Tree;
 
-   package GPIO renames STM32GD.GPIO;
-
-   package SCLK      is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
-   package MISO      is new GPIO.Pin (Pin => GPIO.Pin_6, Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
-   package MOSI      is new GPIO.Pin (Pin => GPIO.Pin_7, Port => GPIO.Port_A, Mode => GPIO.Mode_AF);
-   package CSN       is new GPIO.Pin (Pin => GPIO.Pin_4, Port => GPIO.Port_A, Mode => GPIO.Mode_Out);
-   package BUTTON    is new GPIO.Pin (Pin => GPIO.Pin_0, Port => GPIO.Port_A);
-   package LED       is new GPIO.Pin (Pin => GPIO.Pin_8, Port => GPIO.Port_C, Mode => GPIO.Mode_Out);
-   package LED2      is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_C, Mode => GPIO.Mode_Out);
-   package TX        is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_A, Pull_Resistor => GPIO.Pull_Up, Mode => GPIO.Mode_AF, Alternate_Function => 1);
-   package RX        is new GPIO.Pin (Pin => GPIO.Pin_10, Port => GPIO.Port_A, Pull_Resistor => GPIO.Pull_Up, Mode => GPIO.Mode_AF, Alternate_Function => 1);
-   package USART     is new STM32GD.USART.Peripheral (USART => STM32GD.USART.USART_1, Speed => 115200, RX_DMA_Buffer_Size => 64,
-      Clock_Tree => CLOCKS, Clock => STM32GD.Clock.PCLK);
+   package SCLK    is new STM32GD.GPIO (Pin => 5, Port => GPIOA_Periph, Alternate => True);
+   package MISO    is new STM32GD.GPIO (Pin => 6, Port => GPIOA_Periph, Alternate => True);
+   package MOSI    is new STM32GD.GPIO (Pin => 7, Port => GPIOA_Periph, Alternate => True);
+   package CSN     is new STM32GD.GPIO (Pin => 4, Port => GPIOA_Periph, Output => True);
+   package BUTTON  is new STM32GD.GPIO (Pin => 0, Port => GPIOA_Periph);
+   package LED     is new STM32GD.GPIO (Pin => 8, Port => GPIOC_Periph, Output => True);
+   package LED2    is new STM32GD.GPIO (Pin => 9, Port => GPIOC_Periph, Output => True);
+   package TX      is new STM32GD.GPIO (Pin => 9, Port => GPIOA_Periph, Pull_Up => True, Alternate => True, Alternate_Function => 1);
+   package RX      is new STM32GD.GPIO (Pin => 10, Port => GPIOA_Periph, Pull_Up => True, Alternate => True, Alternate_Function => 1);
+   package USART   is new STM32GD.USART (
+                               USART => USART1_Periph,
+                               Speed => 115200,
+                               Clock_Tree => CLOCKS,
+                               Clock => STM32GD.Clock.PCLK);
    package RTC       is new STM32GD.RTC (Clock_Tree => STM32GD.Board.Clocks, Clock => STM32GD.Clock.LSI);
-   package Text_IO   is new Drivers.Text_IO (USART => STM32GD.Board.USART);
+   package Text_IO is new Drivers.Text_IO (USART => STM32GD.Board.USART);
 
    procedure Init;
 

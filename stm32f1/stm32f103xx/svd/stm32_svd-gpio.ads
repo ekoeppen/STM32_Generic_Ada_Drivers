@@ -464,4 +464,13 @@ package STM32_SVD.GPIO is
    GPIOG_Periph : aliased GPIO_Peripheral
      with Import, Address => System'To_Address (16#40012000#);
 
+   function Port_Index (Port : GPIO_Peripheral) return Natural is
+      (if Port = GPIOA_Periph then 0
+      elsif Port = GPIOB_Periph then 1
+      elsif Port = GPIOC_Periph then 2
+      elsif Port = GPIOD_Periph then 3
+      elsif Port = GPIOE_Periph then 4
+      elsif Port = GPIOF_Periph then 5
+      else 6);
+
 end STM32_SVD.GPIO;

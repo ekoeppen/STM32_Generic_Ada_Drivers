@@ -12,9 +12,8 @@ with Drivers.NRF24;
 
 package Peripherals is
 
-   package CE     is new Pin (Pin => Pin_10, Port => Port_B, Mode => Mode_Out);
-   package IRQ    is new Pin (Pin => Pin_4, Port => Port_B, Mode => Mode_In);
-   package Timer  is new STM32GD.Timer.Peripheral;
+   package CE     is new Pin (Pin => Pin_4, Port => Port_B, Mode => Mode_Out);
+   package IRQ    is new Pin (Pin => Pin_5, Port => Port_B, Mode => Mode_In);
    package Radio  is new Drivers.NRF24 (
                               SPI => STM32GD.Board.SPI,
                               Chip_Select => STM32GD.Board.CSN,

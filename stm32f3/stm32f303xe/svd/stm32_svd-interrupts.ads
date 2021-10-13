@@ -3,6 +3,8 @@
 --  Definition of the device's interrupts
 package STM32_SVD.Interrupts is
 
+   pragma Preelaborate;
+
    ----------------
    -- Interrupts --
    ----------------
@@ -206,5 +208,7 @@ package STM32_SVD.Interrupts is
 
    --  Floating point interrupt
    FPU                           : constant := 81;
+
+   Number_Of_Interrupts          : constant := 81;
 
 end STM32_SVD.Interrupts;

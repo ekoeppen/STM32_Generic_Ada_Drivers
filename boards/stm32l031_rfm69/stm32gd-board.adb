@@ -41,7 +41,7 @@ package body STM32GD.Board is
       --  I2C.Init;
    end Init;
 
-   procedure Power_Down is
+   procedure Disable_Peripherals is
    begin
       RCC_Periph.IOPENR := (Reserved_5_6 => 0, Reserved_8_31 => 0, others => 1);
       GPIOA_Periph.MODER.Val := 16#FFFF_FFFF#;
@@ -56,12 +56,12 @@ package body STM32GD.Board is
       STM32_SVD.RCC.RCC_Periph.APB2ENR.SPI1EN := 0;
       STM32_SVD.RCC.RCC_Periph.APB2ENR.ADCEN := 0;
       STM32_SVD.RCC.RCC_Periph.APB1ENR.I2C1EN := 0;
-   end Power_Down;
+   end Disable_Peripherals;
 
-   procedure Power_Up is
+   procedure Enable_Peripherals is
    begin
       Init;
-   end Power_Up;
+   end Enable_Peripherals;
 
    procedure Stop is
    begin
