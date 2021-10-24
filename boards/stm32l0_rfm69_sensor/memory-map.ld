@@ -37,10 +37,10 @@
 MEMORY
 {
   vectors         (rx) :  ORIGIN = 0x08000000,                     LENGTH = 192
-  flash           (rx) :  ORIGIN = 0x08000000 + 192,               LENGTH = 32768 - 192 - 2048 - 32
-  bootloader_data (rx) :  ORIGIN = 0x08000000 + 32768 - 2048 - 32, LENGTH = 32
-  bootloader      (rx) :  ORIGIN = 0x08000000 + 32768 - 2048,      LENGTH = 2048
-  ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 8192
+  flash           (rx) :  ORIGIN = 0x08000000 + 192,               LENGTH = 16384 - 192 - 2048 - 32
+  bootloader_data (rx) :  ORIGIN = 0x08000000 + 16384 - 2048 - 32, LENGTH = 32
+  bootloader      (rx) :  ORIGIN = 0x08000000 + 16384 - 2048,      LENGTH = 2048
+  ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 4096
 }
 
 REGION_ALIAS("sram_tx", ram)

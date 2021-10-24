@@ -1,8 +1,6 @@
 with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC; use STM32_SVD.RCC;
 with STM32_SVD.GPIO; use STM32_SVD.GPIO;
-with STM32GD.Startup;
-with STM32GD.Vectors;
 
 package body STM32GD.Board is
 
@@ -42,14 +40,14 @@ package body STM32GD.Board is
       GPIOD_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOE_Periph.MODER.Val := 16#FFFF_FFFF#;
       GPIOH_Periph.MODER.Val := 16#FFFF_FFFF#;
-      MOSI.Set_Mode (STM32GD.GPIO.Mode_In);
-      MOSI.Set_Pull_Resistor (STM32GD.GPIO.Pull_Down);
-      MISO.Set_Mode (STM32GD.GPIO.Mode_In);
-      MISO.Set_Pull_Resistor (STM32GD.GPIO.Pull_Down);
-      SCLK.Set_Mode (STM32GD.GPIO.Mode_In);
-      SCLK.Set_Pull_Resistor (STM32GD.GPIO.Pull_Up);
-      CSN.Set_Mode (STM32GD.GPIO.Mode_In);
-      CSN.Set_Pull_Resistor (STM32GD.GPIO.Pull_Up);
+      MOSI.Set_Input;
+      MOSI.Set_Pull_Down;
+      MISO.Set_Input;
+      MISO.Set_Pull_Down;
+      SCLK.Set_Input;
+      SCLK.Set_Pull_Down;
+      CSN.Set_Input;
+      CSN.Set_Pull_Down;
       RCC_Periph.IOPENR := ( Reserved_5_6 => 0, Reserved_8_31 => 0, others => 0);
       RCC_Periph.APB1ENR.USART2EN := 0;
       RCC_Periph.APB2ENR.SPI1EN := 0;

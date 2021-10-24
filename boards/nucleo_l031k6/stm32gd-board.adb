@@ -15,14 +15,9 @@ package body STM32GD.Board is
       RCC_Periph.APB2ENR.SPI1EN := 1;
       RCC_Periph.APB1ENR.I2C1EN := 1;
       RCC_Periph.APB1ENR.USART2EN := 1;
-      A5.Init;
-      A4.Init;
+      LED.Init;
       SCL.Init;
       SDA.Init;
-      SCL.Set_Type (STM32GD.GPIO.Open_Drain);
-      SDA.Set_Type (STM32GD.GPIO.Open_Drain);
-      --  SCL.Set_Speed (STM32GD.GPIO.Speed_100MHz);
-      --  SDA.Set_Speed (STM32GD.GPIO.Speed_100MHz);
       TX.Init;
       RX.Init;
       USART.Init;

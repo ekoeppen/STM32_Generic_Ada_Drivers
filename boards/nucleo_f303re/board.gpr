@@ -1,34 +1,25 @@
+with "../../stm32/stm32f3/stm32f303xe/mcu.gpr";
+
 project Board extends "../../common/common.gpr" is
 
    Board_Name := "nucleo_f303re";
-   Family := "stm32f3";
-   MCU := "stm32f303xe";
-   Core := "m4";
 
-   for Runtime ("Ada") use "ravenscar-sfp-cortex-m4";
-   for Source_Dirs use (
-      PWD,
-      Root & Family & "/" & MCU & "/svd/",
-      Root & Family & "/" & MCU,
-      Root & Family,
-      Root & "common/",
-      Root & HAL_Dir,
-      Root & "drivers/",
-      Root & "boards/" & Board_Name);
-
-   Linker_Files := (
-      "-Tmemory-map" & Linker_Bootloader_File & ".ld",
-      "-T" & Linker_File,
-      "-L" & Root & "boards/" & Board_Name);
+   case RTS is
+      when "zfp" =>
+         for Runtime ("Ada") use "zfp-cortex-m4";
+      when "full" =>
+         for Runtime ("Ada") use "ravenscar-full-cortex-m4";
+      when others =>
+         for Runtime ("Ada") use "ravenscar-sfp-cortex-m4";
+   end case;
 
    for Object_Dir use PWD & "obj/" & Board_Name;
    for Exec_Dir use PWD & "exe/" & Board_Name;
 
    package Linker extends Common.Linker is
       for Default_Switches ("Ada") use
-         Common.Linker'Default_Switches ("ada") & Linker_Files;
+         Common.Linker'Default_Switches ("ada") &
+         ("-L" & Root & "boards/" & Board_Name);
    end Linker;
 
 end Board;
-
-
