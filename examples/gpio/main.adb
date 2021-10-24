@@ -10,10 +10,10 @@ begin
    LED.Set;
    Text_IO.Put_Line ("Hello, World!");
    STM32GD.Clear_Event;
-   Button_IRQ.Configure_Trigger (Rising => True);
+   Button.Configure_Trigger (Rising => True);
    loop
       Text_IO.Put_Line ("Waiting for button...");
-      Button_IRQ.Wait_For_Trigger;
+      Button.Wait_For_Trigger;
       LED.Toggle;
       Text_IO.Put_Line ("Button pressed");
    end loop;

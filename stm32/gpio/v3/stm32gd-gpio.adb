@@ -129,7 +129,6 @@ package body STM32GD.GPIO is
    procedure Clear_Trigger is
    begin
       EXTI.Clear_External_Interrupt (EXTI.External_Line_Number'Val (Pin));
-      NVIC_Periph.ICPR := 2 ** 5;
    end Clear_Trigger;
 
    function Triggered return Boolean is
@@ -139,12 +138,14 @@ package body STM32GD.GPIO is
 
    procedure Configure_Trigger (Rising : Boolean := False; Falling : Boolean := False) is
    begin
-      Connect_External_Interrupt;
+      EXTI.Connect_External_Interrupt (Pin, Port_Index);
       if Rising then
+         EXTI.Enable_External_Interrupt (EXTI.External_Line_Number'Val (Pin), EXTI.Interrupt_Rising_Edge);
          EXTI.Enable_External_Event (EXTI.External_Line_Number'Val (Pin), EXTI.Interrupt_Rising_Edge);
       end if;
       if Falling then
-         EXTI.Enable_External_Event (EXTI.External_Line_Number'Val (Pin), EXTI.Interrupt_Rising_Edge);
+         EXTI.Enable_External_Interrupt (EXTI.External_Line_Number'Val (Pin), EXTI.Interrupt_Falling_Edge);
+         EXTI.Enable_External_Event (EXTI.External_Line_Number'Val (Pin), EXTI.Interrupt_Falling_Edge);
       end if;
    end Configure_Trigger;
 
