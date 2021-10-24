@@ -45,8 +45,12 @@ ENTRY(_start_rom);
 
 SECTIONS
 {
-  .vectors : {
-    KEEP(*(.vectors))
+  .standard_vectors : {
+    KEEP(*(.standard_vectors))
+  } > vectors
+
+  .board_vectors : {
+    KEEP(*(.board_vectors))
   } > vectors
 
   .text :

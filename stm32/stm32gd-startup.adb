@@ -1,34 +1,11 @@
 with System;
 with System.Storage_Elements; use System.Storage_Elements;
-with System.Machine_Code; use System.Machine_Code;
-with STM32_SVD.Interrupts; use STM32_SVD.Interrupts;
--- with System.BB.MCU_Parameters; use System.BB.MCU_Parameters;
 
 package body STM32GD.Startup is
-
-   procedure Stack_End with Import => True,
-      Convention => Asm,
-      External_Name => "__stack_end";
 
    procedure Ada_Main with Import => True,
       Convention => C,
       External_Name => "main";
-
-   procedure SVCall_Handler with Export => True,
-      External_Name => "__gnat_sv_call_trap";
-      pragma Weak_External (SVCall_Handler);
-
-   procedure PendSV_Handler with Export => True,
-      External_Name => "__gnat_pend_sv_trap";
-      pragma Weak_External (PendSV_Handler);
-
-   procedure SysTick_Handler with Export => True,
-      External_Name => "__gnat_sys_tick_trap";
-      pragma Weak_External (SysTick_Handler);
-
-   procedure Default_Handler with Export => True,
-      External_Name => "__gnat_irq_trap";
-      pragma Weak_External (Default_Handler);
 
    procedure Default_Handler is
    begin
@@ -85,7 +62,7 @@ package body STM32GD.Startup is
       Ada_Main;
    end Reset_Handler;
 
-   Vectors : array (1 .. Number_Of_Interrupts) of System.Address := (
+   Standard_Vectors : constant array (1 .. 16) of System.Address := (
       Stack_End'Address,
       Reset_Handler'Address,
       Fault_Handler'Address,
@@ -101,8 +78,7 @@ package body STM32GD.Startup is
       Fault_Handler'Address,
       Fault_Handler'Address,
       PendSV_Handler'Address,
-      SysTick_Handler'Address,
-      others => Default_Handler'Address) with Export;
-      pragma Linker_Section (Vectors, ".vectors");
+      SysTick_Handler'Address) with Export => True, External_Name => "standard_vectors";
+        pragma Linker_Section (Standard_Vectors, ".standard_vectors");
 
 end STM32GD.Startup;
