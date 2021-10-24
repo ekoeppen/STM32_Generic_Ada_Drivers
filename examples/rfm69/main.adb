@@ -40,8 +40,8 @@ procedure Main is
    procedure TX_Test is
       Broadcast_Address : constant Radio.Address_Type := 0;
       TX_Data           : constant Radio.Packet_Type := (
-         16#01#, 16#02#, 16#03#, 16#04#, 16#05#, 16#06#, 16#07#, 16#08#, 16#09#
-         --  16#00#, 16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#FF#, 16#55#
+         --  16#01#, 16#02#, 16#03#, 16#04#, 16#05#, 16#06#, 16#07#, 16#08#, 16#09#
+         16#00#, 16#FF#, 16#00#, 16#00#, 16#00#, 16#00#, 16#00#, 16#FF#, 16#55#
         );
    begin
       Text_IO.Put_Line ("Starting TX test");
@@ -68,6 +68,7 @@ begin
    Board.Init;
    Text_IO.Put_Line ("Starting RFM69 Test");
    Radio.Init;
+   Print_Registers;
    Text_IO.Put_Line ("r: RX test -- t: TX test -- others: Power down");
    Text_IO.Get_Line (Line, Len);
    case Line (Line'First) is
