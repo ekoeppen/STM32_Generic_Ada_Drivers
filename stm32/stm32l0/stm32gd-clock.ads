@@ -22,7 +22,7 @@ package STM32GD.Clock is
 
    HSI_Value : constant Integer := 16_000_000;
    MSI_Value : constant Integer := 2 * 1024 * 1024;
-   LSI_Value : constant Integer := 40_000;
+   LSI_Value : constant Integer := 37_000;
    LSE_Value : constant Integer := 32_768;
 
 end STM32GD.Clock;

@@ -9,7 +9,6 @@ library project MCU extends "../../stm32gd.gpr" is
       "svd",
       "../",
       "../../",
-      "../timer/basic",
       "../../gpio/v2",
       "../../usart/v2",
       "../../i2c/v2",
