@@ -22,9 +22,12 @@ procedure Main is
       Text_IO.Put_Line ("Starting RX test");
       Radio.Set_RX_Address (RX_Address);
       Radio.RX_Mode;
+      Board.IRQ.Configure_Trigger (Rising => True);
+      STM32GD.Clear_Event;
       loop
          STM32GD.Board.LED.Toggle;
-         if Radio.Wait_For_RX then
+         STM32GD.Wait_For_Event;
+         if Radio.RX_Available then
             Text_IO.Put_Line ("Packet received");
             Print_Registers;
             Radio.Clear_IRQ;
