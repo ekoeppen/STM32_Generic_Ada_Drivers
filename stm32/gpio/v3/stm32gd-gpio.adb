@@ -75,6 +75,8 @@ package body STM32GD.GPIO is
          end if;
       elsif Analog_Input then
          Port.MODER.Arr (Integer (Pin)) := 2#11#;
+      else
+         Port.MODER.Arr (Integer (Pin)) := 2#00#;
       end if;
       if Pull_Up then
          Port.PUPDR.Arr (Integer (Pin)) := 2#01#;
