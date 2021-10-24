@@ -1,4 +1,3 @@
-with STM32GD.I2C;
 with STM32_SVD; use STM32_SVD;
 
 package body Drivers.Si7060 is

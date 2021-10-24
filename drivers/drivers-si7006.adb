@@ -3,7 +3,7 @@ with STM32_SVD; use STM32_SVD;
 
 package body Drivers.Si7006 is
 
-   Measurement : STM32GD.I2C.I2C_Data (0 .. 2);
+   Measurement : STM32GD.Byte_Array (0 .. 2);
 
    function Temperature_x100 return Temperature_Type is
    begin
