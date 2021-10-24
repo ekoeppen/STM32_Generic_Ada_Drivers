@@ -50,6 +50,11 @@ package body STM32GD.GPIO is
          Port.PUPDR.Arr (Integer (Pin)) := 2#00#;
    end Set_No_Pull;
 
+   procedure Set_Open_Drain is
+   begin
+      Port.OTYPER.OT.Arr (Integer (Pin)) := 1;
+   end Set_Open_Drain;
+
    procedure Init is
    begin
       if Output then

@@ -5,15 +5,15 @@ generic
    Pin : UInt4;
    Port : in out STM32_SVD.GPIO.GPIO_Peripheral;
 
-   Input : Boolean := True;
+   Input : Boolean := False;
    Output : Boolean := False;
-   Alternate : Boolean := False;
+   Alternate_Output : Boolean := False;
    Analog_Input : Boolean := False;
-   Alternate_Function : UInt4 := 0;
    Pull_Up : Boolean := False;
    Pull_Down : Boolean := False;
-   Open_Drain_Output : Boolean := False;
-   Push_Pull_Output : Boolean := True;
+   Open_Drain : Boolean := False;
+
+   Low_Speed : Boolean := False;
    Medium_Speed : Boolean := False;
    High_Speed : Boolean := False;
 
@@ -26,13 +26,13 @@ package STM32GD.GPIO is
 
    procedure Set_Output;
    procedure Set_Input;
-   procedure Set_Alternate;
+   procedure Set_Alternate_Output;
    procedure Set_Analog_Input;
    procedure Set_Open_Drain;
+   procedure Set_Push_Pull;
    procedure Set_Pull_Up;
    procedure Set_Pull_Down;
    procedure Set_No_Pull;
-   procedure Configure_Alternate_Function (AF : UInt4);
 
    procedure Init;
    procedure Configure_Trigger (Rising : Boolean := False; Falling : Boolean := False);

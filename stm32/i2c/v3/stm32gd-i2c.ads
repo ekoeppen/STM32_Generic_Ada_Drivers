@@ -9,6 +9,7 @@ package STM32GD.I2C is
    pragma Preelaborate;
 
    procedure Init;
+   function Test (Address: I2C_Address) return Boolean;
    function Master_Transmit (Address : I2C_Address; Data : Byte;
       Restart : Boolean := False) return Boolean;
    function Master_Receive (Address : I2C_Address; Data : out Byte)

@@ -28,6 +28,7 @@ package STM32GD.GPIO is
    procedure Set_Input;
    procedure Set_Alternate;
    procedure Set_Analog_Input;
+   procedure Set_Open_Drain;
    procedure Set_Pull_Up;
    procedure Set_Pull_Down;
    procedure Set_No_Pull;

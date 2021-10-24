@@ -5,14 +5,15 @@ with STM32_SVD.EXTI; use STM32_SVD.EXTI;
 with STM32_SVD.NVIC; use STM32_SVD.NVIC;
 with STM32_SVD.SYSCFG; use STM32_SVD.SYSCFG;
 with STM32GD.EXTI;
+with System; use System;
 
 package body STM32GD.GPIO is
 
    function Port_Index return UInt4 is
-      (if Port = GPIOA_Periph then 0
-      elsif Port = GPIOB_Periph then 1
-      elsif Port = GPIOC_Periph then 2
-      elsif Port = GPIOD_Periph then 3
+      (if Port'Address = GPIOA_Periph'Address then 0
+      elsif Port'Address = GPIOB_Periph'Address then 1
+      elsif Port'Address = GPIOC_Periph'Address then 2
+      elsif Port'Address = GPIOD_Periph'Address then 3
       else 5);
 
    procedure Set_Output is
@@ -42,13 +43,18 @@ package body STM32GD.GPIO is
 
    procedure Set_Pull_Down is
    begin
-         Port.PUPDR.Arr (Integer (Pin)) := 2#10#;
+      Port.PUPDR.Arr (Integer (Pin)) := 2#10#;
    end Set_Pull_Down;
 
    procedure Set_No_Pull is
    begin
-         Port.PUPDR.Arr (Integer (Pin)) := 2#00#;
+      Port.PUPDR.Arr (Integer (Pin)) := 2#00#;
    end Set_No_Pull;
+
+   procedure Set_Open_Drain is
+   begin
+      Port.OTYPER.OT.Arr (Integer (Pin)) := 1;
+   end Set_Open_Drain;
 
    procedure Init is
    begin

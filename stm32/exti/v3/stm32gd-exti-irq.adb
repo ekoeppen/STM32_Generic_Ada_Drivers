@@ -62,25 +62,25 @@ package body STM32GD.EXTI.IRQ is
       function Status (Line : External_Line_Number) return Boolean is
       begin
          if Line'Enum_Rep < 19 then
-            return EXTI_Status.PR.Arr (Line'Enum_Rep) = 1;
+            return EXTI_Status.PIF.Arr (Line'Enum_Rep) = 1;
          end if;
-         return EXTI_Status.PR19 = 1;
+         return EXTI_Status.PIF_1.Arr (Line'Enum_Rep - 18) = 1;
       end Status;
 
       procedure Reset_Status (Line : External_Line_Number) is
       begin
          if Line'Enum_Rep < 19 then
-            EXTI_Status.PR.Arr (Line'Enum_Rep) := 0;
+            EXTI_Status.PIF.Arr (Line'Enum_Rep) := 0;
          else
-            EXTI_Status.PR19 := 0;
+            EXTI_Status.PIF_1.Arr (Line'Enum_Rep - 18) := 0;
          end if;
       end Reset_Status;
 
       procedure Handler is
       begin
          EXTI_Status := EXTI_Periph.PR;
-         EXTI_Periph.PR.PR.Val := 2#11_1111_1111_1111_1111#;
-         EXTI_Periph.PR.PR19 := 1;
+         EXTI_Periph.PR.PIF.Val := 0;
+         EXTI_Periph.PR.PIF_1.Val := 0;
          Triggered := True;
       end Handler;
 

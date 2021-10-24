@@ -75,6 +75,22 @@ package body STM32GD.I2C is
       return not Timed_Out;
    end Wait_For_Idle;
 
+   function Test (Address : I2C_Address) return Boolean is
+      Present : Boolean;
+   begin
+      I2C.ICR.NACKCF := 1;
+      if not Wait_For_Idle then return False; end if;
+      I2C.CR2.NBYTES := 0;
+      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.RD_WRN := 0;
+      I2C.CR2.AUTOEND := 0;
+      I2C.CR2.START := 1;
+      Present := I2C.ISR.NACKF = 0;
+      I2C.CR2.STOP := 1;
+      I2C.ICR.NACKCF := 1;
+      return Present;
+   end Test;
+
    function Master_Transmit (Address : I2C_Address; Data : Byte;
       Restart : Boolean := False) return Boolean is
    begin

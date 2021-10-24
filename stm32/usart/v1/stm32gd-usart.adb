@@ -24,29 +24,27 @@ package body STM32GD.USART is
       if Tx_DMA then
          USART.CR3.DMAT := 1;
       end if;
-      USART.ICR.FECF := 1;
-      USART.ICR.ORECF := 1;
    end Init;
 
    function Data_Available return Boolean is
    begin
-      return USART.ISR.RXNE = 1;
+      return USART.SR.RXNE = 1;
    end Data_Available;
 
    procedure Transmit (Data : in Byte) is
    begin
-      while USART.ISR.TXE = 0 loop
+      while USART.SR.TXE = 0 loop
          null;
       end loop;
-      USART.TDR.TDR := UInt9 (Data);
+      USART.DR.DR := UInt9 (Data);
    end Transmit;
 
    function Receive return Byte is
    begin
-      while USART.ISR.RXNE = 0 loop
+      while USART.SR.RXNE = 0 loop
          null;
       end loop;
-      return Byte (USART.RDR.RDR);
+      return Byte (USART.DR.DR);
    end Receive;
 
 end STM32GD.USART;

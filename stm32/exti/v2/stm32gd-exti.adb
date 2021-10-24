@@ -49,16 +49,20 @@ with STM32_SVD.SYSCFG; use STM32_SVD.SYSCFG;
 package body STM32GD.EXTI is
 
    procedure Connect_External_Interrupt (Pin: UInt4; Port_Index: UInt4) is
+      subtype Pin_0_3 is Integer range 0 .. 3;
+      subtype Pin_4_7 is Integer range 4 .. 7;
+      subtype Pin_8_11 is Integer range 8 .. 11;
+      subtype Pin_12_15 is Integer range 12 .. 15;
    begin
       case Pin is
          when 0 .. 3 =>
-            SYSCFG_COMP_Periph.EXTICR1.EXTI.Arr (Integer (Pin)) := Port_Index;
+            SYSCFG_Periph.EXTICR1.EXTI.Arr (Pin_0_3 (Pin)) := Port_Index;
          when 4 .. 7 =>
-            SYSCFG_COMP_Periph.EXTICR2.EXTI.Arr (Integer (Pin) + 4) := Port_Index;
+            SYSCFG_Periph.EXTICR2.EXTI.Arr (Pin_4_7 (Pin)) := Port_Index;
          when 8 .. 11 =>
-            SYSCFG_COMP_Periph.EXTICR3.EXTI.Arr (Integer (Pin) + 8) := Port_Index;
+            SYSCFG_Periph.EXTICR3.EXTI.Arr (Pin_8_11 (Pin)) := Port_Index;
          when 12 .. 15 =>
-            SYSCFG_COMP_Periph.EXTICR4.EXTI.Arr (Integer (Pin) + 12) := Port_Index;
+            SYSCFG_Periph.EXTICR4.EXTI.Arr (Pin_12_15 (Pin)) := Port_Index;
          when others =>
             raise Program_Error;
       end case;
@@ -74,10 +78,10 @@ package body STM32GD.EXTI is
    is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.IMR.IM.Arr (Index) := 1;
-      EXTI_Periph.RTSR.RT.Arr (Index) :=
+      EXTI_Periph.IMR.MR.Arr (Index) := 1;
+      EXTI_Periph.RTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge then 1 else 0);
-      EXTI_Periph.FTSR.FT.Arr (Index) :=
+      EXTI_Periph.FTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge then 1 else 0);
    end Enable_External_Interrupt;
 
@@ -88,9 +92,9 @@ package body STM32GD.EXTI is
    procedure Disable_External_Interrupt (Line : External_Line_Number) is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.IMR.IM.Arr (Index)  := 0;
-      EXTI_Periph.RTSR.RT.Arr (Index) := 0;
-      EXTI_Periph.FTSR.FT.Arr (Index) := 0;
+      EXTI_Periph.IMR.MR.Arr (Index)  := 0;
+      EXTI_Periph.RTSR.TR.Arr (Index) := 0;
+      EXTI_Periph.FTSR.TR.Arr (Index) := 0;
    end Disable_External_Interrupt;
 
    ---------------------------
@@ -103,10 +107,10 @@ package body STM32GD.EXTI is
    is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.EMR.EM.Arr (Index)  := 1;
-      EXTI_Periph.RTSR.RT.Arr (Index) :=
+      EXTI_Periph.EMR.MR.Arr (Index)  := 1;
+      EXTI_Periph.RTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Rising_Edge  | Interrupt_Rising_Falling_Edge then 1 else 0);
-      EXTI_Periph.FTSR.FT.Arr (Index) :=
+      EXTI_Periph.FTSR.TR.Arr (Index) :=
         (if Trigger in Interrupt_Falling_Edge | Interrupt_Rising_Falling_Edge then 1 else 0);
    end Enable_External_Event;
 
@@ -117,9 +121,9 @@ package body STM32GD.EXTI is
    procedure Disable_External_Event (Line : External_Line_Number) is
       Index : constant Natural := External_Line_Number'Pos (Line);
    begin
-      EXTI_Periph.EMR.EM.Arr (Index)  := 0;
-      EXTI_Periph.RTSR.RT.Arr (Index) := 0;
-      EXTI_Periph.FTSR.FT.Arr (Index) := 0;
+      EXTI_Periph.EMR.MR.Arr (Index)  := 0;
+      EXTI_Periph.RTSR.TR.Arr (Index) := 0;
+      EXTI_Periph.FTSR.TR.Arr (Index) := 0;
    end Disable_External_Event;
 
    ------------------
@@ -128,7 +132,7 @@ package body STM32GD.EXTI is
 
    procedure Generate_SWI (Line : External_Line_Number) is
    begin
-      EXTI_Periph.SWIER.SWI.Arr (External_Line_Number'Pos (Line)) := 1;
+      EXTI_Periph.SWIER.SWIER.Arr (External_Line_Number'Pos (Line)) := 1;
    end Generate_SWI;
 
    --------------------------------
@@ -139,9 +143,9 @@ package body STM32GD.EXTI is
      return Boolean is
    begin
       if Line'Enum_Rep < 19 then
-         return EXTI_Periph.PR.PIF.Arr (External_Line_Number'Pos (Line)) = 1;
+         return EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) = 1;
       end if;
-      return EXTI_Periph.PR.PIF_1.Arr (External_Line_Number'Pos (Line) - 18) = 1;
+      return EXTI_Periph.PR.PR19 = 1;
    end External_Interrupt_Pending;
 
    ------------------------------
@@ -151,9 +155,9 @@ package body STM32GD.EXTI is
    procedure Clear_External_Interrupt (Line : External_Line_Number) is
    begin
       if Line'Enum_Rep < 19 then
-         EXTI_Periph.PR.PIF.Arr (External_Line_Number'Pos (Line)) := 1;
+         EXTI_Periph.PR.PR.Arr (External_Line_Number'Pos (Line)) := 1;
       else
-         EXTI_Periph.PR.PIF_1.Arr (External_Line_Number'Pos (Line) - 18) := 1;
+         EXTI_Periph.PR.PR19 := 1;
       end if;
    end Clear_External_Interrupt;
 
