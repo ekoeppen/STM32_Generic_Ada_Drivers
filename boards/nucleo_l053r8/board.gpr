@@ -1,0 +1,25 @@
+with "../../stm32/stm32l0/stm32l0x3/mcu.gpr";
+
+project Board extends "../../common/common.gpr" is
+
+   Board_Name := "nucleo_l053r8";
+
+   case RTS is
+      when "zfp" =>
+         for Runtime ("Ada") use "zfp-cortex-m0";
+      when "full" =>
+         for Runtime ("Ada") use "ravenscar-full-cortex-m0";
+      when others =>
+         for Runtime ("Ada") use "ravenscar-sfp-cortex-m0";
+   end case;
+
+   for Object_Dir use PWD & "obj/" & Board_Name;
+   for Exec_Dir use PWD & "exe/" & Board_Name;
+
+   package Linker extends Common.Linker is
+      for Default_Switches ("Ada") use
+         Common.Linker'Default_Switches ("ada") &
+         ("-L" & Root & "boards/" & Board_Name);
+   end Linker;
+
+end Board;
