@@ -1,11 +1,14 @@
 with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC; use STM32_SVD.RCC;
 with STM32_SVD.GPIO; use STM32_SVD.GPIO;
+with STM32_SVD.PWR; use STM32_SVD.PWR;
 
 package body STM32GD.Board is
 
    procedure Enable_Peripherals is
    begin
+      RCC_Periph.APB1ENR.PWREN := 1;
+
       RCC_Periph.IOPENR.IOPAEN := 1;
       RCC_Periph.IOPENR.IOPBEN := 1;
 
@@ -13,6 +16,10 @@ package body STM32GD.Board is
       RCC_Periph.APB2ENR.SPI1EN := 1;
       RCC_Periph.APB1ENR.I2C1EN := 1;
       RCC_Periph.APB2ENR.ADCEN := 1;
+
+      PWR_Periph.CR.DBP := 1;
+      RCC_Periph.CSR.RTCSEL := 2#10#;
+      RCC_Periph.CSR.RTCEN := 1;
 
       CSN.Init;
       CSN.Set;
@@ -53,6 +60,7 @@ package body STM32GD.Board is
       RCC_Periph.APB2ENR.SPI1EN := 0;
       RCC_Periph.APB1ENR.I2C1EN := 0;
       RCC_Periph.APB2ENR.ADCEN := 0;
+      RCC_Periph.APB1ENR.PWREN := 0;
    end Disable_Peripherals;
 
    procedure Init is
