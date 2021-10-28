@@ -2,6 +2,7 @@ with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC; use STM32_SVD.RCC;
 with STM32_SVD.GPIO; use STM32_SVD.GPIO;
 with STM32_SVD.PWR; use STM32_SVD.PWR;
+with STM32_SVD.ADC; use STM32_SVD.ADC;
 
 package body STM32GD.Board is
 
@@ -20,6 +21,8 @@ package body STM32GD.Board is
       PWR_Periph.CR.DBP := 1;
       RCC_Periph.CSR.RTCSEL := 2#10#;
       RCC_Periph.CSR.RTCEN := 1;
+
+      ADC_Periph.CFGR2.CKMODE := 2#01#;
 
       CSN.Init;
       CSN.Set;

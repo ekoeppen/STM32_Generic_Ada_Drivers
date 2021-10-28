@@ -23,9 +23,9 @@ package STM32GD.Board is
    package LED       is new STM32GD.GPIO (Pin => 3,  Port => GPIOB_Periph, Output => True);
    package TX        is new STM32GD.GPIO (Pin => 2,  Port => GPIOA_Periph, Pull_Up => True, Alternate => True, Alternate_Function => 4);
    package RX        is new STM32GD.GPIO (Pin => 15, Port => GPIOA_Periph, Pull_Up => True, Alternate => True, Alternate_Function => 4);
-   package SCL       is new STM32GD.GPIO (Pin => 9,  Port => GPIOA_Periph, Pull_Up => True, Alternate => True, Alternate_Function => 1);
+   package SCL       is new STM32GD.GPIO (Pin => 9,  Port => GPIOA_Periph, Open_Drain_Output => True, Alternate => True, Alternate_Function => 1);
    package SCL_OUT   is new STM32GD.GPIO (Pin => 9,  Port => GPIOA_Periph, Output => True);
-   package SDA       is new STM32GD.GPIO (Pin => 10, Port => GPIOA_Periph, Pull_Up => True, Alternate => True, Alternate_Function => 1);
+   package SDA       is new STM32GD.GPIO (Pin => 10, Port => GPIOA_Periph, Open_Drain_Output => True, Alternate => True, Alternate_Function => 1);
    package BUTTON    is new STM32GD.GPIO (Pin => 0,  Port => GPIOA_Periph);
 
    package SPI       is new STM32GD.SPI (SPI => STM32_SVD.SPI.SPI1_Periph);

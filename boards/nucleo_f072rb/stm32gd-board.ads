@@ -28,6 +28,12 @@ package STM32GD.Board is
    package RX      is new STM32GD.GPIO (Pin => 3,  Port => GPIOA_Periph,
                                Pull_Up => True,
                                Alternate => True, Alternate_Function => 1);
+   package SCL     is new STM32GD.GPIO (Pin => 8,  Port => GPIOB_Periph,
+                               Pull_Up => True,
+                               Alternate => True, Alternate_Function => 1);
+   package SDA     is new STM32GD.GPIO (Pin => 9,  Port => GPIOB_Periph,
+                               Pull_Up => True,
+                               Alternate => True, Alternate_Function => 1);
    package USART   is new STM32GD.USART (
                                USART => USART2_Periph,
                                Speed => 115200,
