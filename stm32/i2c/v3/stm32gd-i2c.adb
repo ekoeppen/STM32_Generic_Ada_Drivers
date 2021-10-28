@@ -81,7 +81,7 @@ package body STM32GD.I2C is
       I2C.ICR.NACKCF := 1;
       if not Wait_For_Idle then return False; end if;
       I2C.CR2.NBYTES := 0;
-      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.SADD := UInt10 (Address) * 2;
       I2C.CR2.RD_WRN := 0;
       I2C.CR2.AUTOEND := 0;
       I2C.CR2.START := 1;
@@ -96,7 +96,7 @@ package body STM32GD.I2C is
    begin
       if not Wait_For_Idle then return False; end if;
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.SADD := UInt10 (Address) * 2;
       I2C.CR2.RD_WRN := 0;
       I2C.CR2.START := 1;
       I2C.CR2.AUTOEND := (if not Restart then 1 else 0);
@@ -109,7 +109,7 @@ package body STM32GD.I2C is
       return Boolean is
    begin
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.SADD := UInt10 (Address) * 2;
       I2C.CR2.START := 1;
       I2C.CR2.RD_WRN := 1;
       if not Wait_For_TXDR_Empty then return False; end if;
@@ -124,7 +124,7 @@ package body STM32GD.I2C is
    is
    begin
       I2C.CR2.NBYTES := Data'Length;
-      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.SADD := UInt10 (Address) * 2;
       I2C.CR2.RD_WRN := 1;
       I2C.CR2.START := 1;
       I2C.CR2.AUTOEND := 1;
@@ -140,7 +140,7 @@ package body STM32GD.I2C is
       Data : Byte) return Boolean is
    begin
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.SADD := UInt10 (Address) * 2;
       I2C.CR2.START := 1;
       if not Wait_For_TXDR_Empty then return False; end if;
       I2C.TXDR.TXDATA := Register;
@@ -155,7 +155,7 @@ package body STM32GD.I2C is
       Data : out Byte) return Boolean is
    begin
       I2C.CR2.NBYTES := 1;
-      I2C.CR2.SADD := UInt10 (Address);
+      I2C.CR2.SADD := UInt10 (Address) * 2;
       I2C.CR2.START := 1;
       if not Wait_For_TXDR_Empty then return False; end if;
       I2C.TXDR.TXDATA := Register;
