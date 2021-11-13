@@ -48,6 +48,11 @@ package body STM32GD.I2C is
       return False;
    end Wait_For_Idle;
 
+   function Test (Address : I2C_Address) return Boolean is
+   begin
+      return False;
+   end Test;
+
    function Master_Transmit (Address : I2C_Address; Data : Byte;
       Restart : Boolean := False) return Boolean is
    begin
