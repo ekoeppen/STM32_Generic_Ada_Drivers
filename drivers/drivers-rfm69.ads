@@ -20,6 +20,7 @@ package Drivers.RFM69 is
    type Packet_Type is array (Byte range <>) of Byte;
    type AES_Key_Type is array (Byte range 1 .. 16) of Byte;
    type Raw_Register_Array is array (0 .. 16#4D#) of Byte;
+   subtype Output_Power_Range is Integer range -18 .. 17;
 
    procedure Init;
    procedure Set_Sync_Word (Sync_Word : Sync_Word_Type);
@@ -29,6 +30,7 @@ package Drivers.RFM69 is
    procedure Set_Broadcast_Address (Address : Address_Type);
    procedure Set_RX_Address (Address : Address_Type);
    procedure Set_TX_Address (Address : Address_Type);
+   procedure Set_Output_Power (Power : Output_Power_Range);
    procedure TX_Mode;
    procedure RX_Mode;
    procedure TX (Packet: Packet_Type);

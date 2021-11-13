@@ -709,6 +709,16 @@ package body Drivers.RFM69 is
       end loop;
    end Set_Mode;
 
+   procedure Set_Output_Power (Power : Output_Power_Range) is
+      P : PALEVEL_Register_Type;
+      R : Byte;
+   begin
+      Read_Register (PALEVEL, R);
+      P.Val := R;
+      P.Output_Power := UInt5 (Power + 18);
+      Write_Register (PALEVEL, P.Val);
+   end Set_Output_Power;
+
    procedure TX_Mode is
    begin
       null;

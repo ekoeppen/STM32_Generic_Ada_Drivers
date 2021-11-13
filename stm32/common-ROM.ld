@@ -72,6 +72,11 @@ SECTIONS
     __rom_end = .;
   } > flash
 
+  .config :
+  {
+    *(.config)
+   } > config
+
   __data_load = __rom_end;
   .data : AT (__data_load)
   {

@@ -5,6 +5,7 @@ with STM32GD.Power;
 with Drivers.Si7006;
 with CBOR_Codec;
 with Utils;
+with Config;
 
 procedure Main is
 
@@ -28,6 +29,8 @@ procedure Main is
    Modem_Message_Tag  : constant Natural := 70;
    Modem_ID_Tag       : constant Natural := 71;
    RF_Packet_Tag      : constant Natural := 72;
+   Mote_Info_Tag      : constant Natural := 73;
+   Revision_Tag       : constant Natural := 74;
    Status_Cmd_Tag     : constant Natural := 256;
    Ping_Cmd_Tag       : constant Natural := 257;
    Reset_Cmd_Tag      : constant Natural := 258;
@@ -41,14 +44,7 @@ procedure Main is
 
    package CBOR is new CBOR_Codec (Write => Write_Packet, Read => Read_Packet);
    package Temp_Sensor is new Drivers.Si7006 (I2C => STM32GD.Board.I2C);
-
-   procedure Generate_Node_Name is
-      HW_ID : Unsigned_32;
-      UID : STM32GD.UID_Type := STM32GD.UID;
-   begin
-      HW_ID := UID (1) xor UID (2) xor UID (3);
-      Node_Name := Utils.To_Hex_String (HW_ID);
-   end Generate_Node_Name;
+   procedure Print_Registers is new Radio.Print_Registers (Put_Line => Text_IO.Put_Line);
 
    procedure Write_Packet (C : Unsigned_8) is
    begin
@@ -70,9 +66,10 @@ procedure Main is
       Humidity :=  Temp_Sensor.Humidity;
       Voltage := STM32GD.Power.Supply_Voltage;
 
-      Text_IO.Put_Integer (Voltage); Text_IO.New_Line;
-      Text_IO.Put_Integer (Temperature); Text_IO.New_Line;
-      Text_IO.Put_Integer (Humidity); Text_IO.New_Line;
+      Text_IO.Put ("Voltage="); Text_IO.Put_Integer (Voltage);
+      Text_IO.Put (" Temperature="); Text_IO.Put_Integer (Temperature);
+      Text_IO.Put (" Humidity="); Text_IO.Put_Integer (Humidity);
+      Text_IO.New_Line;
       Packet_Index := 1;
       CBOR.Encode_Tag (Sensor_Reading_Tag);
       CBOR.Encode_Array (4);
@@ -86,6 +83,25 @@ procedure Main is
       return True;
    end Read_Sensor_Data;
 
+   procedure Send_Mote_Info is
+      Revision : String (1 .. 6);
+   begin
+      Packet_Index := 1;
+      CBOR.Encode_Tag (Mote_Info_Tag);
+      CBOR.Encode_Array (1);
+      CBOR.Encode_Tag (Revision_Tag);
+      Config.Get_Git_Short_Hash (Revision);
+      CBOR.Encode_Byte_String (Revision);
+      Radio.TX_Mode;
+      Radio.TX (Packet, Packet_Index);
+      Radio.Power_Down;
+      Text_IO.Put ("Config: TX_Power=");
+      Text_IO.Put_Integer (Config.TX_Power);
+      Text_IO.Put (" Transmit_Interval="); Text_IO.Put_Integer (Config.Transmit_Interval);
+      Text_IO.Put (" Revision="); Text_IO.Put (Revision);
+      Text_IO.New_Line;
+   end Send_Mote_Info;
+
    procedure Run (Interval_Seconds : Natural) is
       Now : RTC.Date_Time_Type;
    begin
@@ -94,7 +110,7 @@ procedure Main is
          if Read_Sensor_Data then
             Text_IO.Put_Line ("Sending");
             Radio.TX_Mode;
-            Radio.TX (Packet);
+            Radio.TX (Packet, Packet_Index);
             Radio.Power_Down;
             Text_IO.Put_Line ("Sent");
          end if;
@@ -113,12 +129,15 @@ procedure Main is
 begin
    Init;
    Radio.Init;
+   Radio.Set_Output_Power (Config.TX_Power);
+   Print_Registers;
    Radio.Power_Down;
    LED.Set;
-   Generate_Node_Name;
 
-   Text_IO.Put_Line ("Starting");
+   Config.Get_Node_Name (Node_Name);
+   Text_IO.Put ("Starting: Node=");
    Text_IO.Put_Line (Node_Name);
    STM32GD.Power.Enable_Stop;
-   Run (900);
+   Send_Mote_Info;
+   Run (Config.Transmit_Interval);
 end Main;
