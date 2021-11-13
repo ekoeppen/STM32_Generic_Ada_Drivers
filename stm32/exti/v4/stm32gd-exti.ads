@@ -4,7 +4,7 @@ package STM32GD.EXTI is
 
    pragma Preelaborate;
 
-   subtype External_Line_Number is Integer range 0 .. 31;
+   subtype External_Line_Number is Integer range 0 .. 63;
 
    type External_Triggers is
      (Interrupt_Rising_Edge,
@@ -13,8 +13,6 @@ package STM32GD.EXTI is
       Event_Rising_Edge,
       Event_Falling_Edge,
       Event_Rising_Falling_Edge);
-
-   type EXTI_IRQ_Status is array (0 .. 31) of Boolean;
 
    subtype Interrupt_Triggers is External_Triggers
       range Interrupt_Rising_Edge .. Interrupt_Rising_Falling_Edge;
