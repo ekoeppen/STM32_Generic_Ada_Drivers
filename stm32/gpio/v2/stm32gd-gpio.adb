@@ -55,30 +55,41 @@ package body STM32GD.GPIO is
       Port.OTYPER.OT.Arr (Integer (Pin)) := 1;
    end Set_Open_Drain;
 
+   procedure Set_Push_Pull is
+   begin
+      Port.OTYPER.OT.Arr (Integer (Pin)) := 0;
+   end Set_Push_Pull;
+
    procedure Init is
    begin
       if Output then
-         Port.MODER.Arr (Integer (Pin)) := 2#01#;
-         if Open_Drain_Output then
-            Port.OTYPER.OT.Arr (Integer (Pin)) := 2#1#;
-         end if;
+         Set_Output;
          if Medium_Speed then
             Port.OSPEEDR.Arr (Integer (Pin)) := 2#01#;
          elsif High_Speed then
             Port.OSPEEDR.Arr (Integer (Pin)) := 2#10#;
          end if;
       elsif Alternate then
-         Port.MODER.Arr (Integer (Pin)) := 2#10#;
+         Set_Alternate;
          if  Alternate_Function /= 0 then
             Configure_Alternate_Function (Alternate_Function);
          end if;
       elsif Analog_Input then
-         Port.MODER.Arr (Integer (Pin)) := 2#11#;
+         Set_Analog_Input;
+      else
+         Set_Input;
       end if;
       if Pull_Up then
-         Port.PUPDR.Arr (Integer (Pin)) := 2#01#;
+         Set_Pull_Up;
       elsif Pull_Down then
-         Port.PUPDR.Arr (Integer (Pin)) := 2#10#;
+         Set_Pull_Down;
+      else
+         Set_No_Pull;
+      end if;
+      if Open_Drain_Output then
+         Set_Open_Drain;
+      else
+         Set_Push_Pull;
       end if;
    end Init;
 
