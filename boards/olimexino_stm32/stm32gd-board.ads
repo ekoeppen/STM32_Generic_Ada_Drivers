@@ -1,16 +1,23 @@
-with STM32GD.GPIO; use STM32GD.GPIO;
-
-with STM32GD.GPIO.Pin;
+with STM32_SVD.GPIO; use STM32_SVD.GPIO;
+with STM32_SVD.USART; use STM32_SVD.USART;
+with STM32_SVD.SPI; use STM32_SVD.SPI;
+with STM32_SVD.I2C;
+with STM32GD.GPIO;
+with STM32GD.USART;
+with STM32GD.SPI;
+with STM32GD.I2C;
+with STM32GD.RTC;
+with STM32GD.Clock;
+with STM32GD.Clock.Tree;
+with Drivers.Text_IO;
 
 package STM32GD.Board is
 
-   package GPIO renames STM32GD.GPIO;
-
-   package BUTTON    is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_C);
-   package SWO       is new GPIO.Pin (Pin => GPIO.Pin_3, Port => GPIO.Port_B, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package LED       is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
-   package LED2      is new GPIO.Pin (Pin => GPIO.Pin_1, Port => GPIO.Port_A, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
-   package USB_DISC  is new GPIO.Pin (Pin => GPIO.Pin_12, Port => GPIO.Port_C, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
+   package BUTTON    is new STM32GD.GPIO (Pin => 9, Port => GPIOC_Periph);
+   package SWO       is new STM32GD.GPIO (Pin => 3, Port => GPIOB_Periph, Alternate_Output => True);
+   package LED       is new STM32GD.GPIO (Pin => 5, Port => GPIOA_Periph, Output => True);
+   package LED2      is new STM32GD.GPIO (Pin => 1, Port => GPIOA_Periph, Output => True);
+   package USB_DISC  is new STM32GD.GPIO (Pin => 12, Port => GPIOC_Periph, Output => True);
 
    procedure Init;
    procedure USB_Re_Enumerate;

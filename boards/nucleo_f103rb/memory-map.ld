@@ -39,7 +39,7 @@ MEMORY
   vectors         (rx) :  ORIGIN = 0x08000000,                    LENGTH = 512
   flash           (rx) :  ORIGIN = 0x08000000 + 512,              LENGTH = 128K - 512 - 512
   config          (rx) :  ORIGIN = 0x08000000 + 128K - 512,       LENGTH = 512
-  ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 8192
+  ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 20K
 }
 
 REGION_ALIAS("sram_tx", ram)

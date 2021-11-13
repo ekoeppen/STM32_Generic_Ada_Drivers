@@ -6,11 +6,11 @@ project Board extends "../../common/common.gpr" is
 
    case RTS is
       when "zfp" =>
-         for Runtime ("Ada") use "zfp-cortex-m0";
+         for Runtime ("Ada") use "zfp-cortex-m3";
       when "full" =>
-         for Runtime ("Ada") use "ravenscar-full-cortex-m0";
+         for Runtime ("Ada") use "ravenscar-full-cortex-m3";
       when others =>
-         for Runtime ("Ada") use "ravenscar-sfp-cortex-m0";
+         for Runtime ("Ada") use "ravenscar-sfp-cortex-m3";
    end case;
 
    for Object_Dir use PWD & "obj/" & Board_Name;
