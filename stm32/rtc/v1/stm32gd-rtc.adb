@@ -72,7 +72,7 @@ package body STM32GD.RTC is
    begin
       Unlock;
       Lock;
-      EXTI.Enable_External_Interrupt (EXTI.EXTI_Line_17, EXTI.Interrupt_Rising_Edge);
+      EXTI.Enable_External_Interrupt (17, EXTI.Interrupt_Rising_Edge);
    end Set_Alarm;
 
    procedure Clear_Alarm is
@@ -81,7 +81,7 @@ package body STM32GD.RTC is
       ICPR := NVIC_Periph.ICPR0;
       ICPR := ICPR or 2 ** 3;
       NVIC_Periph.ICPR0 := ICPR;
-      EXTI.Clear_External_Interrupt (EXTI.EXTI_Line_17);
+      EXTI.Clear_External_Interrupt (17);
       Unlock;
       RTC_Periph.CRL.ALRF := 0;
       Lock;

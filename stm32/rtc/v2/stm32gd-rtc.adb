@@ -98,7 +98,7 @@ package body STM32GD.RTC is
       RTC_Periph.CR.ALRAE := 1;
       RTC_Periph.CR.ALRAIE := 1;
       Lock;
-      EXTI.Enable_External_Event (EXTI.EXTI_Line_17, EXTI.Interrupt_Rising_Edge);
+      EXTI.Enable_External_Event (17, EXTI.Interrupt_Rising_Edge);
    end Set_Alarm;
 
    procedure Clear_Alarm is
