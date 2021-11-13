@@ -54,7 +54,7 @@ package STM32GD.Board is
                                  Alternate_Function => 7);
    package USART  is new STM32GD.USART (
       USART => STM32_SVD.USART.USART2_Periph, Speed => 115200,
-      Clock => Clocks.PCLK1, Clock_Tree => Clocks);
+      Clock => STM32GD.Clock.PCLK1, Clock_Tree => Clocks);
    package Text_IO is new Drivers.Text_IO (USART => STM32GD.Board.USART);
    package SPI     is new STM32GD.SPI (SPI => STM32_SVD.SPI.SPI1_Periph);
 

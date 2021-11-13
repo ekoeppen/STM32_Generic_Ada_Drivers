@@ -37,9 +37,8 @@
 MEMORY
 {
   vectors         (rx) :  ORIGIN = 0x08000000,                    LENGTH = 512
-  flash           (rx) :  ORIGIN = 0x08000000 + 512,              LENGTH = 128K - 512 - 2048 - 32
-  bootloader_data (rx) :  ORIGIN = 0x08000000 + 128K - 2048 - 32, LENGTH = 32
-  bootloader      (rx) :  ORIGIN = 0x08000000 + 128K - 2048,      LENGTH = 2048
+  flash           (rx) :  ORIGIN = 0x08000000 + 512,              LENGTH = 128K - 512 - 512
+  config          (rx) :  ORIGIN = 0x08000000 + 128K - 512,       LENGTH = 512
   ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 8192
 }
 
