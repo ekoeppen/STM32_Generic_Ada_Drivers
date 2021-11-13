@@ -1,36 +1,35 @@
+with STM32_SVD.GPIO; use STM32_SVD.GPIO;
+with STM32_SVD.USART; use STM32_SVD.USART;
+with STM32_SVD.SPI; use STM32_SVD.SPI;
+with STM32_SVD.I2C;
 with STM32GD.GPIO;
-with STM32GD.GPIO.Pin;
 with STM32GD.USART;
-with STM32GD.USART.Peripheral;
+with STM32GD.SPI;
+with STM32GD.I2C;
+with STM32GD.RTC;
 with STM32GD.Clock;
 with STM32GD.Clock.Tree;
-with STM32GD.SPI;
-with STM32GD.SPI.Peripheral;
-with STM32GD.RTC;
-with STM32GD.GPIO;
-
 with Drivers.Text_IO;
 
 package STM32GD.Board is
 
-   package GPIO renames STM32GD.GPIO;
    package Clocks    is new STM32GD.Clock.Tree (LSE_Enabled => True);
 
-   package BUTTON    is new GPIO.Pin (Pin => GPIO.Pin_7, Port => GPIO.Port_A);
-   package SWO       is new GPIO.Pin (Pin => GPIO.Pin_3, Port => GPIO.Port_B, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package LED       is new GPIO.Pin (Pin => GPIO.Pin_13, Port => GPIO.Port_C, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
-   package LED2      is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_B, Mode => GPIO.Speed_2MHz, Out_Conf => GPIO.Out_PushPull);
-   package SCLK      is new GPIO.Pin (Pin => GPIO.Pin_5, Port => GPIO.Port_A, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package MISO      is new GPIO.Pin (Pin => GPIO.Pin_6, Port => GPIO.Port_A, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package MOSI      is new GPIO.Pin (Pin => GPIO.Pin_7, Port => GPIO.Port_A, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package CSN       is new GPIO.Pin (Pin => GPIO.Pin_4, Port => GPIO.Port_A, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Out_PushPull);
-   package TX        is new GPIO.Pin (Pin => GPIO.Pin_9, Port => GPIO.Port_A, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_PushPull);
-   package RX        is new GPIO.Pin (Pin => GPIO.Pin_10, Port => GPIO.Port_A);
-   package SCL       is new GPIO.Pin (Pin => GPIO.Pin_6, Port => GPIO.Port_B, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_OpenDrain);
-   package SDA       is new GPIO.Pin (Pin => GPIO.Pin_7, Port => GPIO.Port_B, Mode => GPIO.Speed_50MHz, Out_Conf => GPIO.Alt_OpenDrain);
+   package BUTTON    is new STM32GD.GPIO (Pin => 7, Port => GPIOA_Periph);
+   package SWO       is new STM32GD.GPIO (Pin => 3, Port => GPIOB_Periph, Alternate_Output => True);
+   package LED       is new STM32GD.GPIO (Pin => 13, Port => GPIOC_Periph, Output => True);
+   package LED2      is new STM32GD.GPIO (Pin => 9, Port => GPIOB_Periph, Output => True);
+   package SCLK      is new STM32GD.GPIO (Pin => 5, Port => GPIOA_Periph, Alternate_Output => True);
+   package MISO      is new STM32GD.GPIO (Pin => 6, Port => GPIOA_Periph, Alternate_Output => True);
+   package MOSI      is new STM32GD.GPIO (Pin => 7, Port => GPIOA_Periph, Alternate_Output => True);
+   package CSN       is new STM32GD.GPIO (Pin => 4, Port => GPIOA_Periph, Output => True);
+   package TX        is new STM32GD.GPIO (Pin => 9, Port => GPIOA_Periph, Alternate_Output => True);
+   package RX        is new STM32GD.GPIO (Pin => 10, Port => GPIOA_Periph);
+   package SCL       is new STM32GD.GPIO (Pin => 6, Port => GPIOB_Periph, Open_Drain => True, Alternate_Output => True);
+   package SDA       is new STM32GD.GPIO (Pin => 7, Port => GPIOB_Periph, Open_Drain => True, Alternate_Output => True);
 
-   package SPI       is new STM32GD.SPI.Peripheral (SPI => STM32GD.SPI.SPI_1);
-   package USART     is new STM32GD.USART.Peripheral (USART => STM32GD.USART.USART_1, Speed => 115200, Clock => 8_000_000);
+   package SPI       is new STM32GD.SPI (SPI => STM32_SVD.SPI.SPI1_Periph);
+   package USART     is new STM32GD.USART (USART => STM32_SVD.USART.USART2_Periph, Speed => 115200, Clock_Tree => STM32GD.Board.Clocks, Clock => STM32GD.Clock.HSI);
    package RTC       is new STM32GD.RTC (Clock_Tree => STM32GD.Board.Clocks, Clock => STM32GD.Clock.LSE);
 
    package Text_IO   is new Drivers.Text_IO (USART => STM32GD.Board.USART);
