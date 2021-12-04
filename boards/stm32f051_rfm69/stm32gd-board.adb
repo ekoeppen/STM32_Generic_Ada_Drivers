@@ -1,5 +1,6 @@
 with STM32_SVD; use STM32_SVD;
 with STM32_SVD.RCC; use STM32_SVD.RCC;
+with STM32_SVD.PWR; use STM32_SVD.PWR;
 with STM32_SVD.NVIC;
 with STM32_SVD.GPIO; use STM32_SVD.GPIO;
 
@@ -9,12 +10,13 @@ package body STM32GD.Board is
 
    procedure Enable_Peripherals is
    begin
-      STM32_SVD.RCC.RCC_Periph.AHBENR.IOPAEN := 1;
-      STM32_SVD.RCC.RCC_Periph.AHBENR.IOPBEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.USART1EN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.SPI1EN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB2ENR.ADCEN := 1;
-      STM32_SVD.RCC.RCC_Periph.APB1ENR.I2C1EN := 1;
+      CLOCKS.Init;
+      RCC_Periph.AHBENR.IOPAEN := 1;
+      RCC_Periph.AHBENR.IOPBEN := 1;
+      RCC_Periph.APB2ENR.USART1EN := 1;
+      RCC_Periph.APB2ENR.SPI1EN := 1;
+      RCC_Periph.APB2ENR.ADCEN := 1;
+      RCC_Periph.APB1ENR.I2C1EN := 1;
 
       BUTTON.Init;
       LED.Init;
@@ -73,9 +75,13 @@ package body STM32GD.Board is
    procedure Init is
    begin
       CLOCKS.Init;
-      RTC.Init;
+      RCC_Periph.APB1ENR.PWREN := 1;
+      PWR_Periph.CR.DBP := 1;
+      RCC_Periph.BDCR.BDRST := 2#0#;
+      RCC_Periph.BDCR.RTCSEL := 2#10#;
+      RCC_Periph.BDCR.RTCEN := 1;
       Enable_Peripherals;
-      STM32GD.Clear_Event;
+      RTC.Init;
    end Init;
 
 end STM32GD.Board;

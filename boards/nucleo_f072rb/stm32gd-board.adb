@@ -18,7 +18,8 @@ package body STM32GD.Board is
       RCC_Periph.APB1ENR.PWREN := 1;
       RCC_Periph.APB1ENR.I2C1EN := 1;
       PWR_Periph.CR.DBP := 1;
-      RCC_Periph.BDCR.RTCSEL := 2#01#;
+      RCC_Periph.BDCR.BDRST := 2#0#;
+      RCC_Periph.BDCR.RTCSEL := 2#10#;
       RCC_Periph.BDCR.RTCEN := 1;
       SCL.Init;
       SDA.Init;

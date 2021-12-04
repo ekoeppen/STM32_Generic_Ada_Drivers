@@ -14,7 +14,7 @@ with Drivers.RFM69;
 
 package STM32GD.Board is
 
-   package Clocks      is new STM32GD.Clock.Tree;
+   package CLOCKS       is new STM32GD.Clock.Tree (LSI_Enabled => True);
 
    package BUTTON       is new STM32GD.GPIO (Pin => 0, Port => GPIOA_Periph);
    package LED          is new STM32GD.GPIO (Pin => 1, Port => GPIOB_Periph, Output => True);
