@@ -8,9 +8,10 @@ with Host_Message;
 package body Modem is
 
    package Radio renames STM32GD.Board.Radio;
+   package Modem_Message is new Host_Message (Radio => Radio);
 
    Packet: Radio.Packet_Type (1 .. 64);
-   Host_Packet : Host_Message.Packet_Type (1 .. Unsigned_8 (Packet'Last));
+   Host_Packet : Modem_Message.Packet_Type (1 .. Unsigned_8 (Packet'Last));
    Now : RTC.Date_Time_Type;
    Wait_Time : RTC.Second_Delta_Type := 30;
    Sync_Word : constant Radio.Sync_Word_Type (1 .. 3) := (16#F0#, 16#12#, 16#78#);
@@ -22,7 +23,7 @@ package body Modem is
       S : Sync_Word_Type (1 .. 3);
    begin
       STM32GD.Board.Init;
-      Host_Message.Send_Hello;
+      Modem_Message.Send_Hello;
       Radio.Init;
       Radio.Get_Sync_Word (S);
       if S = Sync_Word then
@@ -36,6 +37,8 @@ package body Modem is
 
    procedure Run is
       Length : Byte;
+      Radio_Registers : Radio.Raw_Register_Array;
+      use STM32GD.Board.Radio;
    begin
       Radio.Set_RX_Address (RX_Address);
       Radio.RX_Mode;
@@ -52,13 +55,21 @@ package body Modem is
             for I in 1 .. Length loop
                Host_Packet (Unsigned_8 (I)) := Unsigned_8 (Packet (I));
             end loop;
-            Host_Message.Send_Packet (Host_Packet, Unsigned_8 (Length));
+            Modem_Message.Send_Packet (Host_Packet, Unsigned_8 (Length));
             LED.Clear;
          end if;
 
          if RTC.Alarm_Triggered then
             RTC.Clear_Alarm;
-            Host_Message.Send_Heartbeat;
+            Modem_Message.Send_Heartbeat;
+            Radio.Read_Registers (Radio_Registers);
+            Modem_Message.Send_Status (Radio_Registers);
+            if Radio.Get_Mode /= Radio.RX then
+               Modem_Message.Send_Error_Message ("Mode error");
+               Radio.Init;
+               Radio.Set_RX_Address (RX_Address);
+               Radio.RX_Mode;
+            end if;
             RTC.Read (Now);
             RTC.Add_Seconds (Now, Wait_Time);
             RTC.Set_Alarm (Now);
@@ -76,7 +87,7 @@ package body Modem is
 
          if RTC.Alarm_Triggered then
             RTC.Clear_Alarm;
-            Host_Message.Send_Error_Message ("Modem init failed");
+            Modem_Message.Send_Error_Message ("Modem init failed");
          end if;
       end loop;
    end Error;

@@ -5,186 +5,6 @@ package body Drivers.RFM69 is
 
    F_Osc : constant Natural := 32_000_000;
 
-   type Register_Type is (
-      FIFO,
-      OPMODE,
-      DATAMODUL,
-      BITRATEMSB,
-      BITRATELSB,
-      FDEVMSB,
-      FDEVLSB,
-      FRFMSB,
-      FRFMID,
-      FRFLSB,
-      OSC1,
-      AFCCTRL,
-      LOWBAT,
-      LISTEN1,
-      LISTEN2,
-      LISTEN3,
-      VERSION,
-      PALEVEL,
-      PARAMP,
-      OCP,
-      AGCREF,
-      AGCTHRESH1,
-      AGCTHRESH2,
-      AGCTHRESH3,
-      LNA,
-      RXBW,
-      AFCBW,
-      OOKPEAK,
-      OOKAVG,
-      OOKFIX,
-      AFCFEI,
-      AFCMSB,
-      AFCLSB,
-      FEIMSB,
-      FEILSB,
-      RSSICONFIG,
-      RSSIVALUE,
-      DIOMAPPING1,
-      DIOMAPPING2,
-      IRQFLAGS1,
-      IRQFLAGS2,
-      RSSITHRESH,
-      RXTIMEOUT1,
-      RXTIMEOUT2,
-      PREAMBLEMSB,
-      PREAMBLELSB,
-      SYNCCONFIG,
-      SYNCVALUE1,
-      SYNCVALUE2,
-      SYNCVALUE3,
-      SYNCVALUE4,
-      SYNCVALUE5,
-      SYNCVALUE6,
-      SYNCVALUE7,
-      SYNCVALUE8,
-      PACKETCONFIG1,
-      PAYLOADLENGTH,
-      NODEADRS,
-      BROADCASTADRS,
-      AUTOMODES,
-      FIFOTHRESH,
-      PACKETCONFIG2,
-      AESKEY1,
-      AESKEY2,
-      AESKEY3,
-      AESKEY4,
-      AESKEY5,
-      AESKEY6,
-      AESKEY7,
-      AESKEY8,
-      AESKEY9,
-      AESKEY10,
-      AESKEY11,
-      AESKEY12,
-      AESKEY13,
-      AESKEY14,
-      AESKEY15,
-      AESKEY16,
-      TEMP1,
-      TEMP2,
-      TESTPA1,
-      TESTPA2,
-      TESTPIIBW);
-
-   for Register_Type use (
-      FIFO          => 16#00#,
-      OPMODE        => 16#01#,
-      DATAMODUL     => 16#02#,
-      BITRATEMSB    => 16#03#,
-      BITRATELSB    => 16#04#,
-      FDEVMSB       => 16#05#,
-      FDEVLSB       => 16#06#,
-      FRFMSB        => 16#07#,
-      FRFMID        => 16#08#,
-      FRFLSB        => 16#09#,
-      OSC1          => 16#0A#,
-      AFCCTRL       => 16#0B#,
-      LOWBAT        => 16#0C#,
-      LISTEN1       => 16#0D#,
-      LISTEN2       => 16#0E#,
-      LISTEN3       => 16#0F#,
-      VERSION       => 16#10#,
-      PALEVEL       => 16#11#,
-      PARAMP        => 16#12#,
-      OCP           => 16#13#,
-      AGCREF        => 16#14#,
-      AGCTHRESH1    => 16#15#,
-      AGCTHRESH2    => 16#16#,
-      AGCTHRESH3    => 16#17#,
-      LNA           => 16#18#,
-      RXBW          => 16#19#,
-      AFCBW         => 16#1A#,
-      OOKPEAK       => 16#1B#,
-      OOKAVG        => 16#1C#,
-      OOKFIX        => 16#1D#,
-      AFCFEI        => 16#1E#,
-      AFCMSB        => 16#1F#,
-      AFCLSB        => 16#20#,
-      FEIMSB        => 16#21#,
-      FEILSB        => 16#22#,
-      RSSICONFIG    => 16#23#,
-      RSSIVALUE     => 16#24#,
-      DIOMAPPING1   => 16#25#,
-      DIOMAPPING2   => 16#26#,
-      IRQFLAGS1     => 16#27#,
-      IRQFLAGS2     => 16#28#,
-      RSSITHRESH    => 16#29#,
-      RXTIMEOUT1    => 16#2A#,
-      RXTIMEOUT2    => 16#2B#,
-      PREAMBLEMSB   => 16#2C#,
-      PREAMBLELSB   => 16#2D#,
-      SYNCCONFIG    => 16#2E#,
-      SYNCVALUE1    => 16#2F#,
-      SYNCVALUE2    => 16#30#,
-      SYNCVALUE3    => 16#31#,
-      SYNCVALUE4    => 16#32#,
-      SYNCVALUE5    => 16#33#,
-      SYNCVALUE6    => 16#34#,
-      SYNCVALUE7    => 16#35#,
-      SYNCVALUE8    => 16#36#,
-      PACKETCONFIG1 => 16#37#,
-      PAYLOADLENGTH => 16#38#,
-      NODEADRS      => 16#39#,
-      BROADCASTADRS => 16#3A#,
-      AUTOMODES     => 16#3B#,
-      FIFOTHRESH    => 16#3C#,
-      PACKETCONFIG2 => 16#3D#,
-      AESKEY1       => 16#3E#,
-      AESKEY2       => 16#3F#,
-      AESKEY3       => 16#40#,
-      AESKEY4       => 16#41#,
-      AESKEY5       => 16#42#,
-      AESKEY6       => 16#43#,
-      AESKEY7       => 16#44#,
-      AESKEY8       => 16#45#,
-      AESKEY9       => 16#46#,
-      AESKEY10      => 16#47#,
-      AESKEY11      => 16#48#,
-      AESKEY12      => 16#49#,
-      AESKEY13      => 16#4A#,
-      AESKEY14      => 16#4B#,
-      AESKEY15      => 16#4C#,
-      AESKEY16      => 16#4D#,
-      TEMP1         => 16#4E#,
-      TEMP2         => 16#4F#,
-      TESTPA1       => 16#5A#,
-      TESTPA2       => 16#5C#,
-      TESTPIIBW     => 16#5F#);
-
-   type OPMODE_Mode_Type is (SLEEP, STDBY, FS, TX, RX)
-   with Size => 3;
-
-   for OPMODE_Mode_Type use (
-      SLEEP => 2#000#,
-      STDBY => 2#001#,
-      FS    => 2#010#,
-      TX    => 2#011#,
-      RX    => 2#100#);
-
    type Command_Type is (R_REGISTER, W_REGISTER);
 
    for Command_Type use (
@@ -697,15 +517,17 @@ package body Drivers.RFM69 is
       M : OPMODE_Register_Type;
       F : IRQFLAGS1_Register_Type;
       R : Byte;
+      Retries : Integer := 100;
    begin
       Read_Register (OPMODE, R);
       M.Val := R;
       M.Mode := Mode;
       Write_Register (OPMODE, M.Val);
-      loop
+      while Retries > 0 loop
          Read_Register (IRQFLAGS1, R);
          F.Val := R;
          exit when F.Mode_Ready;
+         Retries := Retries - 1;
       end loop;
    end Set_Mode;
 
@@ -729,6 +551,15 @@ package body Drivers.RFM69 is
       Set_Mode (RX);
       Write_Register (IRQFLAGS1, 2#0000_1001#);
    end RX_Mode;
+
+   function Get_Mode return OPMODE_Mode_Type is
+      M : OPMODE_Register_Type;
+      R : Byte;
+   begin
+      Read_Register (OPMODE, R);
+      M.Val := R;
+      return M.Mode;
+   end Get_Mode;
 
    procedure TX (Packet: Packet_Type) is
    begin

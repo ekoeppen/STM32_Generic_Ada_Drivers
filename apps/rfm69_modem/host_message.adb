@@ -1,5 +1,6 @@
 with Interfaces; use Interfaces;
 with STM32GD;
+with STM32_SVD; use STM32_SVD;
 with STM32GD.Board; use STM32GD.Board;
 with CBOR_Codec;
 with Utils;
@@ -26,6 +27,8 @@ package body Host_Message is
    Modem_Message_Tag  : constant Natural := 70;
    Modem_ID_Tag       : constant Natural := 71;
    RF_Packet_Tag      : constant Natural := 72;
+   Mote_Info_Tag      : constant Natural := 73;
+   Revision_Tag       : constant Natural := 74;
    Status_Cmd_Tag     : constant Natural := 256;
    Ping_Cmd_Tag       : constant Natural := 257;
    Reset_Cmd_Tag      : constant Natural := 258;
@@ -109,6 +112,27 @@ package body Host_Message is
          Heartbeat := Heartbeat_Range'First;
       end if;
    end Send_Heartbeat;
+
+   procedure Send_Register (Register: Radio.Register_Type;
+      Radio_Registers: Radio.Raw_Register_Array) is
+      U : Utils.Hex_String_Word;
+   begin
+      U := Utils.To_Hex_String (UID (1) xor UID (2) xor UID (3));
+      Start_Message;
+      CBOR.Encode_Tag (Register_Value_Tag);
+      CBOR.Encode_Array (3);
+      CBOR.Encode_Byte_String (U);
+      CBOR.Encode_Integer (Register'Enum_Rep);
+      CBOR.Encode_Integer (Integer (Radio_Registers (Register'Enum_Rep)));
+      Send_Message;
+   end Send_Register;
+
+   procedure Send_Status (Radio_Registers: Radio.Raw_Register_Array) is
+   begin
+      Send_Register (Radio.OPMODE, Radio_Registers);
+      Send_Register (Radio.IRQFLAGS1, Radio_Registers);
+      Send_Register (Radio.IRQFLAGS2, Radio_Registers);
+   end Send_Status;
 
    procedure Send_Error_Message (M : String) is
    begin
