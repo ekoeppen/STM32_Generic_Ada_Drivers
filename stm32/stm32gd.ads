@@ -16,7 +16,6 @@ package STM32GD is
    procedure Wait_For_Interrupt with Inline_Always;
    procedure Clear_Event with Inline_Always;
    procedure Wait_For_Event with Inline_Always;
-   procedure Reset;
    function UID return UID_Type;
 
 end STM32GD;

@@ -21,11 +21,6 @@ package body STM32GD is
       Asm ("WFE", Volatile => True);
    end Wait_For_Event;
 
-   procedure Reset is
-   begin
-      null;
-   end Reset;
-
    function UID return UID_Type is
       UID_F3 : aliased UID_Type with Import, Address => System'To_Address (16#1FFFF7E8#);
       UID_Fx : aliased UID_Type with Import, Address => System'To_Address (16#1FFFF7AC#);
