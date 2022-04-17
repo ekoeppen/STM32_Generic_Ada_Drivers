@@ -2,7 +2,7 @@ with Interfaces; use Interfaces;
 with STM32GD.Board; use STM32GD.Board;
 with STM32_SVD; use STM32_SVD;
 with STM32GD.GPIO;
-with STM32GD.SCB;
+with STM32GD.Startup;
 with Drivers.RFM69;
 with Host_Message;
 
@@ -67,7 +67,7 @@ package body Modem is
             Modem_Message.Send_Status (Radio_Registers);
             if Radio.Get_Mode /= Radio.RX then
                Modem_Message.Send_Error_Message ("Mode error");
-               STM32GD.SCB.Reset;
+               STM32GD.Startup.Reset_Handler;
             end if;
             RTC.Read (Now);
             RTC.Add_Seconds (Now, Wait_Time);
