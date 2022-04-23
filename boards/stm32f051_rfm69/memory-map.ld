@@ -38,7 +38,7 @@ MEMORY
 {
   vectors         (rx) :  ORIGIN = 0x08000000,                LENGTH = 192
   flash           (rx) :  ORIGIN = 0x08000000 + 192,          LENGTH = 65536 - 192 - 1024
-  config          (rx) :  ORIGIN = 0x80000000 + 65536 - 1024, LENGTH = 1024
+  config          (rx) :  ORIGIN = 0x08000000 + 65536 - 1024, LENGTH = 1024
   ram             (rwx) : ORIGIN = 0x20000000, LENGTH = 8192
 }
 

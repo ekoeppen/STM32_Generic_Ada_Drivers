@@ -74,7 +74,7 @@ SECTIONS
 
   .config :
   {
-    *(.config)
+    KEEP(*(.config))
    } > config
 
   __data_load = __rom_end;

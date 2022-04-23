@@ -16,6 +16,7 @@ library project MCU extends "../../stm32gd.gpr" is
       "../../rtc/v2",
       "../../spi/v1",
       "../../scb/v1",
+      "../../power/v1",
       "../../exti/v2");
 
 end MCU;

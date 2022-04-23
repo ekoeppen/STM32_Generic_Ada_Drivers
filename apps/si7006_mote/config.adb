@@ -4,17 +4,26 @@ with Utils;
 
 package body Config is
 
+   type Config_Tag is (Invalid_Tag, Mode_Config_Tag) with Size => 1;
+
+   for Config_Tag use (Invalid_Tag => -1, Mode_Config_Tag => 0);
+
    type Mote_Config_Type is record
+      Tag               : Config_Tag;
+      Length            : Unsigned_8;
       Git_Short_Hash    : String (1 ..12);
       TX_Power          : Integer_8;
       Transmit_Interval : Unsigned_16;
-    end record;
+    end record with Volatile;
 
    Mote_Config : Mote_Config_Type := (
-      Git_Short_Hash => "$Id$        ",
-      TX_Power => -1,
-      Transmit_Interval => 900);
-      --  pragma Linker_Section (Mote_Config, ".config");
+      Tag               => Mode_Config_Tag,
+      Length            => Mote_Config_Type'Size / 8,
+      Git_Short_Hash    => "$Id$        ",
+      TX_Power          => -1,
+      Transmit_Interval => 900)
+      with Export => True, External_Name => "config_data";
+      pragma Linker_Section (Mote_Config, ".config");
 
    function TX_Power return Integer is
    begin

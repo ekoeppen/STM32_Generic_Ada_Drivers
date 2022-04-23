@@ -97,7 +97,8 @@ procedure Main is
       Radio.Power_Down;
       Text_IO.Put ("Config: TX_Power=");
       Text_IO.Put_Integer (Config.TX_Power);
-      Text_IO.Put (" Transmit_Interval="); Text_IO.Put_Integer (Config.Transmit_Interval);
+      Text_IO.Put (" Transmit_Interval=");
+      Text_IO.Put_Integer (Config.Transmit_Interval);
       Text_IO.Put (" Revision="); Text_IO.Put (Revision);
       Text_IO.New_Line;
    end Send_Mote_Info;
